@@ -110,7 +110,8 @@ export const saveJobs = [
     postedAgo: "2 days ago",
     closingDate: "05-12-2025",
     employmentType: "Full time",
-    tags: ["Technology", "Junior"],
+    dep: "Technology",
+    level: "Junior",
   },
   {
     id: "250004D",
@@ -121,6 +122,7 @@ export const saveJobs = [
     postedAgo: "2 days ago",
     closingDate: "05-12-2025",
     employmentType: "Full time",
-    tags: ["Technology", "Senior"],
+    dep: "Technology",
+    level: "Senior",
   },
 ];
