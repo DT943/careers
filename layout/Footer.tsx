@@ -2,7 +2,7 @@
 
 import logo from "../public/icons/logo.webp";
 import Image from "next/image";
-import { socialMediaInfo } from "@/constant";
+import { socialMediaInfo } from "@/shared";
 import back from "../public/images/ground.png";
 import Link from "next/link";
 

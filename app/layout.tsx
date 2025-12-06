@@ -2,6 +2,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
 import NavbarWrapper from "../layout/Navbar";
 import FooterWrapper from "../layout/Footer";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from "@/constant/Config";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,9 +49,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <NavbarWrapper />
-        <main>{children}</main>
-        <FooterWrapper />
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <NavbarWrapper />
+          <main>{children}</main>
+          <FooterWrapper />
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

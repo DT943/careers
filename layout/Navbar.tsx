@@ -5,11 +5,13 @@ import logo from "../public/icons/logo.webp";
 import Image from "next/image";
 import { ArrowSquareOutIcon, UserCircleIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const NavbarWrapper = () => {
   const pathname = usePathname();
+  const { firstName, lastName } = useAuthStore();
 
-  const whiteBackgroundPages = ["/", "/jobs","/talent-community"];
+  const whiteBackgroundPages = ["/", "/jobs", "/talent-community"];
   const hasWhiteBackground = whiteBackgroundPages.includes(pathname);
 
   const backgroundColor = hasWhiteBackground
@@ -45,14 +47,20 @@ const NavbarWrapper = () => {
                 </li>
 
                 <li>
-                  <Link className="transition hover:text-[#C2B48B]" href="/jobs">
+                  <Link
+                    className="transition hover:text-[#C2B48B]"
+                    href="/jobs"
+                  >
                     {" "}
                     Jobs{" "}
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="transition hover:text-[#C2B48B]" href="/talent-community">
+                  <Link
+                    className="transition hover:text-[#C2B48B]"
+                    href="/talent-community"
+                  >
                     {" "}
                     Talent Community{" "}
                   </Link>
@@ -69,21 +77,35 @@ const NavbarWrapper = () => {
                   </Link>
                 </li>
 
-                <li className="flex justify-center items-center gap-1">
-                  <Link
-                    className="flex justify-center items-center gap-1 transition hover:text-[#C2B48B]"
-                    href="/sign-in"
-                  >
-                    {" "}
-                    <UserCircleIcon size={18} />
-                    Log in
-                  </Link>
-                  <span className="text-white">|</span>
-                  <Link className="transition hover:text-[#C2B48B]" href="/sign-up">
-                    {" "}
-                    Sign up{" "}
-                  </Link>
-                </li>
+                {!firstName ? (
+                  <li className="flex justify-center items-center gap-1">
+                    <Link
+                      className="flex justify-center items-center gap-1 transition hover:text-[#C2B48B]"
+                      href="/register"
+                    >
+                      {" "}
+                      <UserCircleIcon size={18} />
+                      Log in
+                    </Link>
+                    <span className="text-white">|</span>
+                    <Link
+                      className="transition hover:text-[#C2B48B]"
+                      href="/register"
+                    >
+                      {" "}
+                      Sign up{" "}
+                    </Link>
+                  </li>
+                ) : (
+                  <li className="flex justify-center items-center gap-1">
+                    <Link
+                      className="flex justify-center items-center gap-1 transition hover:text-[#C2B48B]"
+                      href="/profile"
+                    >
+                      <UserCircleIcon size={18} /> {firstName} {lastName}
+                    </Link>
+                  </li>
+                )}
               </ul>
             </nav>
           </div>

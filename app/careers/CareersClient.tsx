@@ -13,9 +13,7 @@ const CareersClient = () => {
       <TeamTextSection />
       <VacanciesSection />
       <CategoriesSection />
-      <div className="pb-10">
         <OurTalentSection />
-      </div>
     </>
   );
 };
