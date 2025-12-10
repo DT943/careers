@@ -25,7 +25,7 @@ const JobAlertCard: React.FC<JobAlertCardProps> = ({
   onDelete,
 }) => {
   return (
-    <div className="flex items-start justify-between gap-8 rounded-2xl border border-[#E5E5E3] px-6 py-8 shadow-sm">
+    <div className="w-sm lg:w-2xl flex items-start justify-between gap-8 rounded-2xl border border-[#E5E5E3] px-6 py-8 shadow-sm">
       {/* Left side: title + details */}
       <div className="flex-1">
         <div className="mb-3 flex items-center gap-3">

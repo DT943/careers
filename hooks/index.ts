@@ -18,6 +18,8 @@ export {
 export { useTeams } from "./useTeams";
 export { useJobOfferDetail } from "./useJobOfferDetail";
 export { useApplicantProfile } from "./useProfile";
+export { useSavedJobs } from "./useSavedJobs";
+export { useJobAlerts } from "./useJobAlerts";
 
 export type {
   JobOffer,
@@ -34,4 +36,6 @@ export type {
   ProfileExperience,
   ProfileLanguage,
 } from "./useProfile";
+export type { SavedJobItem, SavedJobsResponse } from "./useSavedJobs";
+export type { JobAlert } from "./useJobAlerts";
 

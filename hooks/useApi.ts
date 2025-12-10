@@ -149,6 +149,8 @@ export const queryKeys = {
   auth: {
     user: ["auth", "user"] as const,
     profile: ["auth", "profile"] as const,
+    savedJobs: ["auth", "savedJobs"] as const,
+    jobAlerts: ["auth", "jobAlerts"] as const,
   },
 };
 

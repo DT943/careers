@@ -1,16 +1,28 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import imagrr from "@/public/images/careers/admin.png";
 import Image from "next/image";
-import { saveJobs } from "../jobs/Helper/JobsData";
 import JobCard from "../jobs/Components/JobCard";
+import JobCardSkeleton from "../jobs/Components/JobCardSkeleton";
 import JobAlertCard from "./Components/JobAlert";
 import { PlusCircleIcon } from "@phosphor-icons/react";
 import JobApplicationsTable from "./Components/TableApplication";
 import CandidateProfile from "./Components/GeneralInfo";
 import CandidateProfileSkeleton from "./Components/CandidateProfileSkeleton";
-import { useApplicantProfile } from "@/hooks";
+import {
+  useApplicantProfile,
+  useSavedJobs,
+  useJobAlerts,
+  SavedJobItem,
+  JobAlert as JobAlertApi,
+} from "@/hooks";
+import {
+  formatClosingDate,
+  getEmploymentTypeLabel,
+  getLevelLabel,
+  getTimeAgo,
+} from "@/utils";
 
 type JobAlert = {
   id: number;
@@ -24,35 +36,39 @@ type JobAlert = {
   isActive: boolean;
 };
 
-const initialAlerts: JobAlert[] = [
-  {
-    id: 1,
-    title: "Backend developer",
-    keywords: "Backend",
-    workingTime: "full time",
-    jobLevel: "Senior-Level",
-    location: "Damascus ,Syria",
-    jobCategory: "Digital & Technology",
-    alertFrequency: "Weekly",
-    isActive: true,
-  },
-  {
-    id: 2,
-    title: "Full stack developer",
-    keywords: "Backend",
-    workingTime: "full time",
-    jobLevel: "Senior-Level",
-    location: "Damascus ,Syria",
-    jobCategory: "Digital & Technology",
-    alertFrequency: "Weekly",
-    isActive: true,
-  },
-];
+const initialAlerts: JobAlert[] = [];
 const ProfileClient = () => {
   const [activeTab, setActiveTab] = useState("general");
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
   const { data, isLoading, error } = useApplicantProfile();
+  const {
+    data: savedJobsData,
+    isLoading: savedLoading,
+    error: savedError,
+  } = useSavedJobs();
+  const {
+    data: alertsData,
+    isLoading: alertsLoading,
+    error: alertsError,
+  } = useJobAlerts({ languageCode: "en" });
+
+  useEffect(() => {
+    if (alertsData?.result) {
+      const mapped = alertsData.result.map((alert: JobAlertApi) => ({
+        id: alert.id,
+        title: alert.positionTitle || "Job Alert",
+        keywords: alert.positionTitle || "N/A",
+        workingTime: getEmploymentTypeLabel(alert.employmentType),
+        jobLevel: getLevelLabel(alert.jobLevel),
+        location: "—",
+        jobCategory: String(alert.jobCategory ?? "N/A"),
+        alertFrequency: "N/A",
+        isActive: true,
+      }));
+      setAlerts(mapped);
+    }
+  }, [alertsData]);
 
   const profile = data?.result;
 
@@ -129,6 +145,25 @@ const ProfileClient = () => {
     );
   }, [profile]);
 
+  const savedJobs = useMemo(() => {
+    const items = savedJobsData?.result?.items ?? [];
+    return items.map((item: SavedJobItem) => {
+      const job = item.jobOffer;
+      return {
+        id: job.id,
+        title: job.positionTitle,
+        team: job.teamName,
+        experienceLevel: getLevelLabel(job.level),
+        location: `${job.city}, ${job.country}`,
+        postedAgo: getTimeAgo(job.availableDate),
+        closingDate: formatClosingDate(job.expirationDate),
+        employmentType: getEmploymentTypeLabel(job.employmentType),
+        dep: job.teamName,
+        level: getLevelLabel(job.level),
+      };
+    });
+  }, [savedJobsData]);
+
   const toggleAlert = (id: number) => {
     setAlerts((prev) =>
       prev.map((alert) =>
@@ -149,7 +184,7 @@ const ProfileClient = () => {
           <div className="flex flex-col">
             <h3 className="text-sm font-normal text-primary-1">My profile</h3>
             <h3 className="text-2xl font-bold text-primary-1">
-              Mouayad Hawari
+               {profile?.firstName} {profile?.lastName}
             </h3>
           </div>
         </div>
@@ -247,14 +282,28 @@ const ProfileClient = () => {
           {activeTab === "alerts" && (
             <div className="flex justify-between py-4">
               <div className="flex flex-col gap-4 ">
-                {alerts.map((alert) => (
-                  <JobAlertCard
-                    key={alert.id}
-                    alert={alert}
-                    onToggle={() => toggleAlert(alert.id)}
-                    onDelete={() => deleteAlert(alert.id)}
-                  />
-                ))}
+                {alertsLoading && (
+                  <>
+                    <div className="h-24 bg-gray-100 animate-pulse rounded-md" />
+                    <div className="h-24 bg-gray-100 animate-pulse rounded-md" />
+                  </>
+                )}
+                {!alertsLoading && alertsError && (
+                  <p className="text-red-500 text-sm">Failed to load alerts.</p>
+                )}
+                {!alertsLoading && !alertsError && alerts.length === 0 && (
+                  <p className="text-sm text-primary-900">No alerts found.</p>
+                )}
+                {!alertsLoading &&
+                  !alertsError &&
+                  alerts.map((alert) => (
+                    <JobAlertCard
+                      key={alert.id}
+                      alert={alert}
+                      onToggle={() => toggleAlert(alert.id)}
+                      onDelete={() => deleteAlert(alert.id)}
+                    />
+                  ))}
               </div>
 
               <div>
@@ -271,9 +320,21 @@ const ProfileClient = () => {
 
           {activeTab === "saved" && (
             <div className="space-y-4 py-4">
-              {saveJobs.map((job) => (
-                <JobCard key={job.id} job={job} />
-              ))}
+              {savedLoading && (
+                <>
+                  <JobCardSkeleton />
+                  <JobCardSkeleton />
+                </>
+              )}
+              {!savedLoading && savedError && (
+                <p className="text-red-500 text-sm">Failed to load saved jobs.</p>
+              )}
+              {!savedLoading && !savedError && savedJobs.length === 0 && (
+                <p className="text-sm text-primary-900">No saved jobs yet.</p>
+              )}
+              {!savedLoading &&
+                !savedError &&
+                savedJobs.map((job) => <JobCard key={job.id} job={job} />)}
             </div>
           )}
         </div>
