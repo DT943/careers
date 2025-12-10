@@ -3,13 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import imagrr from "@/public/images/careers/admin.png";
 import Image from "next/image";
-import JobCard from "../jobs/Components/JobCard";
-import JobCardSkeleton from "../jobs/Components/JobCardSkeleton";
-import JobAlertCard from "./Components/JobAlert";
 import { PlusCircleIcon } from "@phosphor-icons/react";
-import JobApplicationsTable from "./Components/TableApplication";
-import CandidateProfile from "./Components/GeneralInfo";
-import CandidateProfileSkeleton from "./Components/CandidateProfileSkeleton";
 import {
   useApplicantProfile,
   useSavedJobs,
@@ -25,6 +19,10 @@ import {
   getLevelLabel,
   getTimeAgo,
 } from "@/utils";
+import GeneralTab from "./Components/GeneralTab";
+import AlertsTab from "./Components/AlertsTab";
+import SavedJobsTab from "./Components/SavedJobsTab";
+import ApplicationsTab from "./Components/ApplicationsTab";
 
 type JobAlert = {
   id: number;
@@ -41,6 +39,7 @@ type JobAlert = {
 const initialAlerts: JobAlert[] = [];
 const ProfileClient = () => {
   const [activeTab, setActiveTab] = useState("general");
+  const [tabLoading, setTabLoading] = useState(false);
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
   const { data, isLoading, error } = useApplicantProfile();
@@ -76,6 +75,12 @@ const ProfileClient = () => {
       setAlerts(mapped);
     }
   }, [alertsData]);
+
+  useEffect(() => {
+    setTabLoading(true);
+    const t = setTimeout(() => setTabLoading(false), 320);
+    return () => clearTimeout(t);
+  }, [activeTab]);
 
   const profile = data?.result;
 
@@ -203,7 +208,7 @@ const ProfileClient = () => {
           <div className="flex flex-col">
             <h3 className="text-sm font-normal text-primary-1">My profile</h3>
             <h3 className="text-2xl font-bold text-primary-1">
-               {profile?.firstName} {profile?.lastName}
+              {profile?.firstName} {profile?.lastName}
             </h3>
           </div>
         </div>
@@ -277,27 +282,22 @@ const ProfileClient = () => {
         <div className="mt-4 text-gray-700">
           {activeTab === "general" && (
             <div className="space-y-4 py-2">
-              {isLoading && <CandidateProfileSkeleton />}
-              {!isLoading && error && (
-                <p className="text-red-500 text-sm">Failed to load profile.</p>
-              )}
-              {!isLoading && !error && profile && (
-                <CandidateProfile
-                  contactInfo={contactInfo}
-                  attachments={attachments}
-                  workHistory={workHistory}
-                  educationHistory={educationHistory}
-                />
-              )}
+              <GeneralTab
+                profile={profile}
+                loading={isLoading}
+                error={!!error}
+                showSkeleton={tabLoading}
+              />
             </div>
           )}
 
           {activeTab === "applications" && (
             <div className="space-y-4 py-4">
-              <JobApplicationsTable
+              <ApplicationsTab
                 applications={applications}
                 loading={appsLoading}
                 error={!!appsError}
+                showSkeleton={tabLoading}
               />
             </div>
           )}
@@ -305,28 +305,14 @@ const ProfileClient = () => {
           {activeTab === "alerts" && (
             <div className="flex justify-between py-4">
               <div className="flex flex-col gap-4 ">
-                {alertsLoading && (
-                  <>
-                    <div className="h-24 bg-gray-100 animate-pulse rounded-md" />
-                    <div className="h-24 bg-gray-100 animate-pulse rounded-md" />
-                  </>
-                )}
-                {!alertsLoading && alertsError && (
-                  <p className="text-red-500 text-sm">Failed to load alerts.</p>
-                )}
-                {!alertsLoading && !alertsError && alerts.length === 0 && (
-                  <p className="text-sm text-primary-900">No alerts found.</p>
-                )}
-                {!alertsLoading &&
-                  !alertsError &&
-                  alerts.map((alert) => (
-                    <JobAlertCard
-                      key={alert.id}
-                      alert={alert}
-                      onToggle={() => toggleAlert(alert.id)}
-                      onDelete={() => deleteAlert(alert.id)}
-                    />
-                  ))}
+                <AlertsTab
+                  alerts={alerts}
+                  loading={alertsLoading}
+                  error={!!alertsError}
+                  showSkeleton={tabLoading}
+                  onToggle={toggleAlert}
+                  onDelete={deleteAlert}
+                />
               </div>
 
               <div>
@@ -343,21 +329,12 @@ const ProfileClient = () => {
 
           {activeTab === "saved" && (
             <div className="space-y-4 py-4">
-              {savedLoading && (
-                <>
-                  <JobCardSkeleton />
-                  <JobCardSkeleton />
-                </>
-              )}
-              {!savedLoading && savedError && (
-                <p className="text-red-500 text-sm">Failed to load saved jobs.</p>
-              )}
-              {!savedLoading && !savedError && savedJobs.length === 0 && (
-                <p className="text-sm text-primary-900">No saved jobs yet.</p>
-              )}
-              {!savedLoading &&
-                !savedError &&
-                savedJobs.map((job) => <JobCard key={job.id} job={job} />)}
+              <SavedJobsTab
+                jobs={savedJobs}
+                loading={savedLoading}
+                error={!!savedError}
+                showSkeleton={tabLoading}
+              />
             </div>
           )}
         </div>

@@ -22,7 +22,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
   location,
 }) => {
   return (
-    <div className="bg-white p-6 rounded-lg w-full h-76">
+    <div className="bg-white p-6 rounded-lg w-full h-70">
       <h3 className="text-base font-bold text-primary-1">{title}</h3>
 
       <div className="flex justify-start items-center gap-2 mt-2">
