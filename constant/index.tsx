@@ -1,5 +1,6 @@
 import axios from "axios";
 import { API_BASE_URL } from "./Config";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -11,7 +12,7 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    const token = "";
+    const token = useAuthStore.getState().token;
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

@@ -17,6 +17,7 @@ export {
 } from "./useJobOffers";
 export { useTeams } from "./useTeams";
 export { useJobOfferDetail } from "./useJobOfferDetail";
+export { useApplicantProfile } from "./useProfile";
 
 export type {
   JobOffer,
@@ -26,4 +27,11 @@ export type {
 } from "./useJobOffers";
 export type { Team } from "./useTeams";
 export type { JobOfferDetail } from "./useJobOfferDetail";
+export type {
+  ApplicantProfile,
+  ProfileSkill,
+  ProfileEducation,
+  ProfileExperience,
+  ProfileLanguage,
+} from "./useProfile";
 

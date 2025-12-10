@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import imagrr from "@/public/images/careers/admin.png";
 import Image from "next/image";
 import { saveJobs } from "../jobs/Helper/JobsData";
 import JobCard from "../jobs/Components/JobCard";
 import JobAlertCard from "./Components/JobAlert";
-import { PlusCircle, PlusCircleIcon } from "@phosphor-icons/react";
+import { PlusCircleIcon } from "@phosphor-icons/react";
 import JobApplicationsTable from "./Components/TableApplication";
 import CandidateProfile from "./Components/GeneralInfo";
+import CandidateProfileSkeleton from "./Components/CandidateProfileSkeleton";
+import { useApplicantProfile } from "@/hooks";
 
 type JobAlert = {
   id: number;
@@ -50,6 +52,82 @@ const ProfileClient = () => {
   const [activeTab, setActiveTab] = useState("general");
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
+  const { data, isLoading, error } = useApplicantProfile();
+
+  const profile = data?.result;
+
+  const contactInfo = useMemo(() => {
+    if (!profile)
+      return {
+        fullName: "",
+        email: "",
+        location: "",
+        mobilePhone: "",
+        birthDate: "",
+        nationality: "",
+        address: "",
+        portfolioUrl: "",
+        linkedinUrl: "",
+      };
+
+    return {
+      fullName: `${profile.firstName} ${profile.lastName}`,
+      email: profile.email,
+      location: `${profile.city}, ${profile.country}`,
+      mobilePhone: profile.phoneNumber,
+      birthDate: profile.dateOfBirth.split("T")[0],
+      nationality: profile.nationality,
+      address: "",
+      portfolioUrl: profile.portfolioUrl,
+      linkedinUrl: profile.linkedInUrl,
+    };
+  }, [profile]);
+
+  const attachments = useMemo(() => {
+    if (!profile?.resumeUrl) return [];
+    return [
+      {
+        id: profile.id,
+        name: "Resume",
+        type: "PDF",
+        url: profile.resumeUrl,
+      },
+    ];
+  }, [profile]);
+
+  const workHistory = useMemo(() => {
+    return (
+      profile?.experiences.map((exp) => {
+        const start = exp.startDate.split("T")[0];
+        const period = exp.isCurrentRole ? `${start} - Present` : start;
+        return {
+          id: exp.id,
+          title: exp.title,
+          companyOrSchool: exp.company,
+          period,
+          location: `${exp.city}, ${exp.country}`,
+          description: exp.responsibilities,
+        };
+      }) ?? []
+    );
+  }, [profile]);
+
+  const educationHistory = useMemo(() => {
+    return (
+      profile?.educations.map((edu) => {
+        const start = edu.startDate.split("T")[0];
+        const end = edu.endDate?.split("T")[0];
+        return {
+          id: edu.id,
+          title: edu.degree,
+          companyOrSchool: edu.institution,
+          period: `${start}${end ? ` - ${end}` : ""}`,
+          location: edu.fieldOfStudy,
+          description: edu.grade ? `Grade: ${edu.grade}` : "",
+        };
+      }) ?? []
+    );
+  }, [profile]);
 
   const toggleAlert = (id: number) => {
     setAlerts((prev) =>
@@ -145,7 +223,18 @@ const ProfileClient = () => {
         <div className="mt-4 text-gray-700">
           {activeTab === "general" && (
             <div className="space-y-4 py-2">
-              <CandidateProfile />
+              {isLoading && <CandidateProfileSkeleton />}
+              {!isLoading && error && (
+                <p className="text-red-500 text-sm">Failed to load profile.</p>
+              )}
+              {!isLoading && !error && profile && (
+                <CandidateProfile
+                  contactInfo={contactInfo}
+                  attachments={attachments}
+                  workHistory={workHistory}
+                  educationHistory={educationHistory}
+                />
+              )}
             </div>
           )}
 

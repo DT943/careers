@@ -4,20 +4,11 @@ import React from "react";
 import {
   FileTextIcon,
   GraduationCap,
-  PaperclipIcon,
   PencilIcon,
-  PencilSimpleIcon,
   SuitcaseIcon,
   TrashIcon,
   UserIcon,
 } from "@phosphor-icons/react";
-import {
-  attachments,
-  contactInfo,
-  educationHistory,
-  TimelineItem,
-  workHistory,
-} from "../Helper/ContentData";
 
 type SectionHeaderProps = {
   title: string;
@@ -71,9 +62,47 @@ const TimelineList: React.FC<TimelineListProps> = ({ items }) => (
   </div>
 );
 
-// ----- MAIN COMPONENT -----
+type ContactInfo = {
+  fullName: string;
+  email: string;
+  location: string;
+  mobilePhone: string;
+  birthDate: string;
+  nationality?: string;
+  address?: string;
+  portfolioUrl?: string;
+  linkedinUrl?: string;
+};
 
-const CandidateProfile: React.FC = () => {
+type Attachment = {
+  id: string | number;
+  name: string;
+  type: string;
+  url: string;
+};
+
+type TimelineItem = {
+  id: string | number;
+  title: string;
+  companyOrSchool: string;
+  period?: string;
+  location?: string;
+  description?: string;
+};
+
+type CandidateProfileProps = {
+  contactInfo: ContactInfo;
+  attachments: Attachment[];
+  workHistory: TimelineItem[];
+  educationHistory: TimelineItem[];
+};
+
+const CandidateProfile: React.FC<CandidateProfileProps> = ({
+  contactInfo,
+  attachments,
+  workHistory,
+  educationHistory,
+}) => {
   return (
     <div className="mx-auto max-w-7xl rounded-lg py-2">
       {/* Top: Contact header + reset password */}
@@ -101,7 +130,13 @@ const CandidateProfile: React.FC = () => {
             value={contactInfo.mobilePhone}
           />
           <ContactRow label="Date of birth" value={contactInfo.birthDate} />
-          <ContactRow label="Address 1" value={contactInfo.address} />
+          <ContactRow
+            label="Nationality"
+            value={contactInfo.nationality || "Not set"}
+          />
+          {contactInfo.address && (
+            <ContactRow label="Address 1" value={contactInfo.address} />
+          )}
           {contactInfo.portfolioUrl && (
             <ContactRow label="Link" value={contactInfo.portfolioUrl} isLink />
           )}
@@ -137,15 +172,26 @@ const CandidateProfile: React.FC = () => {
                   </span>
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
-                  <button className="underline decoration-slate-400 underline-offset-2 hover:text-sky-700">
-                    Download
-                  </button>
-                  <button className="underline decoration-slate-400 underline-offset-2 hover:text-sky-700">
-                    Preview
-                  </button>
-                  <button className="underline decoration-slate-400 underline-offset-2 hover:text-sky-700">
-                    Open new tab
-                  </button>
+                  {attachment.url && (
+                    <>
+                      <a
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline decoration-slate-400 underline-offset-2 hover:text-sky-700"
+                      >
+                        Download
+                      </a>
+                      <a
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="underline decoration-slate-400 underline-offset-2 hover:text-sky-700"
+                      >
+                        Open new tab
+                      </a>
+                    </>
+                  )}
                   <button className="underline decoration-slate-400 underline-offset-2 hover:text-red-600">
                     Delete
                   </button>
