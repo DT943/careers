@@ -20,7 +20,7 @@ import { getEmploymentTypeLabel, getTimeAgo, formatClosingDate, getLevelLabel } 
 
 // Transform API response to JobCard format
 interface TransformedJob {
-  id: string;
+  id: number;
   title: string;
   team: string;
   experienceLevel: string;
@@ -33,7 +33,7 @@ interface TransformedJob {
 }
 
 const transformJobOffer = (job: JobOffer): TransformedJob => ({
-  id: job.code,
+  id: job.id,
   title: job.positionTitle,
   team: job.teamName,
   experienceLevel: getLevelLabel(job.level),

@@ -21,7 +21,7 @@ type VacancyItem = {
 };
 
 const transformJob = (job: JobOffer): VacancyItem => ({
-  id: job.code,
+  id: job.id,
   title: job.positionTitle,
   category: job.teamName,
   level: getLevelLabel(job.level),

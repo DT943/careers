@@ -16,6 +16,7 @@ export {
   useDeleteJobOffer,
 } from "./useJobOffers";
 export { useTeams } from "./useTeams";
+export { useJobOfferDetail } from "./useJobOfferDetail";
 
 export type {
   JobOffer,
@@ -24,4 +25,5 @@ export type {
   UpdateJobOfferData,
 } from "./useJobOffers";
 export type { Team } from "./useTeams";
+export type { JobOfferDetail } from "./useJobOfferDetail";
 

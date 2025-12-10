@@ -44,3 +44,4 @@ const JobCardSkeleton = () => {
 
 export default JobCardSkeleton;
 
+
