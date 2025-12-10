@@ -2,10 +2,32 @@ import BackgroundContainer from "../../../components/CustomBackgroundContainer";
 import header from "../../../public/images/careers/header.png";
 import { useState } from "react";
 import { MagnifyingGlassIcon, MapPinIcon } from "@phosphor-icons/react";
+import { useRouter } from "next/navigation";
 
 const HeaderSection = () => {
-  const [fromValue, setFromValue] = useState("");
-  const [toValue, setToValue] = useState("");
+  const router = useRouter();
+  const [searchValue, setSearchValue] = useState("");
+  const [cityValue, setCityValue] = useState("");
+
+  const handleSearchJobs = () => {
+    const params = new URLSearchParams();
+
+    if (searchValue.trim()) {
+      params.append("search", searchValue.trim());
+    }
+    if (cityValue.trim()) {
+      params.append("city", cityValue.trim());
+    }
+
+    const queryString = params.toString();
+    router.push(`/jobs${queryString ? `?${queryString}` : ""}`);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleSearchJobs();
+    }
+  };
 
   return (
     <div dir={"ltr"}>
@@ -40,8 +62,9 @@ const HeaderSection = () => {
                       <input
                         type="text"
                         placeholder="Search for job title or keywords"
-                        value={fromValue}
-                        onChange={(e) => setFromValue(e.target.value)}
+                        value={searchValue}
+                        onChange={(e) => setSearchValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className="w-full pl-10 border-none text-sm outline-none bg-transparent placeholder-text-600"
                       />
                     </div>
@@ -55,9 +78,10 @@ const HeaderSection = () => {
                       />
                       <input
                         type="text"
-                        placeholder="Search by location"
-                        value={toValue}
-                        onChange={(e) => setToValue(e.target.value)}
+                        placeholder="Search by city"
+                        value={cityValue}
+                        onChange={(e) => setCityValue(e.target.value)}
+                        onKeyDown={handleKeyDown}
                         className="w-full pl-10 border-none text-sm outline-none bg-transparent placeholder-text-600"
                       />
                     </div>
@@ -65,7 +89,7 @@ const HeaderSection = () => {
                     <button
                       type="button"
                       className="w-[40%] rounded-sm py-2 px-2 text-xs bg-primary-1 font-medium text-white hover:opacity-95"
-                      onClick={() => {}}
+                      onClick={handleSearchJobs}
                     >
                       Search jobs
                     </button>

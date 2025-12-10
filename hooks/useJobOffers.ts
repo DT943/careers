@@ -116,20 +116,6 @@ export const useDeleteJobOffer = () => {
   );
 };
 
-// ============================================
-// Helper Functions
-// ============================================
-
-export const getLevelLabel = (level: number): string => {
-  const levels: Record<number, string> = {
-    0: "Internship",
-    1: "Senior",
-    2: "Mid-level",
-    3: "Junior",
-    4: "Lead",
-  };
-  return levels[level] || "Unknown";
-};
 
 export { getEmploymentTypeLabel, getTimeAgo, formatClosingDate };
 

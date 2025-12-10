@@ -14,7 +14,6 @@ export {
   useCreateJobOffer,
   useUpdateJobOffer,
   useDeleteJobOffer,
-  getLevelLabel,
 } from "./useJobOffers";
 
 export type {

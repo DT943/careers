@@ -7,8 +7,13 @@ export const getTimeAgo = (dateString: string): string => {
   if (diffDays === 0) return "Today";
   if (diffDays === 1) return "1 day ago";
   if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} week${Math.floor(diffDays / 7) > 1 ? "s" : ""} ago`;
-  return `${Math.floor(diffDays / 30)} month${Math.floor(diffDays / 30) > 1 ? "s" : ""} ago`;
+  if (diffDays < 30)
+    return `${Math.floor(diffDays / 7)} week${
+      Math.floor(diffDays / 7) > 1 ? "s" : ""
+    } ago`;
+  return `${Math.floor(diffDays / 30)} month${
+    Math.floor(diffDays / 30) > 1 ? "s" : ""
+  } ago`;
 };
 
 export const formatClosingDate = (dateString: string): string => {
@@ -31,3 +36,13 @@ export const getEmploymentTypeLabel = (type: number): string => {
   return types[type] || "Unknown";
 };
 
+export const getLevelLabel = (level: number): string => {
+  const levels: Record<number, string> = {
+    0: "Internship",
+    1: "Senior",
+    2: "Mid-level",
+    3: "Junior",
+    4: "Lead",
+  };
+  return levels[level] || "Unknown";
+};
