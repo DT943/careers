@@ -16,6 +16,8 @@ import {
   useJobAlerts,
   SavedJobItem,
   JobAlert as JobAlertApi,
+  useJobApplications,
+  JobApplicationItem,
 } from "@/hooks";
 import {
   formatClosingDate,
@@ -52,6 +54,11 @@ const ProfileClient = () => {
     isLoading: alertsLoading,
     error: alertsError,
   } = useJobAlerts({ languageCode: "en" });
+  const {
+    data: applicationsData,
+    isLoading: appsLoading,
+    error: appsError,
+  } = useJobApplications();
 
   useEffect(() => {
     if (alertsData?.result) {
@@ -164,6 +171,18 @@ const ProfileClient = () => {
     });
   }, [savedJobsData]);
 
+  const applications = useMemo(() => {
+    const items = applicationsData?.result ?? [];
+    return items.map((item: JobApplicationItem) => ({
+      id: item.id,
+      position: item.jobPosition,
+      status: item.status === 0 ? "Application Received" : "In Progress",
+      location: item.teamName || "—",
+      team: item.teamName,
+      applicationDate: item.appliedOn?.split("T")[0] ?? "",
+    }));
+  }, [applicationsData]);
+
   const toggleAlert = (id: number) => {
     setAlerts((prev) =>
       prev.map((alert) =>
@@ -275,7 +294,11 @@ const ProfileClient = () => {
 
           {activeTab === "applications" && (
             <div className="space-y-4 py-4">
-              <JobApplicationsTable />
+              <JobApplicationsTable
+                applications={applications}
+                loading={appsLoading}
+                error={!!appsError}
+              />
             </div>
           )}
 

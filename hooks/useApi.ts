@@ -151,6 +151,7 @@ export const queryKeys = {
     profile: ["auth", "profile"] as const,
     savedJobs: ["auth", "savedJobs"] as const,
     jobAlerts: ["auth", "jobAlerts"] as const,
+    applications: ["auth", "applications"] as const,
   },
 };
 

@@ -20,6 +20,7 @@ export { useJobOfferDetail } from "./useJobOfferDetail";
 export { useApplicantProfile } from "./useProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useJobAlerts } from "./useJobAlerts";
+export { useJobApplications } from "./useJobApplications";
 
 export type {
   JobOffer,
@@ -38,4 +39,5 @@ export type {
 } from "./useProfile";
 export type { SavedJobItem, SavedJobsResponse } from "./useSavedJobs";
 export type { JobAlert } from "./useJobAlerts";
+export type { JobApplicationItem } from "./useJobApplications";
 

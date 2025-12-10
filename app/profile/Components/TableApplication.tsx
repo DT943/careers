@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ModalCustom from "./WithdrawModal";
 
-type JobApplication = {
+export type JobApplicationRow = {
   id: number;
   position: string;
   status: string;
@@ -10,39 +10,23 @@ type JobApplication = {
   applicationDate: string;
 };
 
-const initialApplications: JobApplication[] = [
-  {
-    id: 1,
-    position: "Senior Backend Developer",
-    status: "Application Received",
-    location: "Damascus",
-    team: "Digital & technology",
-    applicationDate: "26-11-2026",
-  },
-  {
-    id: 2,
-    position: "Senior Frontend Developer",
-    status: "Withdrawn",
-    location: "Damascus",
-    team: "Digital & technology",
-    applicationDate: "26-11-2026",
-  },
-];
+type JobApplicationsTableProps = {
+  applications: JobApplicationRow[];
+  loading?: boolean;
+  error?: boolean;
+};
 
-const JobApplicationsTable: React.FC = () => {
-  const [open, setOpen] = useState(false);
-  const [applications, setApplications] =
-    useState<JobApplication[]>(initialApplications);
+const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
+  applications,
+  loading = false,
+  error = false,
+}) => {
+  const [openForId, setOpenForId] = useState<number | null>(null);
+  const [withdrawnIds, setWithdrawnIds] = useState<Set<number>>(new Set());
 
   const withdrawApplication = (id: number) => {
-    setApplications((prev) =>
-      prev.map((application) =>
-        application.id === id
-          ? { ...application, status: "Withdrawn" }
-          : application
-      )
-    );
-    console.log(id);
+    setWithdrawnIds((prev) => new Set(prev).add(id));
+    setOpenForId(null);
   };
 
   return (
@@ -72,35 +56,90 @@ const JobApplicationsTable: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {applications.map((application) => (
-              <tr key={application.id} className="border-b border-gray-200">
-                <td className="px-6 py-4 text-sm">{application.position}</td>
-                <td className="px-6 py-4 text-sm">{application.status}</td>
-                <td className="px-6 py-4 text-sm">{application.location}</td>
-                <td className="px-6 py-4 text-sm">{application.team}</td>
-                <td className="px-6 py-4 text-sm">
-                  {application.applicationDate}
-                </td>
-                <td className="px-6 py-4 text-sm">
-                  {application.status !== "Withdrawn" && (
-                    <button
-                      className="text-alert"
-                      onClick={() => setOpen(true)}
-                    >
-                      Withdraw application
-                    </button>
-                  )}
-                  <ModalCustom
-                    isOpen={open}
-                    onCancel={() => setOpen(false)}
-                    onWithdraw={() => {
-                      withdrawApplication(application.id);
-                      setOpen(false);
-                    }}
-                  />
+            {loading && (
+              <>
+                {[1, 2, 3].map((idx) => (
+                  <tr key={idx} className="border-b border-gray-200 animate-pulse">
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-32 bg-gray-200 rounded" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-20 bg-gray-200 rounded" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-gray-200 rounded" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-gray-200 rounded" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-20 bg-gray-200 rounded" />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="h-4 w-24 bg-gray-200 rounded" />
+                    </td>
+                  </tr>
+                ))}
+              </>
+            )}
+
+            {!loading && error && (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-6 py-4 text-sm text-red-500 text-center"
+                >
+                  Failed to load applications.
                 </td>
               </tr>
-            ))}
+            )}
+
+            {!loading && !error && applications.length === 0 && (
+              <tr>
+                <td
+                  colSpan={6}
+                  className="px-6 py-4 text-sm text-primary-900 text-center"
+                >
+                  No applications found.
+                </td>
+              </tr>
+            )}
+
+            {!loading &&
+              !error &&
+              applications.map((application) => {
+                const isWithdrawn =
+                  withdrawnIds.has(application.id) ||
+                  application.status.toLowerCase() === "withdrawn";
+                return (
+                  <tr key={application.id} className="border-b border-gray-200">
+                    <td className="px-6 py-4 text-sm">{application.position}</td>
+                    <td className="px-6 py-4 text-sm">
+                      {isWithdrawn ? "Withdrawn" : application.status}
+                    </td>
+                    <td className="px-6 py-4 text-sm">{application.location}</td>
+                    <td className="px-6 py-4 text-sm">{application.team}</td>
+                    <td className="px-6 py-4 text-sm">
+                      {application.applicationDate}
+                    </td>
+                    <td className="px-6 py-4 text-sm">
+                      {!isWithdrawn && (
+                        <button
+                          className="text-alert"
+                          onClick={() => setOpenForId(application.id)}
+                        >
+                          Withdraw application
+                        </button>
+                      )}
+                      <ModalCustom
+                        isOpen={openForId === application.id}
+                        onCancel={() => setOpenForId(null)}
+                        onWithdraw={() => withdrawApplication(application.id)}
+                      />
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
       </div>
