@@ -142,6 +142,9 @@ export const queryKeys = {
   careers: {
     all: ["careers"] as const,
     jobOffers: (params?: QueryParams) => ["careers", "jobOffers", params ?? {}] as const,
+    teams: {
+      list: (params?: QueryParams) => ["careers", "teams", params ?? {}] as const,
+    },
   },
   auth: {
     user: ["auth", "user"] as const,

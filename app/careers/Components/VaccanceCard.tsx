@@ -22,7 +22,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
   location,
 }) => {
   return (
-    <div className="bg-white p-6 rounded-lg w-full h-72">
+    <div className="bg-white p-6 rounded-lg w-full h-76">
       <h3 className="text-base font-bold text-primary-1">{title}</h3>
 
       <div className="flex justify-start items-center gap-2 mt-2">
@@ -35,7 +35,8 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       </div>
 
       <p className="text-sm font-normal text-primary-900 pt-3">
-        ID: {id} - Closing date: {closingDate}
+        ID: {id} - 
+        Closing date: {closingDate}
       </p>
       <p className="text-sm font-normal text-primary-900 pt-1 flex justify-start items-center gap-1">
         <SuitcaseIcon size={18} /> {type}
