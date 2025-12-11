@@ -1,5 +1,9 @@
+ "use client";
+
 import { BriefcaseIcon, ClockIcon, MapPinIcon } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface Job {
   id: any;
@@ -19,6 +23,19 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job }) => {
+  const router = useRouter();
+  const token = useAuthStore((s) => s.token);
+
+  const handleApply = () => {
+    if (!token) {
+      router.push("/register");
+      return;
+    }
+    router.push(
+      `/job-application?jobId=${job.id}&title=${encodeURIComponent(job.title)}`
+    );
+  };
+
   return (
     <article className="rounded-2xl bg-white px-6 py-5 shadow-sm hover:shadow-lg transition">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -70,14 +87,13 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
               View Details
             </button>
           </Link>
-          <Link href={`/job-application?jobId=${job.id}&title=${encodeURIComponent(job.title)}`}>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center rounded-md bg-primary-1 px-5 py-2 text-xs font-medium text-white hover:opacity-95"
-            >
-              Apply Now
-            </button>
-          </Link>
+          <button
+            type="button"
+            onClick={handleApply}
+            className="inline-flex items-center justify-center rounded-md bg-primary-1 px-5 py-2 text-xs font-medium text-white hover:opacity-95"
+          >
+            Apply Now
+          </button>
         </div>
       </div>
     </article>

@@ -1,9 +1,15 @@
+"use client";
+
 import { ClockIcon } from "@phosphor-icons/react";
 import { GoLink } from "react-icons/go";
 import { FaLinkedinIn, FaTelegramPlane, FaWhatsapp } from "react-icons/fa";
 import { BsFacebook } from "react-icons/bs";
 import { PiXLogoBold } from "react-icons/pi";
 import Link from "next/link";
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useSavedJobs, useSaveJobOffer, useUnsaveJobOffer } from "@/hooks";
 
 type HeaderContentProps = {
   title: string;
@@ -28,6 +34,43 @@ const HeaderContent = ({
   closingDate,
   jobId,
 }: HeaderContentProps) => {
+  const router = useRouter();
+  const token = useAuthStore((s) => s.token);
+
+  const { data: savedJobsData } = useSavedJobs(!!token);
+  const { mutateAsync: saveJob, isLoading: saving } = useSaveJobOffer();
+  const { mutateAsync: unsaveJob, isLoading: unsaving } = useUnsaveJobOffer();
+
+  const isSaved = useMemo(
+    () =>
+      !!savedJobsData?.result?.items?.some(
+        (item) => item.jobOfferId === jobId || item.jobOffer?.id === jobId
+      ),
+    [savedJobsData, jobId]
+  );
+
+  const handleApply = () => {
+    if (!token) {
+      router.push("/register");
+      return;
+    }
+    router.push(
+      `/job-application?jobId=${jobId}&title=${encodeURIComponent(title)}`
+    );
+  };
+
+  const handleSaveToggle = async () => {
+    if (!token) {
+      router.push("/register");
+      return;
+    }
+    if (isSaved) {
+      await unsaveJob(jobId);
+    } else {
+      await saveJob({ JobOfferId: jobId } as any);
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[4.5fr_2fr] gap-4 p-6 w-full max-w-7xl">
       <div className="">
@@ -88,14 +131,19 @@ const HeaderContent = ({
 
       <div className="grid grid-cols-1 justify-end items-end">
         <div>
-          <Link href={`/job-application?jobId=${jobId}&title=${encodeURIComponent(title)}`}>
-            <button className="m-1 text-sm font-semibold w-2/3 bg-primary-1 border border-[#054E72] text-white py-3 px-4 rounded-lg p-1 hover:opacity-95">
-              Apply Now
-            </button>
-          </Link>
+          <button
+            onClick={handleApply}
+            className="m-1 text-sm font-semibold w-2/3 bg-primary-1 border border-[#054E72] text-white py-3 px-4 rounded-lg p-1 hover:opacity-95"
+          >
+            Apply Now
+          </button>
 
-          <button className="m-1 text-sm font-semibold w-2/3 border border-[#00253C] text-primary-900 py-3 px-4 rounded-lg p-1 hover:bg-white">
-            Save
+          <button
+            onClick={handleSaveToggle}
+            disabled={saving || unsaving}
+            className="m-1 text-sm font-semibold w-2/3 border border-[#00253C] text-primary-900 py-3 px-4 rounded-lg p-1 hover:bg-white disabled:opacity-50"
+          >
+            {isSaved ? "Unsave" : "Save"}
           </button>
         </div>
 

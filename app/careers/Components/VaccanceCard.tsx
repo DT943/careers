@@ -1,5 +1,8 @@
+ "use client";
+
 import { ClockIcon, MapPinIcon, SuitcaseIcon } from "@phosphor-icons/react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface VacancyCardProps {
   title: any;
@@ -21,6 +24,19 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
   posted,
   location,
 }) => {
+  const router = useRouter();
+  const token = useAuthStore((s) => s.token);
+
+  const handleApply = () => {
+    if (!token) {
+      router.push("/register");
+      return;
+    }
+    router.push(
+      `/job-application?jobId=${id}&title=${encodeURIComponent(title)}`
+    );
+  };
+
   return (
     <div className="bg-white p-6 rounded-lg w-full h-70">
       <h3 className="text-base font-bold text-primary-1">{title}</h3>
@@ -48,11 +64,12 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
         <MapPinIcon size={18} />
         {location}
       </p>
-      <Link href={`/job-application?jobId=${id}&title=${encodeURIComponent(title)}`}>
-        <button className="text-sm w-full mt-4 bg-primary-1 text-white py-2 px-4 rounded-lg p-1 hover:opacity-95">
-          Apply Now
-        </button>
-      </Link>
+      <button
+        onClick={handleApply}
+        className="text-sm w-full mt-4 bg-primary-1 text-white py-2 px-4 rounded-lg p-1 hover:opacity-95"
+      >
+        Apply Now
+      </button>
     </div>
   );
 };
