@@ -4,11 +4,7 @@ import { ApplicantProfile } from "@/hooks";
 import { useState } from "react";
 import CandidateProfileSkeleton from "./CandidateProfileSkeleton";
 import {
-  PaperclipIcon,
-  ShieldStarIcon,
-  SuitcaseSimple,
-  GraduationCap,
-  GlobeHemisphereWest,
+
   MapPin,
   PencilSimpleIcon,
   FileTextIcon,
@@ -16,6 +12,8 @@ import {
   UserIcon,
   TranslateIcon,
   PencilIcon,
+  LightningIcon,
+  GraduationCapIcon,
 } from "@phosphor-icons/react";
 import { PencilSimple } from "@phosphor-icons/react";
 import EditPersonalInfoModal from "./EditPersonalInfoModal";
@@ -156,7 +154,7 @@ const GeneralTab = ({
       <Card>
         <CardHeader
           title="Skills"
-          icon={<ShieldStarIcon size={16} />}
+          icon={<LightningIcon size={20} />}
           rightNode={
             <button
               onClick={() => setShowSkills(true)}
@@ -220,7 +218,7 @@ const GeneralTab = ({
       <Card>
         <CardHeader
           title="Educational History"
-          icon={<GraduationCap size={20} />}
+          icon={<GraduationCapIcon size={20} />}
           rightNode={
             <button
               onClick={() => setShowEdu(true)}

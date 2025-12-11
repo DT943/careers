@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, PlusCircle, Trash } from "@phosphor-icons/react";
+import { PlusCircle, Trash } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 

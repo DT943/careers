@@ -16,13 +16,15 @@ import {
   useApplicantProfile,
   useApplyToJob,
 } from "@/hooks";
+import { useAuthStore } from "@/store/useAuthStore";
 
 const JobApplicationClient = () => {
   const searchParams = useSearchParams();
+  const { token } = useAuthStore();
   const jobIdParam = searchParams.get("jobId");
   const jobTitleParam = searchParams.get("title") || "Job Application";
 
-  const { data: profileData } = useApplicantProfile();
+  const { data: profileData } = useApplicantProfile(!!token);
   const { mutateAsync: applyToJob, isLoading: applying } = useApplyToJob();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -249,72 +251,87 @@ const JobApplicationClient = () => {
 
   return (
     <div className=" mx-auto p-6 min-h-[83vh]">
-      {currentStep != 6 && (
+      {!token ? (
+        <div className="min-h-[60vh] flex items-center justify-center">
+          <div className="max-w-md text-center bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-primary-900 mb-2">
+              Access denied
+            </h2>
+            <p className="text-sm text-primary-900">
+              You need to be logged in to apply for jobs.
+            </p>
+          </div>
+        </div>
+      ) : (
         <>
-          <div className="py-8 p-2 flex items-left justify-left lg:items-left lg:justify-left mx-auto max-w-7xl">
-            {" "}
-            <Link href="/jobs">
-              <h5 className=" flex gap-1 items-center text-[#00253C] hover:text-[#3A5A6B] text-sm font-medium">
-                <ArrowLeftIcon size={18} /> Back to all jobs
-              </h5>
-            </Link>
-          </div>
+          {currentStep != 6 && (
+            <>
+              <div className="py-8 p-2 flex items-left justify-left lg:items-left lg:justify-left mx-auto max-w-7xl">
+                {" "}
+                <Link href="/jobs">
+                  <h5 className=" flex gap-1 items-center text-[#00253C] hover:text-[#3A5A6B] text-sm font-medium">
+                    <ArrowLeftIcon size={18} /> Back to all jobs
+                  </h5>
+                </Link>
+              </div>
 
-          <div className="py-2 p-2 flex justify-left items-left mx-auto max-w-7xl">
-            <h5 className=" flex gap-1 items-center text-primary-1 lg:text-3xl font-normal">
-              You are applying for{" "}
-              <span className="font-bold">{jobTitleParam}</span>
-            </h5>
-          </div>
+              <div className="py-2 p-2 flex justify-left items-left mx-auto max-w-7xl">
+                <h5 className=" flex gap-1 items-center text-primary-1 lg:text-3xl font-normal">
+                  You are applying for{" "}
+                  <span className="font-bold">{jobTitleParam}</span>
+                </h5>
+              </div>
 
-          {/* Progress Bar */}
+              {/* Progress Bar */}
 
-          <div className="py-8 mb-12 mx-auto max-w-5xl">
-            <div className="flex justify-between items-center mb-2">
-              {[1, 2, 3, 4, 5].map((step) => (
-                <div
-                  key={step}
-                  className={`flex flex-col justify-center items-center ${
-                    step < currentStep
-                      ? "text-primary-1"
-                      : step === currentStep
-                      ? "text-primary-1"
-                      : "text-gray-400"
-                  }`}
-                >
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                      step < currentStep
-                        ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
-                        : step === currentStep
-                        ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
-                        : "border-gray-300 bg-gray-300 text-gray-500"
-                    }`}
-                  >
-                    {step < currentStep ? <CheckIcon size={18} /> : step}
-                  </div>
-                  <span className="text-xs lg:max-w-sm max-w-10 absolute mt-24 lg:mt-18 font-medium">
-                    {step === 1 && "Select your resume"}
-                    {step === 2 && "Personal information"}
-                    {step === 3 && "Professional information"}
-                    {step === 4 && "Additional Questions"}
-                    {step === 5 && "ReView & Submit"}
-                  </span>
+              <div className="py-8 mb-12 mx-auto max-w-5xl">
+                <div className="flex justify-between items-center mb-2">
+                  {[1, 2, 3, 4, 5].map((step) => (
+                    <div
+                      key={step}
+                      className={`flex flex-col justify-center items-center ${
+                        step < currentStep
+                          ? "text-primary-1"
+                          : step === currentStep
+                          ? "text-primary-1"
+                          : "text-gray-400"
+                      }`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
+                          step < currentStep
+                            ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
+                            : step === currentStep
+                            ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
+                            : "border-gray-300 bg-gray-300 text-gray-500"
+                        }`}
+                      >
+                        {step < currentStep ? <CheckIcon size={18} /> : step}
+                      </div>
+                      <span className="text-xs lg:max-w-sm max-w-10 absolute mt-24 lg:mt-18 font-medium">
+                        {step === 1 && "Select your resume"}
+                        {step === 2 && "Personal information"}
+                        {step === 3 && "Professional information"}
+                        {step === 4 && "Additional Questions"}
+                        {step === 5 && "ReView & Submit"}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="w-[95%] bg-gray-200 -mt-6 ml-5 rounded-full h-1">
-              <div
-                className="bg-primary-1 h-1 rounded-full transition-all duration-300"
-                style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
-              ></div>
-            </div>
-          </div>
+                <div className="w-[95%] bg-gray-200 -mt-6 ml-5 rounded-full h-1">
+                  <div
+                    className="bg-primary-1 h-1 rounded-full transition-all duration-300"
+                    style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* Step Content */}
+          <div className="mx-auto max-w-5xl">{renderStep()}</div>
         </>
       )}
-
-      {/* Step Content */}
-      <div className="mx-auto max-w-5xl">{renderStep()}</div>
     </div>
   );
 };

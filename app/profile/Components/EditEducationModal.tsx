@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { TrashIcon, X } from "@phosphor-icons/react";
+import { TrashIcon } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
+import ProfileModalShell from "../../../components/ProfileModalShell";
 
 type Props = {
   open: boolean;
@@ -69,11 +70,26 @@ const EditEducationModal = ({ open, onClose, profile }: Props) => {
   };
 
   return (
-    <ModalShell
-      title="Edit Education"
+    <ProfileModalShell
       onClose={onClose}
-      onSave={handleSave}
-      isLoading={isLoading}
+      footer={
+        <>
+          <button
+            onClick={onClose}
+            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={isLoading}
+            className="rounded-md bg-[#054E72] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60"
+          >
+            {isLoading ? "Saving..." : "Save"}
+          </button>
+        </>
+      }
+      maxWidthClass="max-w-4xl"
     >
       <div>
         {rows.map((row, idx) => (
@@ -127,45 +143,9 @@ const EditEducationModal = ({ open, onClose, profile }: Props) => {
           + Add education entry
         </button>
       </div>
-    </ModalShell>
+    </ProfileModalShell>
   );
 };
-
-const ModalShell = ({
-  title,
-  children,
-  onClose,
-  onSave,
-  isLoading,
-}: {
-  title: string;
-  children: React.ReactNode;
-  onClose: () => void;
-  onSave: () => void;
-  isLoading?: boolean;
-}) => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-    <div className="w-full max-w-4xl rounded-lg bg-white shadow-xl">
-      <div className="flex items-center justify-between px-6 py-2"></div>
-      <div className="px-6 py-6">{children}</div>
-      <div className="flex justify-end gap-3 px-6 py-4">
-        <button
-          onClick={onClose}
-          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={onSave}
-          disabled={isLoading}
-          className="rounded-md bg-[#054E72] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60"
-        >
-          {isLoading ? "Saving..." : "Save"}
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 const Field = ({
   label,

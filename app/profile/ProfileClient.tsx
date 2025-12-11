@@ -13,6 +13,7 @@ import {
   useJobApplications,
   JobApplicationItem,
 } from "@/hooks";
+import { useAuthStore } from "@/store/useAuthStore";
 import {
   formatClosingDate,
   getEmploymentTypeLabel,
@@ -38,26 +39,27 @@ type JobAlert = {
 
 const initialAlerts: JobAlert[] = [];
 const ProfileClient = () => {
+  const { token } = useAuthStore();
   const [activeTab, setActiveTab] = useState("general");
   const [tabLoading, setTabLoading] = useState(false);
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
-  const { data, isLoading, error } = useApplicantProfile();
+  const { data, isLoading, error } = useApplicantProfile(!!token);
   const {
     data: savedJobsData,
     isLoading: savedLoading,
     error: savedError,
-  } = useSavedJobs();
+  } = useSavedJobs(!!token);
   const {
     data: alertsData,
     isLoading: alertsLoading,
     error: alertsError,
-  } = useJobAlerts({ languageCode: "en" });
+  } = useJobAlerts({ languageCode: "en" }, !!token);
   const {
     data: applicationsData,
     isLoading: appsLoading,
     error: appsError,
-  } = useJobApplications();
+  } = useJobApplications(!!token);
 
   useEffect(() => {
     if (alertsData?.result) {
@@ -198,6 +200,21 @@ const ProfileClient = () => {
   const deleteAlert = (id: number) => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   };
+  if (!token) {
+    return (
+      <div className="min-h-[83vh] flex items-center justify-center">
+        <div className="max-w-md text-center bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-primary-900 mb-2">
+            Access denied
+          </h2>
+          <p className="text-sm text-primary-900">
+            You need to be logged in to view this page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-[83vh]">
       {/* Header */}
