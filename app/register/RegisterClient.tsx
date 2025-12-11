@@ -114,8 +114,24 @@ const RegisterPage = () => {
   const setPendingEmail = useAuthStore((state) => state.setPendingEmail);
   const setAuth = useAuthStore((state) => state.setAuth);
   const setFlowToken = useAuthStore((state) => state.setFlowToken);
+  const { token } = useAuthStore();
 
   const { title, subtitle } = AUTH_TEXTS[mode];
+
+  if (token) {
+    return (
+      <div className="min-h-[83vh] flex items-center justify-center">
+        <div className="max-w-md text-center bg-white shadow-md rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-primary-900 mb-2">
+            Access denied
+          </h2>
+          <p className="text-sm text-primary-900">
+            You need to be logged in to view this page.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col py-10">
