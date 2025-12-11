@@ -105,7 +105,7 @@ const GeneralTab = ({
             )}
           </div>
         </Card>
-        <ResetPasswordButton />
+        {/* <ResetPasswordButton /> */}
       </div>
 
       {/* Resume */}
@@ -315,7 +315,7 @@ const GeneralTab = ({
 };
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4 ">
+  <div className="rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4">
     {children}
   </div>
 );
@@ -329,12 +329,12 @@ const CardHeader = ({
   icon?: React.ReactNode;
   rightNode?: React.ReactNode;
 }) => (
-  <div className="w-[730px] mb-3 flex items-center justify-between">
+  <div className=" gap-8 mb-3 flex items-center justify-between w-full">
     <div className="flex items-center gap-2 text-primary-900">
       {icon && <span>{icon}</span>}
       <h3 className="text-base font-semibold">{title}</h3>
     </div>
-    {rightNode}
+    <div className="flex justify-end items-center">{rightNode}</div>
   </div>
 );
 

@@ -238,7 +238,7 @@ const ProfileClient = () => {
 
       {/* Breadcrumb */}
       <div className="bg-[#E5E5E3] h-8">
-        <div className="mx-auto max-w-7xl flex justify-start items-center py-1">
+        <div className="mx-auto max-w-7xl flex justify-start items-center py-1 px-2">
           <h3 className="text-sm text-primary-900">
             Home /{" "}
             <span className="text-primary-1 font-semibold">My profile</span>
@@ -247,7 +247,7 @@ const ProfileClient = () => {
       </div>
 
       {/* Tabs */}
-      <div className=" mx-auto max-w-7xl py-2">
+      <div className=" mx-auto max-w-7xl py-2 px-2">
         <div className="-mb-px border-b border-gray-200">
           <div className="flex gap-8">
             {/* TAB 1 */}
@@ -303,7 +303,7 @@ const ProfileClient = () => {
         {/* TAB CONTENT */}
         <div className="mt-4 text-gray-700">
           {activeTab === "general" && (
-            <div className="space-y-4 py-2">
+            <div className="space-y-4 py-2 px-2">
               <GeneralTab
                 profile={profile}
                 loading={isLoading}
@@ -314,7 +314,7 @@ const ProfileClient = () => {
           )}
 
           {activeTab === "applications" && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 px-2">
               <ApplicationsTab
                 applications={applications}
                 loading={appsLoading}
@@ -325,7 +325,7 @@ const ProfileClient = () => {
           )}
 
           {activeTab === "alerts" && (
-            <div className="flex justify-between py-4">
+            <div className="flex justify-between py-4 px-2">
               <div className="flex flex-col gap-4 ">
                 <AlertsTab
                   alerts={alerts}
@@ -337,7 +337,7 @@ const ProfileClient = () => {
                 />
               </div>
 
-              <div>
+              {/* <div>
                 <button
                   type="button"
                   className="inline-flex items-center gap-2 rounded-md bg-[#00527a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition"
@@ -345,12 +345,12 @@ const ProfileClient = () => {
                   <PlusCircleIcon size={18} weight="bold" />
                   New alert
                 </button>
-              </div>
+              </div> */}
             </div>
           )}
 
           {activeTab === "saved" && (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-4 px-2">
               <SavedJobsTab
                 jobs={savedJobs}
                 loading={savedLoading}
