@@ -10,6 +10,12 @@ import {
   GraduationCap,
   GlobeHemisphereWest,
   MapPin,
+  PencilSimpleIcon,
+  FileTextIcon,
+  SuitcaseIcon,
+  UserIcon,
+  TranslateIcon,
+  PencilIcon,
 } from "@phosphor-icons/react";
 import { PencilSimple } from "@phosphor-icons/react";
 import EditPersonalInfoModal from "./EditPersonalInfoModal";
@@ -56,20 +62,20 @@ const GeneralTab = ({
   const [showLang, setShowLang] = useState(false);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 mb-4">
       {/* Personal Information */}
       <div className="flex items-start justify-between">
         <Card>
           <CardHeader
             title="Personal Information"
-            icon={<ShieldStarIcon size={16} />}
+            icon={<UserIcon size={20} />}
             rightNode={
               <button
                 onClick={() => setShowEdit(true)}
                 className="text-primary-1 hover:opacity-80"
                 aria-label="Edit personal information"
               >
-                <PencilSimple size={18} weight="bold" />
+                <PencilIcon size={18} />
               </button>
             }
           />
@@ -103,11 +109,22 @@ const GeneralTab = ({
         </Card>
         <ResetPasswordButton />
       </div>
-    
 
       {/* Resume */}
       <Card>
-        <CardHeader title="Resume" icon={<PaperclipIcon size={16} />} />
+        <CardHeader
+          title="Resume"
+          icon={<FileTextIcon size={20} />}
+          rightNode={
+            <button
+              onClick={() => setShowResume(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Edit personal information"
+            >
+              <PencilIcon size={18} />
+            </button>
+          }
+        />
         <div className="text-sm text-primary-900">
           <p className="mb-2">
             {profile.resumeUrl ? "Resume" : "No resume uploaded"}
@@ -132,12 +149,6 @@ const GeneralTab = ({
               </a>
             </div>
           )}
-          <button
-            onClick={() => setShowResume(true)}
-            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-1 hover:underline"
-          >
-            <PencilSimple size={16} /> Edit
-          </button>
         </div>
       </Card>
 
@@ -152,7 +163,7 @@ const GeneralTab = ({
               className="text-primary-1 hover:opacity-80"
               aria-label="Edit skills"
             >
-              <PencilSimple size={18} weight="bold" />
+              <PencilIcon size={18} />
             </button>
           }
         />
@@ -175,14 +186,14 @@ const GeneralTab = ({
       <Card>
         <CardHeader
           title="Work History"
-          icon={<SuitcaseSimple size={16} />}
+          icon={<SuitcaseIcon size={20} />}
           rightNode={
             <button
               onClick={() => setShowWork(true)}
               className="text-primary-1 hover:opacity-80"
               aria-label="Edit work history"
             >
-              <PencilSimple size={18} weight="bold" />
+              <PencilIcon size={18} />
             </button>
           }
         />
@@ -209,14 +220,14 @@ const GeneralTab = ({
       <Card>
         <CardHeader
           title="Educational History"
-          icon={<GraduationCap size={16} />}
+          icon={<GraduationCap size={20} />}
           rightNode={
             <button
               onClick={() => setShowEdu(true)}
               className="text-primary-1 hover:opacity-80"
               aria-label="Edit education"
             >
-              <PencilSimple size={18} weight="bold" />
+              <PencilIcon size={18} />
             </button>
           }
         />
@@ -243,14 +254,14 @@ const GeneralTab = ({
       <Card>
         <CardHeader
           title="Languages"
-          icon={<GlobeHemisphereWest size={16} />}
+          icon={<TranslateIcon size={20} />}
           rightNode={
             <button
               onClick={() => setShowLang(true)}
               className="text-primary-1 hover:opacity-80"
               aria-label="Edit languages"
             >
-              <PencilSimple size={18} weight="bold" />
+              <PencilIcon size={18} />
             </button>
           }
         />
@@ -306,7 +317,7 @@ const GeneralTab = ({
 };
 
 const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-gray-200  p-4 shadow-sm">
+  <div className="rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4 ">
     {children}
   </div>
 );
@@ -320,7 +331,7 @@ const CardHeader = ({
   icon?: React.ReactNode;
   rightNode?: React.ReactNode;
 }) => (
-  <div className="mb-3 flex items-center justify-between">
+  <div className="w-[730px] mb-3 flex items-center justify-between">
     <div className="flex items-center gap-2 text-primary-900">
       {icon && <span>{icon}</span>}
       <h3 className="text-base font-semibold">{title}</h3>

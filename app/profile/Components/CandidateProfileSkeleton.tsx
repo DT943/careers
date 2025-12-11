@@ -6,7 +6,7 @@ const line = (w: string) => (
 
 const CandidateProfileSkeleton = () => {
   return (
-    <div className="mx-auto max-w-5xl rounded-lg py-2 animate-pulse space-y-8">
+    <div className="mx-auto max-w-7xl rounded-lg py-2 animate-pulse space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-2">

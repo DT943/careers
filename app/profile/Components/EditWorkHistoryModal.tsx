@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
-import ProfileModalShell from "./ProfileModalShell";
+import ProfileModalShell from "../../../components/ProfileModalShell";
+import { TrashIcon } from "@phosphor-icons/react";
 
 type Props = {
   open: boolean;
@@ -162,9 +163,9 @@ const EditWorkHistoryModal = ({ open, onClose, profile }: Props) => {
             </label>
             <button
               onClick={() => removeRow(idx)}
-              className="text-xs font-semibold text-red-500 hover:underline"
+              className="m-2 text-xs font-semibold text-red-500 hover:underline"
             >
-              Remove entry
+              <TrashIcon size={16} />
             </button>
           </div>
         ))}

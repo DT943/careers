@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X } from "@phosphor-icons/react";
+import { TrashIcon, X } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 
 type Props = {
@@ -114,15 +114,15 @@ const EditEducationModal = ({ open, onClose, profile }: Props) => {
             </div>
             <button
               onClick={() => removeRow(idx)}
-              className="text-xs font-semibold text-red-500 hover:underline"
+              className="text-xs font-semibold m-2 text-red-500 hover:underline"
             >
-              Remove entry
+                <TrashIcon size={16} />
             </button>
           </div>
         ))}
         <button
           onClick={addRow}
-          className="text-xs font-semibold text-primary-1 hover:underline"
+          className="mt-4 text-xs font-semibold text-primary-1 hover:underline"
         >
           + Add education entry
         </button>

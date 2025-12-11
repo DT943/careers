@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import imagrr from "@/public/images/careers/admin.png";
+import profileLogo from "@/public/images/logoProfile.png";
 import Image from "next/image";
 import { PlusCircleIcon } from "@phosphor-icons/react";
 import {
@@ -203,7 +203,13 @@ const ProfileClient = () => {
       {/* Header */}
       <div className="bg-white h-24">
         <div className="mx-auto max-w-7xl flex justify-start items-center py-4 gap-2">
-          <Image src={imagrr} alt="" className="w-15 h-15 rounded-full" />
+          <Image
+            src={profileLogo}
+            alt="profile logo"
+            width={60}
+            height={60}
+            className="rounded-full"
+          />
           <div className="flex flex-col">
             <h3 className="text-sm font-normal text-primary-1">My profile</h3>
             <h3 className="text-2xl font-bold text-primary-1">

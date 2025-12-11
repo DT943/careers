@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
-import ProfileModalShell from "./ProfileModalShell";
+import ProfileModalShell from "../../../components/ProfileModalShell";
 
 type Props = {
   open: boolean;

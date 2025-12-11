@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { X, PlusCircle, Trash } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
-import ProfileModalShell from "./ProfileModalShell";
+import ProfileModalShell from "../../../components/ProfileModalShell";
 
 type EditSkillsModalProps = {
   open: boolean;

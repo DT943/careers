@@ -23,10 +23,18 @@ type AlertsTabProps = {
   onDelete: (id: number) => void;
 };
 
-const AlertsTab = ({ alerts, loading, error, showSkeleton, onToggle, onDelete }: AlertsTabProps) => {
+const AlertsTab = ({
+  alerts,
+  loading,
+  error,
+  showSkeleton,
+  onToggle,
+  onDelete,
+}: AlertsTabProps) => {
   if (loading || showSkeleton) {
     return (
       <div className="flex flex-col gap-4 w-full">
+        <AlertSkeleton />
         <AlertSkeleton />
         <AlertSkeleton />
       </div>
@@ -56,8 +64,7 @@ const AlertsTab = ({ alerts, loading, error, showSkeleton, onToggle, onDelete }:
 };
 
 const AlertSkeleton = () => (
-  <div className="h-24 w-full rounded-2xl border border-gray-200 bg-gray-100 animate-pulse" />
+  <div className="w-sm lg:w-2xl h-30 rounded-2xl border border-gray-200 bg-gray-200 animate-pulse" />
 );
 
 export default AlertsTab;
-
