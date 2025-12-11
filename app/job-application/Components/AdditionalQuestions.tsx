@@ -11,9 +11,14 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
   data,
   nextStep,
   prevStep,
+  updateData,
 }) => {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [selectedWorked, setSelectedWorked] = useState("");
+  const [selectedOption, setSelectedOption] = useState(
+    data.hasRelatives ? "yes" : data.hasRelatives === false ? "no" : ""
+  );
+  const [selectedWorked, setSelectedWorked] = useState(
+    data.hasWorkedBefore ? "yes" : data.hasWorkedBefore === false ? "no" : ""
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-lg py-8 px-12">
@@ -38,7 +43,10 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
                     name="agreement"
                     value="yes"
                     checked={selectedWorked === "yes"}
-                    onChange={(e) => setSelectedWorked(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedWorked(e.target.value);
+                      updateData({ hasWorkedBefore: e.target.value === "yes" });
+                    }}
                     className="sr-only"
                   />
                   <div
@@ -64,7 +72,10 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
                     name="agreement"
                     value="no"
                     checked={selectedWorked === "no"}
-                    onChange={(e) => setSelectedWorked(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedWorked(e.target.value);
+                      updateData({ hasWorkedBefore: e.target.value === "yes" });
+                    }}
                     className="sr-only"
                   />
                   <div
@@ -99,7 +110,10 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
                     name="agreement"
                     value="yes"
                     checked={selectedOption === "yes"}
-                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedOption(e.target.value);
+                      updateData({ hasRelatives: e.target.value === "yes" });
+                    }}
                     className="sr-only"
                   />
                   <div
@@ -125,7 +139,10 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
                     name="agreement"
                     value="no"
                     checked={selectedOption === "no"}
-                    onChange={(e) => setSelectedOption(e.target.value)}
+                    onChange={(e) => {
+                      setSelectedOption(e.target.value);
+                      updateData({ hasRelatives: e.target.value === "yes" });
+                    }}
                     className="sr-only"
                   />
                   <div
@@ -154,6 +171,8 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
             <div className="flex items-center gap-3 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] p-3 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
               <textarea
                 placeholder="Tell us what excites you about us and this role..."
+                value={data.whyJoin}
+                onChange={(e) => updateData({ whyJoin: e.target.value })}
                 className="h-20 flex-1 border-none resize-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -169,6 +188,8 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Company Website"
+                value={data.howHear}
+                onChange={(e) => updateData({ howHear: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -184,6 +205,8 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="1-3 years"
+                value={data.yearsOfExperience}
+                onChange={(e) => updateData({ yearsOfExperience: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -197,6 +220,8 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
               <input
                 type="date"
                 placeholder="17-12-2025"
+                value={data.whenCanYouStart}
+                onChange={(e) => updateData({ whenCanYouStart: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -211,6 +236,8 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
             <input
               type="text"
               placeholder="e.g., USD 1,000 per month"
+              value={data.expectedSalary}
+              onChange={(e) => updateData({ expectedSalary: e.target.value })}
               className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
             />
           </div>

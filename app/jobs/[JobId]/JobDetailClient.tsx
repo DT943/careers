@@ -90,6 +90,7 @@ const JobDetailClient = () => {
             jobType={getEmploymentTypeLabel(job.employmentType)}
             level={getLevelLabel(job.level)}
             closingDate={formatClosingDate(job.expirationDate)}
+            jobId={job.id}
           />
         )}
 

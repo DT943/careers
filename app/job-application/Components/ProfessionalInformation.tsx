@@ -1,31 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
-import { ApplicationStepProps } from "@/types/application";
+import React, { useEffect, useState } from "react";
+import { ApplicationStepProps, PositionItem, EducationItem } from "@/types/application";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   PlusCircleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-
-type PositionItem = {
-  companyName: string;
-  jobTitle: string;
-  startDate: string;
-  endDate: string;
-  currentlyWorkingHere: boolean;
-  description: string;
-};
-
-type EducationItem = {
-  institutionName: string;
-  degree: string;
-  fieldOfStudy: string;
-  startDate: string;
-  endDate: string;
-  currentlyWorkingHere: boolean;
-};
 
 const EMPTY_POSITION: PositionItem = {
   companyName: "",
@@ -49,18 +31,24 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
   data,
   nextStep,
   prevStep,
+  updateData,
 }) => {
   const [positions, setPositions] = useState<PositionItem[]>(
-    (data as any)?.professionalPositions?.length
-      ? (data as any).professionalPositions
-      : [EMPTY_POSITION]
+    data.positions?.length ? data.positions : [EMPTY_POSITION]
   );
 
   const [educationItems, setEducationItems] = useState<EducationItem[]>(
-    (data as any)?.educationHistory?.length
-      ? (data as any).educationHistory
-      : [EMPTY_EDUCATION]
+    data.educationHistory?.length ? data.educationHistory : [EMPTY_EDUCATION]
   );
+
+  useEffect(() => {
+    if (data.positions?.length) {
+      setPositions(data.positions);
+    }
+    if (data.educationHistory?.length) {
+      setEducationItems(data.educationHistory);
+    }
+  }, [data.positions, data.educationHistory]);
 
   const handlePositionChange = (
     index: number,
@@ -70,6 +58,7 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
     setPositions((prev) => {
       const clone = [...prev];
       clone[index] = { ...clone[index], [field]: value } as PositionItem;
+      updateData({ positions: clone });
       return clone;
     });
   };
@@ -80,23 +69,33 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       clone[index] = { ...EMPTY_POSITION };
       return clone;
     });
+    updateData({ positions: [{ ...EMPTY_POSITION }] });
   };
 
   const handleRemovePosition = (index: number) => {
     setPositions((prev) => {
       if (prev.length === 1) {
-        return [{ ...EMPTY_POSITION }];
+        const res = [{ ...EMPTY_POSITION }];
+        updateData({ positions: res });
+        return res;
       }
-      return prev.filter((_, i) => i !== index);
+      const res = prev.filter((_, i) => i !== index);
+      updateData({ positions: res });
+      return res;
     });
   };
 
   const handleAddPosition = () => {
-    setPositions((prev) => [...prev, { ...EMPTY_POSITION }]);
+    setPositions((prev) => {
+      const res = [...prev, { ...EMPTY_POSITION }];
+      updateData({ positions: res });
+      return res;
+    });
   };
 
   const handleClearAllPosition = () => {
     setPositions([{ ...EMPTY_POSITION }]);
+    updateData({ positions: [{ ...EMPTY_POSITION }] });
   };
 
   const handleEducationChange = (
@@ -107,6 +106,7 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
     setEducationItems((prev) => {
       const clone = [...prev];
       clone[index] = { ...clone[index], [field]: value } as EducationItem;
+      updateData({ educationHistory: clone });
       return clone;
     });
   };
@@ -117,27 +117,40 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       clone[index] = { ...EMPTY_EDUCATION };
       return clone;
     });
+    updateData({ educationHistory: [{ ...EMPTY_EDUCATION }] });
   };
 
   const handleRemoveEducationItem = (index: number) => {
     setEducationItems((prev) => {
       if (prev.length === 1) {
-        return [{ ...EMPTY_EDUCATION }];
+        const res = [{ ...EMPTY_EDUCATION }];
+        updateData({ educationHistory: res });
+        return res;
       }
-      return prev.filter((_, i) => i !== index);
+      const res = prev.filter((_, i) => i !== index);
+      updateData({ educationHistory: res });
+      return res;
     });
   };
 
   const handleAddEducationItem = () => {
-    setEducationItems((prev) => [...prev, { ...EMPTY_EDUCATION }]);
+    setEducationItems((prev) => {
+      const res = [...prev, { ...EMPTY_EDUCATION }];
+      updateData({ educationHistory: res });
+      return res;
+    });
   };
 
   const handleClearAllEducation = () => {
     setEducationItems([{ ...EMPTY_EDUCATION }]);
+    updateData({ educationHistory: [{ ...EMPTY_EDUCATION }] });
   };
 
   const handleContinue = () => {
-
+    updateData({
+      positions,
+      educationHistory: educationItems,
+    });
     nextStep();
   };
 

@@ -70,7 +70,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
               View Details
             </button>
           </Link>
-          <Link href="/job-application">
+          <Link href={`/job-application?jobId=${job.id}&title=${encodeURIComponent(job.title)}`}>
             <button
               type="button"
               className="inline-flex items-center justify-center rounded-md bg-primary-1 px-5 py-2 text-xs font-medium text-white hover:opacity-95"

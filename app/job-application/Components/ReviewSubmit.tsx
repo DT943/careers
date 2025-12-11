@@ -3,34 +3,46 @@ import { ApplicationStepProps } from "@/types/application";
 import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
 import PersonalInformationPreview from "./PersonalInformationPreview";
 import AdditionalQuestionsPreview from "./AdditionalQuestionsPreview";
+import { useMemo } from "react";
 
-const userPersonalInfo = {
-  fullName: "Mouayad Hawari",
-  email: "mouayadhawari@gmail.com",
-  phone: "+963 935 679 806",
-  location: "Syria, Damascus",
-  nationality: "Syrian",
-  birthDate: "21-03-1995",
-  linkedin: "linkedin.com/in/yourprofile",
-  portfolio: "yourwebsite.com",
+type ReviewSubmitProps = ApplicationStepProps & {
+  onSubmit: () => void;
+  applying?: boolean;
 };
 
-const additionalQuestions = {
-  worked: "No",
-  relative: "Yes",
-  here: "Company website",
-  experience: "3-5 years",
-  startDate: "15-12-2025",
-  salary: "USD 1000 / month",
-  description:
-    "I am passionate about aviation and have always admired FlyCham's commitment to excellence and innovation in the airline industry. With my background in aviation management and backend development, I believe I can contribute significantly to your digital transformation initiatives while growing professionally in a dynamic environment.",
-};
-
-const ReviewSubmit: React.FC<ApplicationStepProps> = ({
+const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
   data,
-  nextStep,
   prevStep,
-}) => {
+  onSubmit,
+  applying,
+}: ReviewSubmitProps) => {
+  const personalInfo = useMemo(
+    () => ({
+      fullName: `${data.firstName} ${data.lastName}`,
+      email: data.email,
+      phone: `${data.countryPhoneCode ? `${data.countryPhoneCode} ` : ""}${data.phoneNumber}`,
+      location: `${data.city}, ${data.country}`,
+      nationality: data.nationality,
+      birthDate: data.dateOfBirth,
+      linkedin: data.linkedinUrl,
+      portfolio: data.portfolioUrl,
+    }),
+    [data]
+  );
+
+  const additionalQuestions = useMemo(
+    () => ({
+      worked: data.hasWorkedBefore === undefined ? "—" : data.hasWorkedBefore ? "Yes" : "No",
+      relative: data.hasRelatives === undefined ? "—" : data.hasRelatives ? "Yes" : "No",
+      here: data.howHear || "—",
+      experience: data.yearsOfExperience || "—",
+      startDate: data.whenCanYouStart || "—",
+      salary: data.expectedSalary || "—",
+      description: data.whyJoin || "—",
+    }),
+    [data]
+  );
+
   return (
     <div className="bg-white rounded-lg shadow-lg py-8 px-12">
       <div className="text-left justify-center mb-8 max-w-2xl">
@@ -44,7 +56,7 @@ const ReviewSubmit: React.FC<ApplicationStepProps> = ({
       </div>
 
       <div className="flex flex-col gap-y-6">
-        <PersonalInformationPreview personalInfo={userPersonalInfo} />
+        <PersonalInformationPreview personalInfo={personalInfo} />
         <AdditionalQuestionsPreview additionalQuestions={additionalQuestions} />
       </div>
 
@@ -57,10 +69,11 @@ const ReviewSubmit: React.FC<ApplicationStepProps> = ({
         </button>
 
         <button
-          onClick={nextStep}
-          className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg border border-primary-1 font-semibold bg-primary-1 text-white hover:opacity-95`}
+          onClick={onSubmit}
+          disabled={applying}
+          className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg border border-primary-1 font-semibold bg-primary-1 text-white hover:opacity-95 disabled:opacity-50`}
         >
-          Submit application <ArrowRightIcon size={20} />
+          {applying ? "Submitting..." : "Submit application"} <ArrowRightIcon size={20} />
         </button>
       </div>
     </div>

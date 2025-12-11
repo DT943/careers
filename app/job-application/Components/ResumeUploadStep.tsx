@@ -1,12 +1,13 @@
 "use client";
 import { useState, useRef, useCallback } from "react";
-import { ApplicationStepProps } from "@/types/application";
+import { ApplicationStepProps, PositionItem, EducationItem } from "@/types/application";
 import {
   ArrowRightIcon,
   CheckCircleIcon,
   UploadIcon,
 } from "@phosphor-icons/react";
 import { IoDocumentTextOutline } from "react-icons/io5";
+import { useParseResume } from "@/hooks";
 
 const ResumeUploadStep: React.FC<ApplicationStepProps> = ({
   data,
@@ -15,7 +16,9 @@ const ResumeUploadStep: React.FC<ApplicationStepProps> = ({
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const parseResume = useParseResume();
 
   const validateFile = (file: File): boolean => {
     const validTypes = [
@@ -43,9 +46,44 @@ const ResumeUploadStep: React.FC<ApplicationStepProps> = ({
     (file: File) => {
       if (validateFile(file)) {
         updateData({ resume: file, resumeUrl: URL.createObjectURL(file) });
+        setIsUploading(true);
+        parseResume.mutateAsync(file)
+          .then((result) => {
+            const mappedPositions: PositionItem[] =
+              result?.experiences?.map((exp) => ({
+                companyName: exp.company,
+                jobTitle: exp.title,
+                startDate: exp.startDate?.split("T")[0] ?? "",
+                endDate: exp.endDate?.split("T")[0] ?? "",
+                currentlyWorkingHere: !exp.endDate,
+                description: exp.description ?? "",
+              })) ?? [];
+
+            const mappedEdu: EducationItem[] =
+              result?.educations?.map((edu) => ({
+                institutionName: edu.institution,
+                degree: edu.degree,
+                fieldOfStudy: "",
+                startDate: edu.startDate?.split("T")[0] ?? "",
+                endDate: edu.endDate?.split("T")[0] ?? "",
+                currentlyWorkingHere: !edu.endDate,
+              })) ?? [];
+
+            updateData({
+              resumeCode: result.resumeCode,
+              resumeUrl: result.resumeUrl,
+              skills: result.skills ?? [],
+              positions: mappedPositions.length ? mappedPositions : data.positions,
+              educationHistory: mappedEdu.length ? mappedEdu : data.educationHistory,
+            });
+          })
+          .catch(() => {
+            setError("Failed to parse resume. Please try again.");
+          })
+          .finally(() => setIsUploading(false));
       }
     },
-    [updateData]
+    [updateData, data.positions, data.educationHistory, parseResume]
   );
 
   const handleDrop = useCallback(
@@ -90,6 +128,7 @@ const ResumeUploadStep: React.FC<ApplicationStepProps> = ({
       setError("Please upload your resume to continue");
       return;
     }
+    if (isUploading) return;
     nextStep();
   };
 
@@ -138,7 +177,8 @@ const ResumeUploadStep: React.FC<ApplicationStepProps> = ({
               <p className="text-lg font-semibold mb-2"></p>
               <div className="flex justify-center items-center gap-2">
                 <p className="text-sm text-primary-1">{data.resume.name}</p>{" "}
-                <CheckCircleIcon className="w-6 h-6 text-green-600" />
+                {!isUploading && <CheckCircleIcon className="w-6 h-6 text-green-600" />}
+                {isUploading && <span className="text-xs text-primary-900">Parsing...</span>}
               </div>
               {/* <p className="text-sm text-gray-500">
                 {(data.resume.size / (1024 * 1024)).toFixed(2)} MB

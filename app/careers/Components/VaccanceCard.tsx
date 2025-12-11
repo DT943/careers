@@ -48,7 +48,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
         <MapPinIcon size={18} />
         {location}
       </p>
-      <Link href="/job-application">
+      <Link href={`/job-application?jobId=${id}&title=${encodeURIComponent(title)}`}>
         <button className="text-sm w-full mt-4 bg-primary-1 text-white py-2 px-4 rounded-lg p-1 hover:opacity-95">
           Apply Now
         </button>

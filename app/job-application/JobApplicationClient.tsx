@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ApplicationData } from "../../types/application";
 import ResumeUploadStep from "./Components/ResumeUploadStep";
 
@@ -11,20 +12,111 @@ import ReviewSubmit from "./Components/ReviewSubmit";
 import ApplicationSubmitted from "./Components/ApplicationSubmitted";
 import AdditionalQuestions from "./Components/AdditionalQuestions";
 import Link from "next/link";
+import {
+  useApplicantProfile,
+  useApplyToJob,
+} from "@/hooks";
 
 const JobApplicationClient = () => {
+  const searchParams = useSearchParams();
+  const jobIdParam = searchParams.get("jobId");
+  const jobTitleParam = searchParams.get("title") || "Job Application";
+
+  const { data: profileData } = useApplicantProfile();
+  const { mutateAsync: applyToJob, isLoading: applying } = useApplyToJob();
+
   const [currentStep, setCurrentStep] = useState(1);
   const [applicationData, setApplicationData] = useState<ApplicationData>({
     resume: null,
     resumeUrl: "",
+    resumeCode: "",
+    skills: [],
     additionalDocuments: [],
     portfolioUrl: "",
+    firstName: "",
+    lastName: "",
+    email: "",
+    countryPhoneCode: "",
+    phoneNumber: "",
+    country: "",
+    city: "",
+    dateOfBirth: "",
+    nationality: "",
+    linkedinUrl: "",
+    positions: [],
+    educationHistory: [],
+    hasWorkedBefore: undefined,
+    hasRelatives: undefined,
+    whyJoin: "",
+    howHear: "",
+    yearsOfExperience: "",
+    whenCanYouStart: "",
+    expectedSalary: "",
+    jobOfferId: jobIdParam ? Number(jobIdParam) : undefined,
+    jobTitle: jobTitleParam,
     step: 1,
   });
+
+  const profile = profileData?.result;
 
   const updateApplicationData = (data: Partial<ApplicationData>) => {
     setApplicationData((prev) => ({ ...prev, ...data }));
   };
+
+  // Ensure jobOfferId is always synced from URL params
+  useEffect(() => {
+    if (jobIdParam) {
+      const jobId = Number(jobIdParam);
+      if (!isNaN(jobId)) {
+        setApplicationData((prev) => {
+          if (prev.jobOfferId !== jobId) {
+            return { ...prev, jobOfferId: jobId };
+          }
+          return prev;
+        });
+      }
+    }
+  }, [jobIdParam]);
+
+  useEffect(() => {
+    if (profile) {
+      setApplicationData((prev) => ({
+        ...prev,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        email: profile.email || "",
+        country: profile.country,
+        city: profile.city,
+        phoneNumber: profile.phoneNumber,
+        nationality: profile.nationality,
+        dateOfBirth: profile.dateOfBirth?.split("T")[0] ?? "",
+        linkedinUrl: profile.linkedInUrl,
+        portfolioUrl: profile.portfolioUrl,
+        resumeUrl: profile.resumeUrl ?? prev.resumeUrl,
+        jobOfferId: prev.jobOfferId || (jobIdParam ? Number(jobIdParam) : undefined),
+        positions:
+          profile.experiences?.map((exp) => ({
+            companyName: exp.company,
+            jobTitle: exp.title,
+            startDate: exp.startDate?.split("T")[0] ?? "",
+            endDate: exp.isCurrentRole ? "" : exp.startDate?.split("T")[0] ?? "",
+            currentlyWorkingHere: exp.isCurrentRole,
+            description: exp.responsibilities ?? "",
+          })) ?? prev.positions,
+        educationHistory:
+          profile.educations?.map((edu) => ({
+            institutionName: edu.institution,
+            degree: edu.degree,
+            fieldOfStudy: edu.fieldOfStudy,
+            startDate: edu.startDate?.split("T")[0] ?? "",
+            endDate: edu.endDate?.split("T")[0] ?? "",
+            currentlyWorkingHere: false,
+          })) ?? prev.educationHistory,
+        step: 4,
+      }));
+      setCurrentStep(4);
+    }
+  }, [profile, jobIdParam]);
 
   const nextStep = () => {
     setCurrentStep((prev) => prev + 1);
@@ -82,6 +174,8 @@ const JobApplicationClient = () => {
             updateData={updateApplicationData}
             nextStep={nextStep}
             prevStep={prevStep}
+            onSubmit={handleSubmit}
+            applying={applying}
           />
         );
       case 6:
@@ -93,9 +187,64 @@ const JobApplicationClient = () => {
             updateData={updateApplicationData}
             nextStep={nextStep}
             prevStep={prevStep}
-          />
+            />
         );
     }
+  };
+
+  const handleSubmit = async () => {
+    // Ensure jobOfferId is always available from URL params if missing
+    const finalJobOfferId = applicationData.jobOfferId || (jobIdParam ? Number(jobIdParam) : undefined);
+    
+    if (!finalJobOfferId) {
+      console.error("Missing jobOfferId. Please ensure you're applying from a job listing.");
+      alert("Missing job information. Please apply from a job listing page.");
+      return;
+    }
+
+    const payload = {
+      jobOfferId: finalJobOfferId,
+      jobTitle: applicationData.jobTitle,
+      resumeCode: applicationData.resumeCode,
+      resumeUrl: applicationData.resumeUrl,
+      firstName: applicationData.firstName,
+      lastName: applicationData.lastName,
+      countryPhoneCode: applicationData.countryPhoneCode,
+      phoneNumber: applicationData.phoneNumber,
+      country: applicationData.country,
+      city: applicationData.city,
+      nationality: applicationData.nationality,
+      dateOfBirth: applicationData.dateOfBirth,
+      linkedInUrl: applicationData.linkedinUrl,
+      portfolioUrl: applicationData.portfolioUrl,
+      yearsOfExperience: applicationData.yearsOfExperience,
+      whenCanYouStart: applicationData.whenCanYouStart,
+      expectedSalary: applicationData.expectedSalary,
+      hasWorkedAtFlyChamBefore: applicationData.hasWorkedBefore,
+      hasRelativesAtFlyCham: applicationData.hasRelatives,
+      whyWantToJoinFlyCham: applicationData.whyJoin,
+      howDidYouHearAboutJob: applicationData.howHear,
+      skills: applicationData.skills,
+      experiences: applicationData.positions.map((p) => ({
+        title: p.jobTitle,
+        company: p.companyName,
+        startDate: p.startDate,
+        endDate: p.endDate,
+        isCurrentRole: p.currentlyWorkingHere,
+        responsibilities: p.description,
+      })),
+      educations: applicationData.educationHistory.map((e) => ({
+        degree: e.degree,
+        institution: e.institutionName,
+        fieldOfStudy: e.fieldOfStudy,
+        startDate: e.startDate,
+        endDate: e.endDate,
+        grade: "",
+      })),
+    };
+
+    await applyToJob(payload);
+    setCurrentStep(6);
   };
 
   return (
@@ -114,7 +263,7 @@ const JobApplicationClient = () => {
           <div className="py-2 p-2 flex justify-left items-left mx-auto max-w-7xl">
             <h5 className=" flex gap-1 items-center text-primary-1 lg:text-3xl font-normal">
               You are applying for{" "}
-              <span className="font-bold">Senior Backend Developer</span>
+              <span className="font-bold">{jobTitleParam}</span>
             </h5>
           </div>
 

@@ -100,7 +100,6 @@ const ProfileClient = () => {
 
     return {
       fullName: `${profile.firstName} ${profile.lastName}`,
-      email: profile.email,
       location: `${profile.city}, ${profile.country}`,
       mobilePhone: profile.phoneNumber,
       birthDate: profile.dateOfBirth.split("T")[0],

@@ -16,6 +16,7 @@ export interface ProfileEducation {
 }
 
 export interface ProfileExperience {
+  endDate: any;
   id: number;
   company: string;
   title: string;

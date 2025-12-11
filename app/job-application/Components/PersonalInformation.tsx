@@ -12,6 +12,7 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
   data,
   nextStep,
   prevStep,
+  updateData,
 }) => {
   return (
     <div className="bg-white rounded-lg shadow-lg py-8 px-12">
@@ -31,6 +32,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Enter your first name"
+                value={data.firstName}
+                onChange={(e) => updateData({ firstName: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -44,6 +47,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Enter your last name"
+                value={data.lastName}
+                onChange={(e) => updateData({ lastName: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -60,6 +65,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="email"
                 placeholder="Mouayadhawari@gmail.com"
+                value={data.email}
+                onChange={(e) => updateData({ email: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -74,6 +81,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
                 <input
                   type="text"
                   placeholder="Enter your first name"
+                  value={data.countryPhoneCode}
+                  onChange={(e) => updateData({ countryPhoneCode: e.target.value })}
                   className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
                 />
               </div>
@@ -87,6 +96,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
                 <input
                   type="text"
                   placeholder="Enter your last name"
+                  value={data.phoneNumber}
+                  onChange={(e) => updateData({ phoneNumber: e.target.value })}
                   className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
                 />
               </div>
@@ -103,6 +114,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Enter your first name"
+                value={data.country}
+                onChange={(e) => updateData({ country: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -116,6 +129,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Enter your last name"
+                value={data.city}
+                onChange={(e) => updateData({ city: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -132,6 +147,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="date"
                 placeholder="17-02-2001"
+                value={data.dateOfBirth}
+                onChange={(e) => updateData({ dateOfBirth: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -146,6 +163,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="Syrian"
+                value={data.nationality}
+                onChange={(e) => updateData({ nationality: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -163,6 +182,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="linkedin.com/in/yourprofile"
+                value={data.linkedinUrl}
+                onChange={(e) => updateData({ linkedinUrl: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -178,6 +199,8 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
               <input
                 type="text"
                 placeholder="yourwebsite.com"
+                value={data.portfolioUrl}
+                onChange={(e) => updateData({ portfolioUrl: e.target.value })}
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>

@@ -14,6 +14,7 @@ type HeaderContentProps = {
   jobType: string;
   level: string;
   closingDate: string;
+  jobId: number;
 };
 
 const HeaderContent = ({
@@ -25,6 +26,7 @@ const HeaderContent = ({
   jobType,
   level,
   closingDate,
+  jobId,
 }: HeaderContentProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[4.5fr_2fr] gap-4 p-6 w-full max-w-7xl">
@@ -86,7 +88,7 @@ const HeaderContent = ({
 
       <div className="grid grid-cols-1 justify-end items-end">
         <div>
-          <Link href="/job-application">
+          <Link href={`/job-application?jobId=${jobId}&title=${encodeURIComponent(title)}`}>
             <button className="m-1 text-sm font-semibold w-2/3 bg-primary-1 border border-[#054E72] text-white py-3 px-4 rounded-lg p-1 hover:opacity-95">
               Apply Now
             </button>

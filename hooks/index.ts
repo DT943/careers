@@ -21,6 +21,7 @@ export { useApplicantProfile } from "./useProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useJobAlerts } from "./useJobAlerts";
 export { useJobApplications } from "./useJobApplications";
+export { useParseResume, useApplyToJob } from "./useJobApplication";
 
 export type {
   JobOffer,

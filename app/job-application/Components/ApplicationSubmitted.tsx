@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FaCheck } from "react-icons/fa";
 
 const ApplicationSubmitted = () => {
@@ -19,14 +20,14 @@ const ApplicationSubmitted = () => {
       </p>
       <div className="flex justify-center items-center gap-2">
         {" "}
+        <Link href={"/jobs"}>
+          <button
+            className={` flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold border border-[#D4D4D2] bg-white text-primary-900 hover:bg-[#F5F5F4]`}
+          >
+            See more open positions
+          </button>
+        </Link>
         <button
-          onClick={() => window.location.reload()}
-          className={` flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold border border-[#D4D4D2] bg-white text-primary-900 hover:bg-[#F5F5F4]`}
-        >
-          See more open positions
-        </button>
-        <button
-          onClick={() => window.location.reload()}
           className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold bg-primary-1 text-white hover:bg-primary-700 hover:opacity-95`}
         >
           View Application
