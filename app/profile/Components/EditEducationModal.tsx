@@ -1,0 +1,192 @@
+"use client";
+
+import { useState } from "react";
+import { X } from "@phosphor-icons/react";
+import { ApplicantProfile, useUpdateProfile } from "@/hooks";
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  profile: ApplicantProfile;
+};
+
+const EditEducationModal = ({ open, onClose, profile }: Props) => {
+  const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
+  const [rows, setRows] = useState(
+    profile.educations.map((edu) => ({
+      institution: edu.institution,
+      degree: edu.degree,
+      fieldOfStudy: edu.fieldOfStudy,
+      startDate: edu.startDate?.split("T")[0] ?? "",
+      endDate: edu.endDate?.split("T")[0] ?? "",
+      grade: edu.grade ?? "",
+    }))
+  );
+
+  if (!open) return null;
+
+  const handleChange = (
+    idx: number,
+    field: keyof (typeof rows)[number],
+    value: string
+  ) => {
+    setRows((prev) =>
+      prev.map((row, i) => (i === idx ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const addRow = () =>
+    setRows((prev) => [
+      ...prev,
+      {
+        institution: "",
+        degree: "",
+        fieldOfStudy: "",
+        startDate: "",
+        endDate: "",
+        grade: "",
+      },
+    ]);
+
+  const removeRow = (idx: number) =>
+    setRows((prev) => prev.filter((_, i) => i !== idx));
+
+  const handleSave = async () => {
+    const filtered = rows.filter(
+      (r) => r.degree.trim() || r.institution.trim()
+    );
+    const fd = new FormData();
+    filtered.forEach((row, idx) => {
+      fd.append(`educations[${idx}].institution`, row.institution);
+      fd.append(`educations[${idx}].degree`, row.degree);
+      fd.append(`educations[${idx}].fieldOfStudy`, row.fieldOfStudy);
+      fd.append(`educations[${idx}].startDate`, row.startDate);
+      fd.append(`educations[${idx}].endDate`, row.endDate);
+      fd.append(`educations[${idx}].grade`, row.grade ?? "");
+    });
+    await updateProfile(fd);
+    onClose();
+  };
+
+  return (
+    <ModalShell
+      title="Edit Education"
+      onClose={onClose}
+      onSave={handleSave}
+      isLoading={isLoading}
+    >
+      <div>
+        {rows.map((row, idx) => (
+          <div key={idx}>
+            <div className="grid md:grid-cols-2 gap-3">
+              <Field
+                label="Institution"
+                value={row.institution}
+                onChange={(v) => handleChange(idx, "institution", v)}
+              />
+              <Field
+                label="Degree"
+                value={row.degree}
+                onChange={(v) => handleChange(idx, "degree", v)}
+              />
+              <Field
+                label="Field of Study"
+                value={row.fieldOfStudy}
+                onChange={(v) => handleChange(idx, "fieldOfStudy", v)}
+              />
+              <Field
+                label="Grade"
+                value={row.grade}
+                onChange={(v) => handleChange(idx, "grade", v)}
+              />
+              <Field
+                label="Start Date"
+                type="date"
+                value={row.startDate}
+                onChange={(v) => handleChange(idx, "startDate", v)}
+              />
+              <Field
+                label="End Date"
+                type="date"
+                value={row.endDate}
+                onChange={(v) => handleChange(idx, "endDate", v)}
+              />
+            </div>
+            <button
+              onClick={() => removeRow(idx)}
+              className="text-xs font-semibold text-red-500 hover:underline"
+            >
+              Remove entry
+            </button>
+          </div>
+        ))}
+        <button
+          onClick={addRow}
+          className="text-xs font-semibold text-primary-1 hover:underline"
+        >
+          + Add education entry
+        </button>
+      </div>
+    </ModalShell>
+  );
+};
+
+const ModalShell = ({
+  title,
+  children,
+  onClose,
+  onSave,
+  isLoading,
+}: {
+  title: string;
+  children: React.ReactNode;
+  onClose: () => void;
+  onSave: () => void;
+  isLoading?: boolean;
+}) => (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+    <div className="w-full max-w-4xl rounded-lg bg-white shadow-xl">
+      <div className="flex items-center justify-between px-6 py-2"></div>
+      <div className="px-6 py-6">{children}</div>
+      <div className="flex justify-end gap-3 px-6 py-4">
+        <button
+          onClick={onClose}
+          className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium text-primary-900 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={onSave}
+          disabled={isLoading}
+          className="rounded-md bg-[#054E72] px-5 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60"
+        >
+          {isLoading ? "Saving..." : "Save"}
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const Field = ({
+  label,
+  value,
+  onChange,
+  type = "text",
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  type?: string;
+}) => (
+  <label className="flex flex-col gap-1 text-xs font-medium text-primary-900">
+    {label}
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="rounded-md border border-gray-200 px-3 py-2 text-sm text-primary-900 focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
+    />
+  </label>
+);
+
+export default EditEducationModal;

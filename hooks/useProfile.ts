@@ -1,4 +1,5 @@
 import { useGetQuery, queryKeys, ApiResponse } from "./useApi";
+import { useUpdateMutation } from "./useApi";
 
 export interface ProfileSkill {
   id: number;
@@ -68,4 +69,12 @@ export const useApplicantProfile = (enabled = true) => {
     { enabled }
   );
 };
+
+// Update profile via PUT form-data. Pass only the fields you need.
+export const useUpdateProfile = () =>
+  useUpdateMutation<ApiResponse<ApplicantProfile>, any>(
+    ENDPOINTS.profile,
+    {},
+    [queryKeys.auth.profile]
+  );
 

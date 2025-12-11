@@ -1,6 +1,7 @@
 "use client";
 
 import { ApplicantProfile } from "@/hooks";
+import { useState } from "react";
 import CandidateProfileSkeleton from "./CandidateProfileSkeleton";
 import {
   PaperclipIcon,
@@ -10,6 +11,13 @@ import {
   GlobeHemisphereWest,
   MapPin,
 } from "@phosphor-icons/react";
+import { PencilSimple } from "@phosphor-icons/react";
+import EditPersonalInfoModal from "./EditPersonalInfoModal";
+import EditResumeModal from "./EditResumeModal";
+import EditSkillsModal from "./EditSkillsModal";
+import EditWorkHistoryModal from "./EditWorkHistoryModal";
+import EditEducationModal from "./EditEducationModal";
+import EditLanguagesModal from "./EditLanguagesModal";
 
 type GeneralTabProps = {
   profile?: ApplicantProfile;
@@ -40,6 +48,13 @@ const GeneralTab = ({
     return <p className="text-red-500 text-sm">Failed to load profile.</p>;
   if (!profile) return null;
 
+  const [showEdit, setShowEdit] = useState(false);
+  const [showResume, setShowResume] = useState(false);
+  const [showSkills, setShowSkills] = useState(false);
+  const [showWork, setShowWork] = useState(false);
+  const [showEdu, setShowEdu] = useState(false);
+  const [showLang, setShowLang] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Personal Information */}
@@ -48,7 +63,15 @@ const GeneralTab = ({
           <CardHeader
             title="Personal Information"
             icon={<ShieldStarIcon size={16} />}
-            rightNode={<></>}
+            rightNode={
+              <button
+                onClick={() => setShowEdit(true)}
+                className="text-primary-1 hover:opacity-80"
+                aria-label="Edit personal information"
+              >
+                <PencilSimple size={18} weight="bold" />
+              </button>
+            }
           />
           <div className="grid md:grid-cols-2 gap-y-3 text-sm text-primary-900">
             <InfoRow
@@ -80,6 +103,7 @@ const GeneralTab = ({
         </Card>
         <ResetPasswordButton />
       </div>
+    
 
       {/* Resume */}
       <Card>
@@ -108,12 +132,30 @@ const GeneralTab = ({
               </a>
             </div>
           )}
+          <button
+            onClick={() => setShowResume(true)}
+            className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary-1 hover:underline"
+          >
+            <PencilSimple size={16} /> Edit
+          </button>
         </div>
       </Card>
 
       {/* Skills */}
       <Card>
-        <CardHeader title="Skills" icon={<ShieldStarIcon size={16} />} />
+        <CardHeader
+          title="Skills"
+          icon={<ShieldStarIcon size={16} />}
+          rightNode={
+            <button
+              onClick={() => setShowSkills(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Edit skills"
+            >
+              <PencilSimple size={18} weight="bold" />
+            </button>
+          }
+        />
         <div className="flex flex-wrap gap-2 text-xs">
           {profile.skills.length === 0 && (
             <p className="text-sm text-primary-900">No skills added.</p>
@@ -131,7 +173,19 @@ const GeneralTab = ({
 
       {/* Work History */}
       <Card>
-        <CardHeader title="Work History" icon={<SuitcaseSimple size={16} />} />
+        <CardHeader
+          title="Work History"
+          icon={<SuitcaseSimple size={16} />}
+          rightNode={
+            <button
+              onClick={() => setShowWork(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Edit work history"
+            >
+              <PencilSimple size={18} weight="bold" />
+            </button>
+          }
+        />
         <Timeline>
           {profile.experiences.map((exp) => (
             <TimelineItem
@@ -156,6 +210,15 @@ const GeneralTab = ({
         <CardHeader
           title="Educational History"
           icon={<GraduationCap size={16} />}
+          rightNode={
+            <button
+              onClick={() => setShowEdu(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Edit education"
+            >
+              <PencilSimple size={18} weight="bold" />
+            </button>
+          }
         />
         <Timeline>
           {profile.educations.map((edu) => (
@@ -181,6 +244,15 @@ const GeneralTab = ({
         <CardHeader
           title="Languages"
           icon={<GlobeHemisphereWest size={16} />}
+          rightNode={
+            <button
+              onClick={() => setShowLang(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Edit languages"
+            >
+              <PencilSimple size={18} weight="bold" />
+            </button>
+          }
         />
         <div className="space-y-2 text-sm">
           {profile.languages.map((lang) => (
@@ -198,6 +270,37 @@ const GeneralTab = ({
           )}
         </div>
       </Card>
+
+      <EditPersonalInfoModal
+        open={showEdit}
+        onClose={() => setShowEdit(false)}
+        profile={profile}
+      />
+      <EditResumeModal
+        open={showResume}
+        onClose={() => setShowResume(false)}
+        profile={profile}
+      />
+      <EditSkillsModal
+        open={showSkills}
+        onClose={() => setShowSkills(false)}
+        profile={profile}
+      />
+      <EditWorkHistoryModal
+        open={showWork}
+        onClose={() => setShowWork(false)}
+        profile={profile}
+      />
+      <EditEducationModal
+        open={showEdu}
+        onClose={() => setShowEdu(false)}
+        profile={profile}
+      />
+      <EditLanguagesModal
+        open={showLang}
+        onClose={() => setShowLang(false)}
+        profile={profile}
+      />
     </div>
   );
 };
