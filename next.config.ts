@@ -1,9 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    domains: ['flycham.com'],  // Add the domain here
+    domains: ['flycham.com'],
+  },
+  reactStrictMode: false,  // Keep React strict mode on (for better performance)
+  experimental: {
+    disableOptimizedLoading: true,  // Disables some Next.js debugging features
   },
 };
 
