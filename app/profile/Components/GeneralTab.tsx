@@ -367,7 +367,7 @@ const InfoRow = ({
 );
 
 const Timeline = ({ children }: { children: React.ReactNode }) => (
-  <div className="relative pl-4 space-y-4 before:absolute before:left-1 before:top-0 before:bottom-0 before:w-px before:bg-gray-200">
+  <div className="relative pl-4 space-y-4 before:absolute before:left-3.5 before:top-3 before:bottom-0 before:w-px before:bg-gray-300">
     {children}
   </div>
 );
