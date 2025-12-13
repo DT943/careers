@@ -19,6 +19,7 @@ import {
   getEmploymentTypeLabel,
   getLevelLabel,
   getTimeAgo,
+  getApplicationStatusLabel,
 } from "@/utils";
 import GeneralTab from "./Components/GeneralTab";
 import AlertsTab from "./Components/AlertsTab";
@@ -182,8 +183,8 @@ const ProfileClient = () => {
     return items.map((item: JobApplicationItem) => ({
       id: item.id,
       position: item.jobPosition,
-      status: item.status === 0 ? "Application Received" : "In Progress",
-      location: item.teamName || "—",
+      status: getApplicationStatusLabel(item.status),
+      location: item.userProfile.city || "—",
       team: item.teamName,
       applicationDate: item.appliedOn?.split("T")[0] ?? "",
     }));

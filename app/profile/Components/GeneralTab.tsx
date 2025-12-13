@@ -4,7 +4,6 @@ import { ApplicantProfile } from "@/hooks";
 import { useState } from "react";
 import CandidateProfileSkeleton from "./CandidateProfileSkeleton";
 import {
-
   MapPin,
   PencilSimpleIcon,
   FileTextIcon,
@@ -22,23 +21,13 @@ import EditSkillsModal from "./EditSkillsModal";
 import EditWorkHistoryModal from "./EditWorkHistoryModal";
 import EditEducationModal from "./EditEducationModal";
 import EditLanguagesModal from "./EditLanguagesModal";
+import { getLanguageLevelLabel } from "@/utils";
 
 type GeneralTabProps = {
   profile?: ApplicantProfile;
   loading?: boolean;
   error?: boolean;
   showSkeleton?: boolean;
-};
-
-const languageLabel = (level?: number) => {
-  const map: Record<number, string> = {
-    0: "Beginner",
-    1: "Beginner",
-    2: "Intermediate",
-    3: "Advanced",
-    4: "Native",
-  };
-  return level !== undefined ? map[level] ?? "Unknown" : "Unknown";
 };
 
 const GeneralTab = ({
@@ -270,7 +259,7 @@ const GeneralTab = ({
                 {lang.name}
               </span>
               <span className="text-primary-1 text-xs">
-                {languageLabel(lang.level)}
+                {getLanguageLevelLabel(lang.level)}
               </span>
             </div>
           ))}

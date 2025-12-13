@@ -1,3 +1,11 @@
+import {
+  JobLevel,
+  WorkArrangementType,
+  EmploymentType,
+  ApplicationStatus,
+  LanguageLevel,
+} from "@/enums";
+
 export const getTimeAgo = (dateString: string): string => {
   const date = new Date(dateString);
   const now = new Date();
@@ -28,21 +36,57 @@ export const formatClosingDate = (dateString: string): string => {
 };
 
 export const getEmploymentTypeLabel = (type: number): string => {
-  const types: Record<number, string> = {
-    0: "Full time",
-    1: "Part time",
-    2: "Contract",
+  const labels: Record<EmploymentType, string> = {
+    [EmploymentType.FullTime]: "Full time",
+    [EmploymentType.PartTime]: "Part time",
+    [EmploymentType.Contract]: "Contract",
+    [EmploymentType.Temporary]: "Temporary",
   };
-  return types[type] || "Unknown";
+  return labels[type as EmploymentType] || "Unknown";
 };
 
 export const getLevelLabel = (level: number): string => {
-  const levels: Record<number, string> = {
-    0: "Internship",
-    1: "Senior",
-    2: "Mid-level",
-    3: "Junior",
-    4: "Lead",
+  const labels: Record<JobLevel, string> = {
+    [JobLevel.Intern]: "Intern",
+    [JobLevel.Junior]: "Junior",
+    [JobLevel.Mid]: "Mid-level",
+    [JobLevel.Senior]: "Senior",
+    [JobLevel.Lead]: "Lead",
+    [JobLevel.Principal]: "Principal",
   };
-  return levels[level] || "Unknown";
+  return labels[level as JobLevel] || "Unknown";
+};
+
+export const getWorkArrangementLabel = (arrangement: number): string => {
+  const labels: Record<WorkArrangementType, string> = {
+    [WorkArrangementType.Onsite]: "Onsite",
+    [WorkArrangementType.Remote]: "Remote",
+    [WorkArrangementType.Hybrid]: "Hybrid",
+  };
+  return labels[arrangement as WorkArrangementType] || "Unknown";
+};
+
+export const getApplicationStatusLabel = (status: number): string => {
+  const labels: Record<ApplicationStatus, string> = {
+    [ApplicationStatus.Pending]: "Pending",
+    [ApplicationStatus.Reviewed]: "Reviewed",
+    [ApplicationStatus.Scheduled]: "Scheduled",
+    [ApplicationStatus.Interviewed]: "Interviewed",
+    [ApplicationStatus.OfferExtended]: "Offer Extended",
+    [ApplicationStatus.OfferAccepted]: "Offer Accepted",
+    [ApplicationStatus.Hired]: "Hired",
+    [ApplicationStatus.Rejected]: "Rejected",
+    [ApplicationStatus.Withdrawn]: "Withdrawn",
+  };
+  return labels[status as ApplicationStatus] || "Unknown";
+};
+
+export const getLanguageLevelLabel = (level: number): string => {
+  const labels: Record<LanguageLevel, string> = {
+    [LanguageLevel.Beginner]: "Beginner",
+    [LanguageLevel.Intermediate]: "Intermediate",
+    [LanguageLevel.Fluent]: "Fluent",
+    [LanguageLevel.Native]: "Native",
+  };
+  return labels[level as LanguageLevel] || "Unknown";
 };

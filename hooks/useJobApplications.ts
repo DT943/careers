@@ -1,3 +1,4 @@
+import { ApplicantProfile } from ".";
 import { useGetQuery, queryKeys, ApiResponse } from "./useApi";
 
 export interface JobApplicationItem {
@@ -22,6 +23,7 @@ export interface JobApplicationItem {
   whenCanYouStart: string;
   expectedSalary: string;
   appliedOn: string;
+  userProfile: ApplicantProfile
 }
 
 const ENDPOINTS = {
