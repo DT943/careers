@@ -13,6 +13,7 @@ import {
   PencilIcon,
   LightningIcon,
   GraduationCapIcon,
+  TrashIcon,
 } from "@phosphor-icons/react";
 import { PencilSimple } from "@phosphor-icons/react";
 import EditPersonalInfoModal from "./EditPersonalInfoModal";
@@ -21,7 +22,9 @@ import EditSkillsModal from "./EditSkillsModal";
 import EditWorkHistoryModal from "./EditWorkHistoryModal";
 import EditEducationModal from "./EditEducationModal";
 import EditLanguagesModal from "./EditLanguagesModal";
+import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { getLanguageLevelLabel } from "@/utils";
+import { useUpdateProfile } from "@/hooks";
 
 type GeneralTabProps = {
   profile?: ApplicantProfile;
@@ -36,17 +39,49 @@ const GeneralTab = ({
   error,
   showSkeleton,
 }: GeneralTabProps) => {
-  if (showSkeleton || loading) return <CandidateProfileSkeleton />;
-  if (error)
-    return <p className="text-red-500 text-sm">Failed to load profile.</p>;
-  if (!profile) return null;
-
+  // Hooks must be called before any conditional returns
+  const { mutateAsync: updateProfile, isLoading: isDeleting } =
+    useUpdateProfile();
   const [showEdit, setShowEdit] = useState(false);
   const [showResume, setShowResume] = useState(false);
   const [showSkills, setShowSkills] = useState(false);
   const [showWork, setShowWork] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
   const [showLang, setShowLang] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: "skills" | "experiences" | "educations" | "languages" | null;
+    open: boolean;
+  }>({ type: null, open: false });
+
+  if (showSkeleton || loading) return <CandidateProfileSkeleton />;
+  if (error)
+    return <p className="text-red-500 text-sm">Failed to load profile.</p>;
+  if (!profile) return null;
+
+  const handleDelete = async (
+    type: "skills" | "experiences" | "educations" | "languages"
+  ) => {
+    const fd = new FormData();
+    // Send empty array by appending the field name with "null" as string value
+    // Backend expects FormData format, and based on user requirement: "send : skills : null"
+    // We send it as a string "null" which the backend should interpret as null/empty array
+    if (type === "skills") {
+      fd.append("skills", "null");
+    } else if (type === "experiences") {
+      fd.append("experiences", "null");
+    } else if (type === "educations") {
+      fd.append("educations", "null");
+    } else if (type === "languages") {
+      fd.append("languages", "null");
+    }
+    try {
+      await updateProfile(fd);
+      setDeleteConfirm({ type: null, open: false });
+    } catch (error) {
+      console.error("Error deleting:", error);
+      // Keep modal open on error so user can retry
+    }
+  };
 
   return (
     <div className="space-y-4 mb-4">
@@ -145,13 +180,26 @@ const GeneralTab = ({
           title="Skills"
           icon={<LightningIcon size={20} />}
           rightNode={
-            <button
-              onClick={() => setShowSkills(true)}
-              className="text-primary-1 hover:opacity-80"
-              aria-label="Edit skills"
-            >
-              <PencilIcon size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {profile.skills.length > 0 && (
+                <button
+                  onClick={() =>
+                    setDeleteConfirm({ type: "skills", open: true })
+                  }
+                  className="text-alert hover:opacity-80"
+                  aria-label="Delete skills"
+                >
+                  <TrashIcon size={18} />
+                </button>
+              )}
+              <button
+                onClick={() => setShowSkills(true)}
+                className="text-primary-1 hover:opacity-80"
+                aria-label="Edit skills"
+              >
+                <PencilIcon size={18} />
+              </button>
+            </div>
           }
         />
         <div className="flex flex-wrap gap-2 text-xs">
@@ -175,13 +223,26 @@ const GeneralTab = ({
           title="Work History"
           icon={<SuitcaseIcon size={20} />}
           rightNode={
-            <button
-              onClick={() => setShowWork(true)}
-              className="text-primary-1 hover:opacity-80"
-              aria-label="Edit work history"
-            >
-              <PencilIcon size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {profile.experiences.length > 0 && (
+                <button
+                  onClick={() =>
+                    setDeleteConfirm({ type: "experiences", open: true })
+                  }
+                  className="text-alert hover:opacity-80"
+                  aria-label="Delete work history"
+                >
+                  <TrashIcon size={18} />
+                </button>
+              )}
+              <button
+                onClick={() => setShowWork(true)}
+                className="text-primary-1 hover:opacity-80"
+                aria-label="Edit work history"
+              >
+                <PencilIcon size={18} />
+              </button>
+            </div>
           }
         />
         <Timeline>
@@ -209,13 +270,27 @@ const GeneralTab = ({
           title="Educational History"
           icon={<GraduationCapIcon size={20} />}
           rightNode={
-            <button
-              onClick={() => setShowEdu(true)}
-              className="text-primary-1 hover:opacity-80"
-              aria-label="Edit education"
-            >
-              <PencilIcon size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {" "}
+              {profile.educations.length > 0 && (
+                <button
+                  onClick={() =>
+                    setDeleteConfirm({ type: "educations", open: true })
+                  }
+                  className="text-alert hover:opacity-80"
+                  aria-label="Delete education"
+                >
+                  <TrashIcon size={18} />
+                </button>
+              )}
+              <button
+                onClick={() => setShowEdu(true)}
+                className="text-primary-1 hover:opacity-80"
+                aria-label="Edit education"
+              >
+                <PencilIcon size={18} />
+              </button>
+            </div>
           }
         />
         <Timeline>
@@ -243,13 +318,26 @@ const GeneralTab = ({
           title="Languages"
           icon={<TranslateIcon size={20} />}
           rightNode={
-            <button
-              onClick={() => setShowLang(true)}
-              className="text-primary-1 hover:opacity-80"
-              aria-label="Edit languages"
-            >
-              <PencilIcon size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              {profile.languages.length > 0 && (
+                <button
+                  onClick={() =>
+                    setDeleteConfirm({ type: "languages", open: true })
+                  }
+                  className="text-alert hover:opacity-80"
+                  aria-label="Delete languages"
+                >
+                  <TrashIcon size={18} />
+                </button>
+              )}
+              <button
+                onClick={() => setShowLang(true)}
+                className="text-primary-1 hover:opacity-80"
+                aria-label="Edit languages"
+              >
+                <PencilIcon size={18} />
+              </button>
+            </div>
           }
         />
         <div className="space-y-2 text-sm">
@@ -298,6 +386,30 @@ const GeneralTab = ({
         open={showLang}
         onClose={() => setShowLang(false)}
         profile={profile}
+      />
+      <DeleteConfirmationModal
+        open={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ type: null, open: false })}
+        onConfirm={() => deleteConfirm.type && handleDelete(deleteConfirm.type)}
+        title={`Delete ${
+          deleteConfirm.type === "skills"
+            ? "Skills"
+            : deleteConfirm.type === "experiences"
+            ? "Work History"
+            : deleteConfirm.type === "educations"
+            ? "Education History"
+            : "Languages"
+        }?`}
+        message={`Are you sure you want to delete all ${
+          deleteConfirm.type === "skills"
+            ? "skills"
+            : deleteConfirm.type === "experiences"
+            ? "work history entries"
+            : deleteConfirm.type === "educations"
+            ? "education history entries"
+            : "languages"
+        }? This action cannot be undone.`}
+        isLoading={isDeleting}
       />
     </div>
   );

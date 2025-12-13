@@ -16,6 +16,11 @@ export type EducationItem = {
   currentlyWorkingHere: boolean;
 };
 
+export type LanguageItem = {
+  name: string;
+  level: number;
+};
+
 export interface ApplicationData {
   // Resume
   resume: File | null;
@@ -40,6 +45,7 @@ export interface ApplicationData {
   // Professional
   positions: PositionItem[];
   educationHistory: EducationItem[];
+  languages: LanguageItem[];
 
   // Additional questions
   hasWorkedBefore?: boolean;

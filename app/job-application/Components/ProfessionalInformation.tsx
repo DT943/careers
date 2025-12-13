@@ -1,13 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { ApplicationStepProps, PositionItem, EducationItem } from "@/types/application";
+import React, { useEffect, useState, useRef } from "react";
+import {
+  ApplicationStepProps,
+  PositionItem,
+  EducationItem,
+  LanguageItem,
+} from "@/types/application";
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   PlusCircleIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
+import { LanguageLevel } from "@/enums";
+import { getLanguageLevelLabel } from "@/utils";
 
 const EMPTY_POSITION: PositionItem = {
   companyName: "",
@@ -40,15 +47,53 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
   const [educationItems, setEducationItems] = useState<EducationItem[]>(
     data.educationHistory?.length ? data.educationHistory : [EMPTY_EDUCATION]
   );
+  const [skills, setSkills] = useState<string[]>(
+    data.skills?.length ? data.skills : [""]
+  );
+  const [languages, setLanguages] = useState<LanguageItem[]>(
+    data.languages?.length
+      ? data.languages
+      : [{ name: "", level: LanguageLevel.Beginner }]
+  );
+
+  // Use ref to track if we should skip syncing (to avoid infinite loops)
+  const skipSyncRef = useRef(false);
 
   useEffect(() => {
+    skipSyncRef.current = true; // Skip sync when props change
     if (data.positions?.length) {
       setPositions(data.positions);
     }
     if (data.educationHistory?.length) {
       setEducationItems(data.educationHistory);
     }
-  }, [data.positions, data.educationHistory]);
+    if (data.skills?.length) {
+      setSkills(data.skills);
+    }
+    if (data.languages?.length) {
+      setLanguages(data.languages);
+    }
+    // Reset skip flag after a short delay to allow sync on next change
+    setTimeout(() => {
+      skipSyncRef.current = false;
+    }, 0);
+  }, [data.positions, data.educationHistory, data.skills, data.languages]);
+
+  // Sync skills to parent when they change (but not when props update)
+  useEffect(() => {
+    if (skipSyncRef.current) {
+      return;
+    }
+    updateData({ skills: skills.filter((s) => s.trim()) });
+  }, [skills]);
+
+  // Sync languages to parent when they change (but not when props update)
+  useEffect(() => {
+    if (skipSyncRef.current) {
+      return;
+    }
+    updateData({ languages: languages.filter((l) => l.name.trim()) });
+  }, [languages]);
 
   const handlePositionChange = (
     index: number,
@@ -146,10 +191,66 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
     updateData({ educationHistory: [{ ...EMPTY_EDUCATION }] });
   };
 
+  const handleSkillChange = (index: number, value: string) => {
+    setSkills((prev) => {
+      const clone = [...prev];
+      clone[index] = value;
+      return clone;
+    });
+    // updateData will be called by useEffect when skills state changes
+  };
+
+  const handleAddSkill = () => {
+    setSkills((prev) => [...prev, ""]);
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    setSkills((prev) => {
+      const res = prev.filter((_, i) => i !== index);
+      return res.length > 0 ? res : [""];
+    });
+    // updateData will be called by useEffect when skills state changes
+  };
+
+  const handleLanguageChange = (
+    index: number,
+    field: "name" | "level",
+    value: string | number
+  ) => {
+    setLanguages((prev) => {
+      const clone = [...prev];
+      clone[index] = {
+        ...clone[index],
+        [field]: field === "level" ? Number(value) : value,
+      };
+      return clone;
+    });
+    // updateData will be called by useEffect when languages state changes
+  };
+
+  const handleAddLanguage = () => {
+    setLanguages((prev) => [
+      ...prev,
+      { name: "", level: LanguageLevel.Beginner },
+    ]);
+  };
+
+  const handleRemoveLanguage = (index: number) => {
+    setLanguages((prev) => {
+      const res = prev.filter((_, i) => i !== index);
+      return res.length > 0
+        ? res
+        : [{ name: "", level: LanguageLevel.Beginner }];
+    });
+    // updateData will be called by useEffect when languages state changes
+  };
+
   const handleContinue = () => {
     updateData({
       positions,
       educationHistory: educationItems,
+      skills: skills.filter((s) => s.trim()),
+      languages: languages.filter((l) => l.name.trim()),
     });
     nextStep();
   };
@@ -489,6 +590,121 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
               )}
             </div>
           ))}
+        </section>
+
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-primary-900">Skills</h2>
+          <button
+            type="button"
+            onClick={() => {
+              skipSyncRef.current = true;
+              setSkills([""]);
+            }}
+            className="text-xs font-semibold text-alert hover:underline"
+          >
+            clear
+          </button>
+        </div>
+        <section className="border-2 rounded-xl border-[#E5E5E3] p-6">
+          {skills.map((skill, index) => (
+            <div key={index} className="flex items-center gap-2 mb-3 last:mb-0">
+              <input
+                type="text"
+                placeholder="Skill name"
+                value={skill}
+                onChange={(e) => handleSkillChange(index, e.target.value)}
+                className="flex-1 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:border-[#054E72] focus:ring-1 focus:ring-[#054E72] outline-none"
+              />
+              {skills.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveSkill(index)}
+                  className="text-alert"
+                >
+                  <TrashIcon size={20} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddSkill}
+            className="mt-4 w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-primary-1 hover:bg-[#F5F5F4]"
+          >
+            <PlusCircleIcon size={24} className="mr-2" />
+            Add Another Skill
+          </button>
+        </section>
+
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-base font-semibold text-primary-900">
+            Languages
+          </h2>
+          <button
+            type="button"
+            onClick={() => {
+              setLanguages([{ name: "", level: LanguageLevel.Beginner }]);
+              updateData({ languages: [] });
+            }}
+            className="text-xs font-semibold text-alert hover:underline"
+          >
+            clear
+          </button>
+        </div>
+        <section className="border-2 rounded-xl border-[#E5E5E3] p-6">
+          {languages.map((lang, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-12 gap-3 items-center mb-3 last:mb-0"
+            >
+              <input
+                type="text"
+                placeholder="Language"
+                value={lang.name}
+                onChange={(e) =>
+                  handleLanguageChange(index, "name", e.target.value)
+                }
+                className="col-span-7 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] px-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:border-[#054E72] focus:ring-1 focus:ring-[#054E72] outline-none"
+              />
+              <select
+                value={lang.level}
+                onChange={(e) =>
+                  handleLanguageChange(index, "level", e.target.value)
+                }
+                className="col-span-4 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] px-3 py-2 text-sm text-gray-700 focus:border-[#054E72] focus:ring-1 focus:ring-[#054E72] outline-none"
+              >
+                <option value={LanguageLevel.Beginner}>
+                  {getLanguageLevelLabel(LanguageLevel.Beginner)}
+                </option>
+                <option value={LanguageLevel.Intermediate}>
+                  {getLanguageLevelLabel(LanguageLevel.Intermediate)}
+                </option>
+                <option value={LanguageLevel.Fluent}>
+                  {getLanguageLevelLabel(LanguageLevel.Fluent)}
+                </option>
+                <option value={LanguageLevel.Native}>
+                  {getLanguageLevelLabel(LanguageLevel.Native)}
+                </option>
+              </select>
+              {languages.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleRemoveLanguage(index)}
+                  className="col-span-1 text-alert"
+                >
+                  <TrashIcon size={20} />
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            onClick={handleAddLanguage}
+            className="mt-4 w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-primary-1 hover:bg-[#F5F5F4]"
+          >
+            <PlusCircleIcon size={24} className="mr-2" />
+            Add Another Language
+          </button>
         </section>
       </form>
 

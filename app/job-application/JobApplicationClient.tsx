@@ -47,6 +47,7 @@ const JobApplicationClient = () => {
     linkedinUrl: "",
     positions: [],
     educationHistory: [],
+    languages: [],
     hasWorkedBefore: undefined,
     hasRelatives: undefined,
     whyJoin: "",
@@ -114,6 +115,12 @@ const JobApplicationClient = () => {
             endDate: edu.endDate?.split("T")[0] ?? "",
             currentlyWorkingHere: false,
           })) ?? prev.educationHistory,
+        skills: profile.skills?.map((s) => s.name) ?? prev.skills,
+        languages:
+          profile.languages?.map((lang) => ({
+            name: lang.name,
+            level: lang.level,
+          })) ?? prev.languages,
         step: 4,
       }));
       setCurrentStep(4);

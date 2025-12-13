@@ -74,7 +74,7 @@ const EditSkillsModal = ({ open, onClose, profile }: EditSkillsModalProps) => {
               <button
                 type="button"
                 onClick={() => removeSkill(idx)}
-                className="text-red-500 hover:text-red-600"
+                className="text-alert hover:text-red-600"
               >
                 <Trash size={18} />
               </button>

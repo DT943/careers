@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
+import { LanguageLevel } from "@/enums";
+import { getLanguageLevelLabel } from "@/utils";
+import { TrashIcon } from "@phosphor-icons/react";
 
 type Props = {
   open: boolean;
@@ -33,7 +36,7 @@ const EditLanguagesModal = ({ open, onClose, profile }: Props) => {
   };
 
   const addRow = () =>
-    setLanguages((prev) => [...prev, { name: "", level: 0 }]);
+    setLanguages((prev) => [...prev, { name: "", level: LanguageLevel.Beginner }]);
   const removeRow = (idx: number) =>
     setLanguages((prev) => prev.filter((_, i) => i !== idx));
 
@@ -42,7 +45,7 @@ const EditLanguagesModal = ({ open, onClose, profile }: Props) => {
     const fd = new FormData();
     filtered.forEach((lang, idx) => {
       fd.append(`languages[${idx}].name`, lang.name);
-      fd.append(`languages[${idx}].level`, String(lang.level ?? 0));
+      fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
     });
     await updateProfile(fd);
     onClose();
@@ -79,22 +82,31 @@ const EditLanguagesModal = ({ open, onClose, profile }: Props) => {
               value={lang.name}
               onChange={(e) => handleChange(idx, "name", e.target.value)}
               placeholder="Language"
-              className="col-span-7 rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
+              className="col-span-8 rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
             />
-            <input
-              type="number"
-              min={0}
-              max={4}
+            <select
               value={lang.level}
               onChange={(e) => handleChange(idx, "level", e.target.value)}
-              placeholder="Level (0-4)"
               className="col-span-3 rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
-            />
+            >
+              <option value={LanguageLevel.Beginner}>
+                {getLanguageLevelLabel(LanguageLevel.Beginner)}
+              </option>
+              <option value={LanguageLevel.Intermediate}>
+                {getLanguageLevelLabel(LanguageLevel.Intermediate)}
+              </option>
+              <option value={LanguageLevel.Fluent}>
+                {getLanguageLevelLabel(LanguageLevel.Fluent)}
+              </option>
+              <option value={LanguageLevel.Native}>
+                {getLanguageLevelLabel(LanguageLevel.Native)}
+              </option>
+            </select>
             <button
               onClick={() => removeRow(idx)}
-              className="col-span-2 text-xs font-semibold text-red-500 hover:underline"
+              className="text-xs font-semibold text-alert hover:underline"
             >
-              Remove
+              <TrashIcon size={20} />
             </button>
           </div>
         ))}
