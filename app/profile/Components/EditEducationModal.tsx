@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrashIcon } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
@@ -9,20 +9,57 @@ type Props = {
   open: boolean;
   onClose: () => void;
   profile: ApplicantProfile;
+  mode?: "edit" | "add";
 };
 
-const EditEducationModal = ({ open, onClose, profile }: Props) => {
+const EMPTY_EDUCATION_ROW = {
+  institution: "",
+  degree: "",
+  fieldOfStudy: "",
+  startDate: "",
+  endDate: "",
+  grade: "",
+};
+
+const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
+  
   const [rows, setRows] = useState(
-    profile.educations.map((edu) => ({
-      institution: edu.institution,
-      degree: edu.degree,
-      fieldOfStudy: edu.fieldOfStudy,
-      startDate: edu.startDate?.split("T")[0] ?? "",
-      endDate: edu.endDate?.split("T")[0] ?? "",
-      grade: edu.grade ?? "",
-    }))
+    mode === "add"
+      ? [EMPTY_EDUCATION_ROW]
+      : profile.educations.length
+        ? profile.educations.map((edu) => ({
+            institution: edu.institution,
+            degree: edu.degree,
+            fieldOfStudy: edu.fieldOfStudy,
+            startDate: edu.startDate?.split("T")[0] ?? "",
+            endDate: edu.endDate?.split("T")[0] ?? "",
+            grade: edu.grade ?? "",
+          }))
+        : [EMPTY_EDUCATION_ROW]
   );
+
+  // Reset state when mode or open changes
+  useEffect(() => {
+    if (open) {
+      if (mode === "add") {
+        setRows([EMPTY_EDUCATION_ROW]);
+      } else {
+        setRows(
+          profile.educations.length
+            ? profile.educations.map((edu) => ({
+                institution: edu.institution,
+                degree: edu.degree,
+                fieldOfStudy: edu.fieldOfStudy,
+                startDate: edu.startDate?.split("T")[0] ?? "",
+                endDate: edu.endDate?.split("T")[0] ?? "",
+                grade: edu.grade ?? "",
+              }))
+            : [EMPTY_EDUCATION_ROW]
+        );
+      }
+    }
+  }, [open, mode, profile.educations]);
 
   if (!open) return null;
 
@@ -57,14 +94,38 @@ const EditEducationModal = ({ open, onClose, profile }: Props) => {
       (r) => r.degree.trim() || r.institution.trim()
     );
     const fd = new FormData();
-    filtered.forEach((row, idx) => {
-      fd.append(`educations[${idx}].institution`, row.institution);
-      fd.append(`educations[${idx}].degree`, row.degree);
-      fd.append(`educations[${idx}].fieldOfStudy`, row.fieldOfStudy);
-      fd.append(`educations[${idx}].startDate`, row.startDate);
-      fd.append(`educations[${idx}].endDate`, row.endDate);
-      fd.append(`educations[${idx}].grade`, row.grade ?? "");
-    });
+    
+    if (mode === "add") {
+      // Merge new educations with existing ones
+      const existingEducations = profile.educations.map((edu) => ({
+        institution: edu.institution,
+        degree: edu.degree,
+        fieldOfStudy: edu.fieldOfStudy,
+        startDate: edu.startDate?.split("T")[0] ?? "",
+        endDate: edu.endDate?.split("T")[0] ?? "",
+        grade: edu.grade ?? "",
+      }));
+      const allEducations = [...existingEducations, ...filtered];
+      allEducations.forEach((row, idx) => {
+        fd.append(`educations[${idx}].institution`, row.institution);
+        fd.append(`educations[${idx}].degree`, row.degree);
+        fd.append(`educations[${idx}].fieldOfStudy`, row.fieldOfStudy);
+        fd.append(`educations[${idx}].startDate`, row.startDate);
+        fd.append(`educations[${idx}].endDate`, row.endDate);
+        fd.append(`educations[${idx}].grade`, row.grade ?? "");
+      });
+    } else {
+      // Edit mode: replace all educations
+      filtered.forEach((row, idx) => {
+        fd.append(`educations[${idx}].institution`, row.institution);
+        fd.append(`educations[${idx}].degree`, row.degree);
+        fd.append(`educations[${idx}].fieldOfStudy`, row.fieldOfStudy);
+        fd.append(`educations[${idx}].startDate`, row.startDate);
+        fd.append(`educations[${idx}].endDate`, row.endDate);
+        fd.append(`educations[${idx}].grade`, row.grade ?? "");
+      });
+    }
+    
     await updateProfile(fd);
     onClose();
   };

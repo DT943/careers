@@ -49,6 +49,10 @@ const GeneralTab = ({
   const [showWork, setShowWork] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
   const [showLang, setShowLang] = useState(false);
+  const [skillsMode, setSkillsMode] = useState<"edit" | "add">("edit");
+  const [workMode, setWorkMode] = useState<"edit" | "add">("edit");
+  const [eduMode, setEduMode] = useState<"edit" | "add">("edit");
+  const [langMode, setLangMode] = useState<"edit" | "add">("edit");
   const [deleteConfirm, setDeleteConfirm] = useState<{
     type: "skills" | "experiences" | "educations" | "languages" | null;
     open: boolean;
@@ -201,6 +205,27 @@ const GeneralTab = ({
             rightNode={
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => {
+                    setShowSkills(true);
+                    setSkillsMode("add");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Add skill"
+                >
+                  <PlusCircleIcon size={18} />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowSkills(true);
+                    setSkillsMode("edit");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit skills"
+                >
+                  <PencilIcon size={18} />
+                </button>
+
+                <button
                   onClick={() =>
                     setDeleteConfirm({ type: "skills", open: true })
                   }
@@ -208,13 +233,6 @@ const GeneralTab = ({
                   aria-label="Delete skills"
                 >
                   <TrashIcon size={18} />
-                </button>
-                <button
-                  onClick={() => setShowSkills(true)}
-                  className="text-primary-1 hover:opacity-80"
-                  aria-label="Edit skills"
-                >
-                  <PencilIcon size={18} />
                 </button>
               </div>
             }
@@ -258,6 +276,26 @@ const GeneralTab = ({
             rightNode={
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => {
+                    setShowWork(true);
+                    setWorkMode("add");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Add work history"
+                >
+                  <PlusCircleIcon size={18} />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowWork(true);
+                    setWorkMode("edit");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit work history"
+                >
+                  <PencilIcon size={18} />
+                </button>
+                <button
                   onClick={() =>
                     setDeleteConfirm({ type: "experiences", open: true })
                   }
@@ -265,13 +303,6 @@ const GeneralTab = ({
                   aria-label="Delete work history"
                 >
                   <TrashIcon size={18} />
-                </button>
-                <button
-                  onClick={() => setShowWork(true)}
-                  className="text-primary-1 hover:opacity-80"
-                  aria-label="Edit work history"
-                >
-                  <PencilIcon size={18} />
                 </button>
               </div>
             }
@@ -319,6 +350,26 @@ const GeneralTab = ({
             rightNode={
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => {
+                    setShowEdu(true);
+                    setEduMode("add");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Add education"
+                >
+                  <PlusCircleIcon size={18} />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowEdu(true);
+                    setEduMode("edit");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit education"
+                >
+                  <PencilIcon size={18} />
+                </button>
+                <button
                   onClick={() =>
                     setDeleteConfirm({ type: "educations", open: true })
                   }
@@ -326,13 +377,6 @@ const GeneralTab = ({
                   aria-label="Delete education"
                 >
                   <TrashIcon size={18} />
-                </button>
-                <button
-                  onClick={() => setShowEdu(true)}
-                  className="text-primary-1 hover:opacity-80"
-                  aria-label="Edit education"
-                >
-                  <PencilIcon size={18} />
                 </button>
               </div>
             }
@@ -380,6 +424,26 @@ const GeneralTab = ({
             rightNode={
               <div className="flex items-center gap-2">
                 <button
+                  onClick={() => {
+                    setShowLang(true);
+                    setLangMode("add");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Add language"
+                >
+                  <PlusCircleIcon size={18} />
+                </button>
+                <button
+                  onClick={() => {
+                    setShowLang(true);
+                    setLangMode("edit");
+                  }}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit languages"
+                >
+                  <PencilIcon size={18} />
+                </button>
+                <button
                   onClick={() =>
                     setDeleteConfirm({ type: "languages", open: true })
                   }
@@ -387,13 +451,6 @@ const GeneralTab = ({
                   aria-label="Delete languages"
                 >
                   <TrashIcon size={18} />
-                </button>
-                <button
-                  onClick={() => setShowLang(true)}
-                  className="text-primary-1 hover:opacity-80"
-                  aria-label="Edit languages"
-                >
-                  <PencilIcon size={18} />
                 </button>
               </div>
             }
@@ -427,21 +484,25 @@ const GeneralTab = ({
         open={showSkills}
         onClose={() => setShowSkills(false)}
         profile={profile}
+        mode={skillsMode}
       />
       <EditWorkHistoryModal
         open={showWork}
         onClose={() => setShowWork(false)}
         profile={profile}
+        mode={workMode}
       />
       <EditEducationModal
         open={showEdu}
         onClose={() => setShowEdu(false)}
         profile={profile}
+        mode={eduMode}
       />
       <EditLanguagesModal
         open={showLang}
         onClose={() => setShowLang(false)}
         profile={profile}
+        mode={langMode}
       />
       <DeleteConfirmationModal
         open={deleteConfirm.open}
@@ -471,14 +532,16 @@ const GeneralTab = ({
   );
 };
 
-const Card = ({ 
-  children, 
-  className = "" 
-}: { 
+const Card = ({
+  children,
+  className = "",
+}: {
   children: React.ReactNode;
   className?: string;
 }) => (
-  <div className={`rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4 ${className}`}>
+  <div
+    className={`rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4 ${className}`}
+  >
     {children}
   </div>
 );

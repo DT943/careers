@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { PlusCircle, Trash } from "@phosphor-icons/react";
+import { useState, useEffect } from "react";
+import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 
@@ -9,13 +9,25 @@ type EditSkillsModalProps = {
   open: boolean;
   onClose: () => void;
   profile: ApplicantProfile;
+  mode?: "edit" | "add";
 };
 
-const EditSkillsModal = ({ open, onClose, profile }: EditSkillsModalProps) => {
+const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsModalProps) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
   const [skills, setSkills] = useState(
-    profile.skills.length ? profile.skills.map((s) => s.name) : [""]
+    mode === "add" ? [""] : profile.skills.length ? profile.skills.map((s) => s.name) : [""]
   );
+
+  // Reset state when mode or open changes
+  useEffect(() => {
+    if (open) {
+      if (mode === "add") {
+        setSkills([""]);
+      } else {
+        setSkills(profile.skills.length ? profile.skills.map((s) => s.name) : [""]);
+      }
+    }
+  }, [open, mode, profile.skills]);
 
   if (!open) return null;
 
@@ -30,9 +42,21 @@ const EditSkillsModal = ({ open, onClose, profile }: EditSkillsModalProps) => {
   const handleSubmit = async () => {
     const cleanSkills = skills.map((s) => s.trim()).filter(Boolean);
     const fd = new FormData();
-    cleanSkills.forEach((name, idx) => {
-      fd.append(`skills[${idx}].name`, name);
-    });
+    
+    if (mode === "add") {
+      // Merge new skills with existing ones
+      const existingSkills = profile.skills.map((s) => s.name);
+      const allSkills = [...existingSkills, ...cleanSkills];
+      allSkills.forEach((name, idx) => {
+        fd.append(`skills[${idx}].name`, name);
+      });
+    } else {
+      // Edit mode: replace all skills
+      cleanSkills.forEach((name, idx) => {
+        fd.append(`skills[${idx}].name`, name);
+      });
+    }
+    
     await updateProfile(fd);
     onClose();
   };
@@ -76,7 +100,7 @@ const EditSkillsModal = ({ open, onClose, profile }: EditSkillsModalProps) => {
                 onClick={() => removeSkill(idx)}
                 className="text-alert hover:text-red-600"
               >
-                <Trash size={18} />
+                <TrashIcon size={18} />
               </button>
             )}
           </div>
@@ -86,7 +110,7 @@ const EditSkillsModal = ({ open, onClose, profile }: EditSkillsModalProps) => {
           onClick={addSkill}
           className="inline-flex items-center gap-2 text-sm text-primary-1 hover:opacity-80"
         >
-          <PlusCircle size={16} />
+          <PlusCircleIcon size={16} />
           Add skill
         </button>
       </div>

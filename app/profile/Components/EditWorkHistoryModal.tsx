@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 import { TrashIcon } from "@phosphor-icons/react";
@@ -9,22 +9,63 @@ type Props = {
   open: boolean;
   onClose: () => void;
   profile: ApplicantProfile;
+  mode?: "edit" | "add";
 };
 
-const EditWorkHistoryModal = ({ open, onClose, profile }: Props) => {
+const EMPTY_WORK_ROW = {
+  title: "",
+  company: "",
+  startDate: "",
+  endDate: "",
+  isCurrentRole: false,
+  city: "",
+  country: "",
+  responsibilities: "",
+};
+
+const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
+  
   const [rows, setRows] = useState(
-    profile.experiences.map((exp) => ({
-      title: exp.title,
-      company: exp.company,
-      startDate: exp.startDate?.split("T")[0] ?? "",
-      endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
-      isCurrentRole: exp.isCurrentRole,
-      city: exp.city,
-      country: exp.country,
-      responsibilities: exp.responsibilities ?? "",
-    }))
+    mode === "add"
+      ? [EMPTY_WORK_ROW]
+      : profile.experiences.length
+        ? profile.experiences.map((exp) => ({
+            title: exp.title,
+            company: exp.company,
+            startDate: exp.startDate?.split("T")[0] ?? "",
+            endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
+            isCurrentRole: exp.isCurrentRole,
+            city: exp.city,
+            country: exp.country,
+            responsibilities: exp.responsibilities ?? "",
+          }))
+        : [EMPTY_WORK_ROW]
   );
+
+  // Reset state when mode or open changes
+  useEffect(() => {
+    if (open) {
+      if (mode === "add") {
+        setRows([EMPTY_WORK_ROW]);
+      } else {
+        setRows(
+          profile.experiences.length
+            ? profile.experiences.map((exp) => ({
+                title: exp.title,
+                company: exp.company,
+                startDate: exp.startDate?.split("T")[0] ?? "",
+                endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
+                isCurrentRole: exp.isCurrentRole,
+                city: exp.city,
+                country: exp.country,
+                responsibilities: exp.responsibilities ?? "",
+              }))
+            : [EMPTY_WORK_ROW]
+        );
+      }
+    }
+  }, [open, mode, profile.experiences]);
 
   if (!open) return null;
 
@@ -59,22 +100,56 @@ const EditWorkHistoryModal = ({ open, onClose, profile }: Props) => {
   const handleSave = async () => {
     const filtered = rows.filter((r) => r.title.trim() || r.company.trim());
     const fd = new FormData();
-    filtered.forEach((row, idx) => {
-      fd.append(`experiences[${idx}].title`, row.title);
-      fd.append(`experiences[${idx}].company`, row.company);
-      fd.append(`experiences[${idx}].startDate`, row.startDate);
-      fd.append(
-        `experiences[${idx}].endDate`,
-        row.isCurrentRole ? "" : row.endDate
-      );
-      fd.append(`experiences[${idx}].isCurrentRole`, String(row.isCurrentRole));
-      fd.append(
-        `experiences[${idx}].responsibilities`,
-        row.responsibilities ?? ""
-      );
-      fd.append(`experiences[${idx}].city`, row.city ?? "");
-      fd.append(`experiences[${idx}].country`, row.country ?? "");
-    });
+    
+    if (mode === "add") {
+      // Merge new experiences with existing ones
+      const existingExperiences = profile.experiences.map((exp) => ({
+        title: exp.title,
+        company: exp.company,
+        startDate: exp.startDate?.split("T")[0] ?? "",
+        endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
+        isCurrentRole: exp.isCurrentRole,
+        city: exp.city,
+        country: exp.country,
+        responsibilities: exp.responsibilities ?? "",
+      }));
+      const allExperiences = [...existingExperiences, ...filtered];
+      allExperiences.forEach((row, idx) => {
+        fd.append(`experiences[${idx}].title`, row.title);
+        fd.append(`experiences[${idx}].company`, row.company);
+        fd.append(`experiences[${idx}].startDate`, row.startDate);
+        fd.append(
+          `experiences[${idx}].endDate`,
+          row.isCurrentRole ? "" : row.endDate
+        );
+        fd.append(`experiences[${idx}].isCurrentRole`, String(row.isCurrentRole));
+        fd.append(
+          `experiences[${idx}].responsibilities`,
+          row.responsibilities ?? ""
+        );
+        fd.append(`experiences[${idx}].city`, row.city ?? "");
+        fd.append(`experiences[${idx}].country`, row.country ?? "");
+      });
+    } else {
+      // Edit mode: replace all experiences
+      filtered.forEach((row, idx) => {
+        fd.append(`experiences[${idx}].title`, row.title);
+        fd.append(`experiences[${idx}].company`, row.company);
+        fd.append(`experiences[${idx}].startDate`, row.startDate);
+        fd.append(
+          `experiences[${idx}].endDate`,
+          row.isCurrentRole ? "" : row.endDate
+        );
+        fd.append(`experiences[${idx}].isCurrentRole`, String(row.isCurrentRole));
+        fd.append(
+          `experiences[${idx}].responsibilities`,
+          row.responsibilities ?? ""
+        );
+        fd.append(`experiences[${idx}].city`, row.city ?? "");
+        fd.append(`experiences[${idx}].country`, row.country ?? "");
+      });
+    }
+    
     await updateProfile(fd);
     onClose();
   };

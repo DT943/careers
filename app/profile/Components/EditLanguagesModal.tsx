@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 import { LanguageLevel } from "@/enums";
@@ -11,13 +11,33 @@ type Props = {
   open: boolean;
   onClose: () => void;
   profile: ApplicantProfile;
+  mode?: "edit" | "add";
 };
 
-const EditLanguagesModal = ({ open, onClose, profile }: Props) => {
+const EditLanguagesModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
   const [languages, setLanguages] = useState(
-    profile.languages.map((l) => ({ name: l.name, level: l.level }))
+    mode === "add" 
+      ? [{ name: "", level: LanguageLevel.Beginner }]
+      : profile.languages.length 
+        ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
+        : [{ name: "", level: LanguageLevel.Beginner }]
   );
+
+  // Reset state when mode or open changes
+  useEffect(() => {
+    if (open) {
+      if (mode === "add") {
+        setLanguages([{ name: "", level: LanguageLevel.Beginner }]);
+      } else {
+        setLanguages(
+          profile.languages.length 
+            ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
+            : [{ name: "", level: LanguageLevel.Beginner }]
+        );
+      }
+    }
+  }, [open, mode, profile.languages]);
 
   if (!open) return null;
 
@@ -43,10 +63,23 @@ const EditLanguagesModal = ({ open, onClose, profile }: Props) => {
   const handleSave = async () => {
     const filtered = languages.filter((l) => l.name.trim());
     const fd = new FormData();
-    filtered.forEach((lang, idx) => {
-      fd.append(`languages[${idx}].name`, lang.name);
-      fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
-    });
+    
+    if (mode === "add") {
+      // Merge new languages with existing ones
+      const existingLanguages = profile.languages.map((l) => ({ name: l.name, level: l.level }));
+      const allLanguages = [...existingLanguages, ...filtered];
+      allLanguages.forEach((lang, idx) => {
+        fd.append(`languages[${idx}].name`, lang.name);
+        fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
+      });
+    } else {
+      // Edit mode: replace all languages
+      filtered.forEach((lang, idx) => {
+        fd.append(`languages[${idx}].name`, lang.name);
+        fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
+      });
+    }
+    
     await updateProfile(fd);
     onClose();
   };
