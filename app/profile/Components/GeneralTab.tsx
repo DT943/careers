@@ -14,6 +14,7 @@ import {
   LightningIcon,
   GraduationCapIcon,
   TrashIcon,
+  PlusCircleIcon,
 } from "@phosphor-icons/react";
 import { PencilSimple } from "@phosphor-icons/react";
 import EditPersonalInfoModal from "./EditPersonalInfoModal";
@@ -175,13 +176,30 @@ const GeneralTab = ({
       </Card>
 
       {/* Skills */}
-      <Card>
-        <CardHeader
-          title="Skills"
-          icon={<LightningIcon size={20} />}
-          rightNode={
-            <div className="flex items-center gap-2">
-              {profile.skills.length > 0 && (
+      {profile.skills.length === 0 ? (
+        <Card className="bg-gray-100">
+          <CardHeader
+            title="Skills"
+            icon={<LightningIcon size={20} />}
+            rightNode={null}
+          />
+          <div className="w-full">
+            <button
+              onClick={() => setShowSkills(true)}
+              className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
+            >
+              <PlusCircleIcon size={24} className="mr-2" />
+              Add Skill
+            </button>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader
+            title="Skills"
+            icon={<LightningIcon size={20} />}
+            rightNode={
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() =>
                     setDeleteConfirm({ type: "skills", open: true })
@@ -191,40 +209,54 @@ const GeneralTab = ({
                 >
                   <TrashIcon size={18} />
                 </button>
-              )}
-              <button
-                onClick={() => setShowSkills(true)}
-                className="text-primary-1 hover:opacity-80"
-                aria-label="Edit skills"
+                <button
+                  onClick={() => setShowSkills(true)}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit skills"
+                >
+                  <PencilIcon size={18} />
+                </button>
+              </div>
+            }
+          />
+          <div className="flex flex-wrap gap-2 text-xs">
+            {profile.skills.map((skill) => (
+              <span
+                key={skill.id}
+                className="rounded-full border border-primary-1/40 text-primary-1 px-2 py-1 bg-white"
               >
-                <PencilIcon size={18} />
-              </button>
-            </div>
-          }
-        />
-        <div className="flex flex-wrap gap-2 text-xs">
-          {profile.skills.length === 0 && (
-            <p className="text-sm text-primary-900">No skills added.</p>
-          )}
-          {profile.skills.map((skill) => (
-            <span
-              key={skill.id}
-              className="rounded-full border border-primary-1/40 text-primary-1 px-2 py-1 bg-white"
-            >
-              {skill.name}
-            </span>
-          ))}
-        </div>
-      </Card>
+                {skill.name}
+              </span>
+            ))}
+          </div>
+        </Card>
+      )}
 
       {/* Work History */}
-      <Card>
-        <CardHeader
-          title="Work History"
-          icon={<SuitcaseIcon size={20} />}
-          rightNode={
-            <div className="flex items-center gap-2">
-              {profile.experiences.length > 0 && (
+      {profile.experiences.length === 0 ? (
+        <Card className="bg-gray-100">
+          <CardHeader
+            title="Work History"
+            icon={<SuitcaseIcon size={20} />}
+            rightNode={null}
+          />
+          <div className="w-full">
+            <button
+              onClick={() => setShowWork(true)}
+              className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1 "
+            >
+              <PlusCircleIcon size={24} className="mr-2" />
+              Add Work History
+            </button>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader
+            title="Work History"
+            icon={<SuitcaseIcon size={20} />}
+            rightNode={
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() =>
                     setDeleteConfirm({ type: "experiences", open: true })
@@ -234,45 +266,58 @@ const GeneralTab = ({
                 >
                   <TrashIcon size={18} />
                 </button>
-              )}
-              <button
-                onClick={() => setShowWork(true)}
-                className="text-primary-1 hover:opacity-80"
-                aria-label="Edit work history"
-              >
-                <PencilIcon size={18} />
-              </button>
-            </div>
-          }
-        />
-        <Timeline>
-          {profile.experiences.map((exp) => (
-            <TimelineItem
-              key={exp.id}
-              title={exp.title}
-              subtitle={exp.company}
-              period={`${exp.startDate.split("T")[0]} - ${
-                exp.isCurrentRole ? "Present" : ""
-              }`}
-              location={`${exp.city}, ${exp.country}`}
-              description={exp.responsibilities}
-            />
-          ))}
-          {profile.experiences.length === 0 && (
-            <p className="text-sm text-primary-900">No work history.</p>
-          )}
-        </Timeline>
-      </Card>
+                <button
+                  onClick={() => setShowWork(true)}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit work history"
+                >
+                  <PencilIcon size={18} />
+                </button>
+              </div>
+            }
+          />
+          <Timeline>
+            {profile.experiences.map((exp) => (
+              <TimelineItem
+                key={exp.id}
+                title={exp.title}
+                subtitle={exp.company}
+                period={`${exp.startDate.split("T")[0]} - ${
+                  exp.isCurrentRole ? "Present" : ""
+                }`}
+                location={`${exp.city}, ${exp.country}`}
+                description={exp.responsibilities}
+              />
+            ))}
+          </Timeline>
+        </Card>
+      )}
 
       {/* Education */}
-      <Card>
-        <CardHeader
-          title="Educational History"
-          icon={<GraduationCapIcon size={20} />}
-          rightNode={
-            <div className="flex items-center gap-2">
-              {" "}
-              {profile.educations.length > 0 && (
+      {profile.educations.length === 0 ? (
+        <Card className="bg-gray-100">
+          <CardHeader
+            title="Educational History"
+            icon={<GraduationCapIcon size={20} />}
+            rightNode={null}
+          />
+          <div className="w-full">
+            <button
+              onClick={() => setShowEdu(true)}
+              className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
+            >
+              <PlusCircleIcon size={24} className="mr-2" />
+              Add Education
+            </button>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader
+            title="Educational History"
+            icon={<GraduationCapIcon size={20} />}
+            rightNode={
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() =>
                     setDeleteConfirm({ type: "educations", open: true })
@@ -282,44 +327,58 @@ const GeneralTab = ({
                 >
                   <TrashIcon size={18} />
                 </button>
-              )}
-              <button
-                onClick={() => setShowEdu(true)}
-                className="text-primary-1 hover:opacity-80"
-                aria-label="Edit education"
-              >
-                <PencilIcon size={18} />
-              </button>
-            </div>
-          }
-        />
-        <Timeline>
-          {profile.educations.map((edu) => (
-            <TimelineItem
-              key={edu.id}
-              title={edu.degree}
-              subtitle={edu.institution}
-              period={`${edu.startDate.split("T")[0]} - ${
-                edu.endDate?.split("T")[0] ?? ""
-              }`}
-              location={edu.fieldOfStudy}
-              description={edu.grade ? `Grade: ${edu.grade}` : ""}
-            />
-          ))}
-          {profile.educations.length === 0 && (
-            <p className="text-sm text-primary-900">No education history.</p>
-          )}
-        </Timeline>
-      </Card>
+                <button
+                  onClick={() => setShowEdu(true)}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit education"
+                >
+                  <PencilIcon size={18} />
+                </button>
+              </div>
+            }
+          />
+          <Timeline>
+            {profile.educations.map((edu) => (
+              <TimelineItem
+                key={edu.id}
+                title={edu.degree}
+                subtitle={edu.institution}
+                period={`${edu.startDate.split("T")[0]} - ${
+                  edu.endDate?.split("T")[0] ?? ""
+                }`}
+                location={edu.fieldOfStudy}
+                description={edu.grade ? `Grade: ${edu.grade}` : ""}
+              />
+            ))}
+          </Timeline>
+        </Card>
+      )}
 
       {/* Languages */}
-      <Card>
-        <CardHeader
-          title="Languages"
-          icon={<TranslateIcon size={20} />}
-          rightNode={
-            <div className="flex items-center gap-2">
-              {profile.languages.length > 0 && (
+      {profile.languages.length === 0 ? (
+        <Card className="bg-gray-100">
+          <CardHeader
+            title="Languages"
+            icon={<TranslateIcon size={20} />}
+            rightNode={null}
+          />
+          <div className="w-full">
+            <button
+              onClick={() => setShowLang(true)}
+              className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
+            >
+              <PlusCircleIcon size={24} className="mr-2" />
+              Add Language
+            </button>
+          </div>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader
+            title="Languages"
+            icon={<TranslateIcon size={20} />}
+            rightNode={
+              <div className="flex items-center gap-2">
                 <button
                   onClick={() =>
                     setDeleteConfirm({ type: "languages", open: true })
@@ -329,33 +388,30 @@ const GeneralTab = ({
                 >
                   <TrashIcon size={18} />
                 </button>
-              )}
-              <button
-                onClick={() => setShowLang(true)}
-                className="text-primary-1 hover:opacity-80"
-                aria-label="Edit languages"
-              >
-                <PencilIcon size={18} />
-              </button>
-            </div>
-          }
-        />
-        <div className="space-y-2 text-sm">
-          {profile.languages.map((lang) => (
-            <div key={lang.id} className="flex items-center gap-2">
-              <span className="font-semibold text-primary-900">
-                {lang.name}
-              </span>
-              <span className="text-primary-1 text-xs">
-                {getLanguageLevelLabel(lang.level)}
-              </span>
-            </div>
-          ))}
-          {profile.languages.length === 0 && (
-            <p className="text-sm text-primary-900">No languages listed.</p>
-          )}
-        </div>
-      </Card>
+                <button
+                  onClick={() => setShowLang(true)}
+                  className="text-primary-1 hover:opacity-80"
+                  aria-label="Edit languages"
+                >
+                  <PencilIcon size={18} />
+                </button>
+              </div>
+            }
+          />
+          <div className="space-y-2 text-sm">
+            {profile.languages.map((lang) => (
+              <div key={lang.id} className="flex items-center gap-2">
+                <span className="font-semibold text-primary-900">
+                  {lang.name}
+                </span>
+                <span className="text-primary-1 text-xs">
+                  {getLanguageLevelLabel(lang.level)}
+                </span>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <EditPersonalInfoModal
         open={showEdit}
@@ -415,8 +471,14 @@ const GeneralTab = ({
   );
 };
 
-const Card = ({ children }: { children: React.ReactNode }) => (
-  <div className="rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4">
+const Card = ({ 
+  children, 
+  className = "" 
+}: { 
+  children: React.ReactNode;
+  className?: string;
+}) => (
+  <div className={`rounded-md max-w-3xl flex flex-col items-start justify-start w-full border border-[#E5E5E3] p-4 ${className}`}>
     {children}
   </div>
 );
