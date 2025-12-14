@@ -8,7 +8,9 @@ type JobAlert = {
   workingTime: string;
   jobLevel: string;
   location: string;
-  jobCategory: string;
+  jobCategoryName: string;
+  workArrangementType: string;
+  employmentType: string;
   alertFrequency: string;
   isActive: boolean;
 };
@@ -44,24 +46,28 @@ const JobAlertCard: React.FC<JobAlertCardProps> = ({
           <p>
             <span className="font-semibold">Keywords:</span> {alert.keywords}
           </p>
-          <p>
+          {/* <p>
             <span className="font-semibold">Location:</span> {alert.location}
+          </p> */}
+          <p>
+            <span className="font-semibold">Employment Type:</span>{" "}
+            {alert.employmentType}
           </p>
           <p>
-            <span className="font-semibold">Working Time:</span>{" "}
-            {alert.workingTime}
+            <span className="font-semibold">Work Arrangement:</span>{" "}
+            {alert.workArrangementType}
           </p>
           <p>
             <span className="font-semibold">Job Category:</span>{" "}
-            {alert.jobCategory}
+            {alert.jobCategoryName}
           </p>
           <p>
             <span className="font-semibold">Job Level:</span> {alert.jobLevel}
           </p>
-          <p>
+          {/* <p>
             <span className="font-semibold">Alert Frequency:</span>{" "}
             {alert.alertFrequency}
-          </p>
+          </p> */}
         </div>
       </div>
 

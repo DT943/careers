@@ -13,6 +13,7 @@ import {
   useJobApplications,
   JobApplicationItem,
 } from "@/hooks";
+import NewJobAlertModal from "./Components/NewJobAlertModal";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
   formatClosingDate,
@@ -20,6 +21,7 @@ import {
   getLevelLabel,
   getTimeAgo,
   getApplicationStatusLabel,
+  getWorkArrangementLabel,
 } from "@/utils";
 import GeneralTab from "./Components/GeneralTab";
 import AlertsTab from "./Components/AlertsTab";
@@ -33,7 +35,9 @@ type JobAlert = {
   workingTime: string;
   jobLevel: string;
   location: string;
-  jobCategory: string;
+  jobCategoryName: string;
+  workArrangementType: string;
+  employmentType: string;
   alertFrequency: string;
   isActive: boolean;
 };
@@ -43,6 +47,7 @@ const ProfileClient = () => {
   const { token } = useAuthStore();
   const [activeTab, setActiveTab] = useState("general");
   const [tabLoading, setTabLoading] = useState(false);
+  const [showNewAlertModal, setShowNewAlertModal] = useState(false);
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
   const { data, isLoading, error } = useApplicantProfile(!!token);
@@ -71,7 +76,9 @@ const ProfileClient = () => {
         workingTime: getEmploymentTypeLabel(alert.employmentType),
         jobLevel: getLevelLabel(alert.jobLevel),
         location: "—",
-        jobCategory: String(alert.jobCategory ?? "N/A"),
+        jobCategoryName: alert.jobCategoryName || "N/A",
+        workArrangementType: getWorkArrangementLabel(alert.workArrangementType),
+        employmentType: getEmploymentTypeLabel(alert.employmentType),
         alertFrequency: "N/A",
         isActive: true,
       }));
@@ -338,15 +345,16 @@ const ProfileClient = () => {
                 />
               </div>
 
-              {/* <div>
+              <div>
                 <button
                   type="button"
+                  onClick={() => setShowNewAlertModal(true)}
                   className="inline-flex items-center gap-2 rounded-md bg-[#00527a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition"
                 >
                   <PlusCircleIcon size={18} weight="bold" />
                   New alert
                 </button>
-              </div> */}
+              </div>
             </div>
           )}
 
@@ -362,6 +370,11 @@ const ProfileClient = () => {
           )}
         </div>
       </div>
+
+      <NewJobAlertModal
+        open={showNewAlertModal}
+        onClose={() => setShowNewAlertModal(false)}
+      />
     </div>
   );
 };

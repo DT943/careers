@@ -9,7 +9,9 @@ type Alert = {
   workingTime: string;
   jobLevel: string;
   location: string;
-  jobCategory: string;
+  jobCategoryName: string;
+  workArrangementType: string;
+  employmentType: string;
   alertFrequency: string;
   isActive: boolean;
 };

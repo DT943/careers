@@ -20,9 +20,10 @@ export { useJobOfferDetail } from "./useJobOfferDetail";
 export { useApplicantProfile, useUpdateProfile } from "./useProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useSaveJobOffer, useUnsaveJobOffer } from "./useSavedJobActions";
-export { useJobAlerts } from "./useJobAlerts";
+export { useJobAlerts, useCreateJobAlert } from "./useJobAlerts";
 export { useJobApplications } from "./useJobApplications";
 export { useParseResume, useApplyToJob } from "./useJobApplication";
+export { usePositionTitles } from "./usePositionTitles";
 
 export type {
   JobOffer,
@@ -30,7 +31,7 @@ export type {
   CreateJobOfferData,
   UpdateJobOfferData,
 } from "./useJobOffers";
-export type { Team } from "./useTeams";
+export type { Team, TeamsResponse, TeamTranslation } from "./useTeams";
 export type { JobOfferDetail } from "./useJobOfferDetail";
 export type {
   ApplicantProfile,
@@ -40,6 +41,7 @@ export type {
   ProfileLanguage,
 } from "./useProfile";
 export type { SavedJobItem, SavedJobsResponse } from "./useSavedJobs";
-export type { JobAlert } from "./useJobAlerts";
+export type { JobAlert, CreateJobAlertData } from "./useJobAlerts";
+export type { PositionTitle, PositionTitlesResponse } from "./usePositionTitles";
 export type { JobApplicationItem } from "./useJobApplications";
 
