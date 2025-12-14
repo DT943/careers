@@ -42,7 +42,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       <h3 className="text-base font-bold text-primary-1">{title}</h3>
 
       <div className="flex justify-start items-center gap-2 mt-2">
-        <p className="text-primary-1 text-sm font-normal bg-[#E5E5E3]/70 rounded-xl px-2 py-1">
+        <p className="text-primary-1 text-sm font-normal bg-[#054E72]/10 rounded-xl px-2 py-1">
           {category}
         </p>
         <p className="text-primary-1 text-sm font-normal bg-[#E5E5E3]/70 rounded-xl px-2 py-1">
