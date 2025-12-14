@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
-import { TrashIcon } from "@phosphor-icons/react";
+import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react";
 
 type Props = {
   open: boolean;
@@ -23,24 +23,29 @@ const EMPTY_WORK_ROW = {
   responsibilities: "",
 };
 
-const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
+const EditWorkHistoryModal = ({
+  open,
+  onClose,
+  profile,
+  mode = "edit",
+}: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
-  
+
   const [rows, setRows] = useState(
     mode === "add"
       ? [EMPTY_WORK_ROW]
       : profile.experiences.length
-        ? profile.experiences.map((exp) => ({
-            title: exp.title,
-            company: exp.company,
-            startDate: exp.startDate?.split("T")[0] ?? "",
-            endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
-            isCurrentRole: exp.isCurrentRole,
-            city: exp.city,
-            country: exp.country,
-            responsibilities: exp.responsibilities ?? "",
-          }))
-        : [EMPTY_WORK_ROW]
+      ? profile.experiences.map((exp) => ({
+          title: exp.title,
+          company: exp.company,
+          startDate: exp.startDate?.split("T")[0] ?? "",
+          endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
+          isCurrentRole: exp.isCurrentRole,
+          city: exp.city,
+          country: exp.country,
+          responsibilities: exp.responsibilities ?? "",
+        }))
+      : [EMPTY_WORK_ROW]
   );
 
   // Reset state when mode or open changes
@@ -55,7 +60,9 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
                 title: exp.title,
                 company: exp.company,
                 startDate: exp.startDate?.split("T")[0] ?? "",
-                endDate: exp.isCurrentRole ? "" : exp.endDate?.split("T")[0] ?? "",
+                endDate: exp.isCurrentRole
+                  ? ""
+                  : exp.endDate?.split("T")[0] ?? "",
                 isCurrentRole: exp.isCurrentRole,
                 city: exp.city,
                 country: exp.country,
@@ -100,7 +107,7 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
   const handleSave = async () => {
     const filtered = rows.filter((r) => r.title.trim() || r.company.trim());
     const fd = new FormData();
-    
+
     if (mode === "add") {
       // Merge new experiences with existing ones
       const existingExperiences = profile.experiences.map((exp) => ({
@@ -122,7 +129,10 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
           `experiences[${idx}].endDate`,
           row.isCurrentRole ? "" : row.endDate
         );
-        fd.append(`experiences[${idx}].isCurrentRole`, String(row.isCurrentRole));
+        fd.append(
+          `experiences[${idx}].isCurrentRole`,
+          String(row.isCurrentRole)
+        );
         fd.append(
           `experiences[${idx}].responsibilities`,
           row.responsibilities ?? ""
@@ -140,7 +150,10 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
           `experiences[${idx}].endDate`,
           row.isCurrentRole ? "" : row.endDate
         );
-        fd.append(`experiences[${idx}].isCurrentRole`, String(row.isCurrentRole));
+        fd.append(
+          `experiences[${idx}].isCurrentRole`,
+          String(row.isCurrentRole)
+        );
         fd.append(
           `experiences[${idx}].responsibilities`,
           row.responsibilities ?? ""
@@ -149,7 +162,7 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
         fd.append(`experiences[${idx}].country`, row.country ?? "");
       });
     }
-    
+
     await updateProfile(fd);
     onClose();
   };
@@ -180,7 +193,7 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
     >
       <div className="space-y-3">
         {rows.map((row, idx) => (
-          <div key={idx} className="space-y-2">
+          <div key={idx} className="border border-gray-200 rounded-lg p-3">
             <div className="grid md:grid-cols-2 gap-3">
               <Field
                 label="Title"
@@ -236,19 +249,22 @@ const EditWorkHistoryModal = ({ open, onClose, profile, mode = "edit" }: Props) 
                 className="h-20 rounded-md border border-gray-200 px-3 py-2 text-sm text-primary-900 focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
               />
             </label>
-            <button
-              onClick={() => removeRow(idx)}
-              className="m-2 text-xs font-semibold text-red-500 hover:underline"
-            >
-              <TrashIcon size={16} />
-            </button>
+            <div className="flex justify-end items-end mt-1">
+              <button
+                onClick={() => removeRow(idx)}
+                className=" text-xs font-semibold mt-2 text-alert hover:underline"
+              >
+                <TrashIcon size={18} />
+              </button>
+            </div>
           </div>
         ))}
         <button
           onClick={addRow}
-          className="text-xs font-semibold text-primary-1 hover:underline"
+          className="mt-3 rounded-lg border border-[#E5E5E3] py-2 px-4 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
         >
-          + Add work entry
+          <PlusCircleIcon size={24} className="mr-2" />
+          Add work
         </button>
       </div>
     </ProfileModalShell>

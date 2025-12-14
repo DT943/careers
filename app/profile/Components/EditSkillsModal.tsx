@@ -12,10 +12,19 @@ type EditSkillsModalProps = {
   mode?: "edit" | "add";
 };
 
-const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsModalProps) => {
+const EditSkillsModal = ({
+  open,
+  onClose,
+  profile,
+  mode = "edit",
+}: EditSkillsModalProps) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
   const [skills, setSkills] = useState(
-    mode === "add" ? [""] : profile.skills.length ? profile.skills.map((s) => s.name) : [""]
+    mode === "add"
+      ? [""]
+      : profile.skills.length
+      ? profile.skills.map((s) => s.name)
+      : [""]
   );
 
   // Reset state when mode or open changes
@@ -24,7 +33,9 @@ const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsMo
       if (mode === "add") {
         setSkills([""]);
       } else {
-        setSkills(profile.skills.length ? profile.skills.map((s) => s.name) : [""]);
+        setSkills(
+          profile.skills.length ? profile.skills.map((s) => s.name) : [""]
+        );
       }
     }
   }, [open, mode, profile.skills]);
@@ -42,7 +53,7 @@ const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsMo
   const handleSubmit = async () => {
     const cleanSkills = skills.map((s) => s.trim()).filter(Boolean);
     const fd = new FormData();
-    
+
     if (mode === "add") {
       // Merge new skills with existing ones
       const existingSkills = profile.skills.map((s) => s.name);
@@ -56,7 +67,7 @@ const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsMo
         fd.append(`skills[${idx}].name`, name);
       });
     }
-    
+
     await updateProfile(fd);
     onClose();
   };
@@ -108,9 +119,9 @@ const EditSkillsModal = ({ open, onClose, profile, mode = "edit" }: EditSkillsMo
         <button
           type="button"
           onClick={addSkill}
-          className="inline-flex items-center gap-2 text-sm text-primary-1 hover:opacity-80"
+          className="mt-3 rounded-lg border border-[#E5E5E3] py-2 px-4 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
         >
-          <PlusCircleIcon size={16} />
+          <PlusCircleIcon size={24} className="mr-2" />
           Add skill
         </button>
       </div>

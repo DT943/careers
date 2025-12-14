@@ -5,7 +5,7 @@ import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 import { LanguageLevel } from "@/enums";
 import { getLanguageLevelLabel } from "@/utils";
-import { TrashIcon } from "@phosphor-icons/react";
+import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react";
 
 type Props = {
   open: boolean;
@@ -14,14 +14,19 @@ type Props = {
   mode?: "edit" | "add";
 };
 
-const EditLanguagesModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
+const EditLanguagesModal = ({
+  open,
+  onClose,
+  profile,
+  mode = "edit",
+}: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
   const [languages, setLanguages] = useState(
-    mode === "add" 
+    mode === "add"
       ? [{ name: "", level: LanguageLevel.Beginner }]
-      : profile.languages.length 
-        ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
-        : [{ name: "", level: LanguageLevel.Beginner }]
+      : profile.languages.length
+      ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
+      : [{ name: "", level: LanguageLevel.Beginner }]
   );
 
   // Reset state when mode or open changes
@@ -31,7 +36,7 @@ const EditLanguagesModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
         setLanguages([{ name: "", level: LanguageLevel.Beginner }]);
       } else {
         setLanguages(
-          profile.languages.length 
+          profile.languages.length
             ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
             : [{ name: "", level: LanguageLevel.Beginner }]
         );
@@ -56,30 +61,42 @@ const EditLanguagesModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
   };
 
   const addRow = () =>
-    setLanguages((prev) => [...prev, { name: "", level: LanguageLevel.Beginner }]);
+    setLanguages((prev) => [
+      ...prev,
+      { name: "", level: LanguageLevel.Beginner },
+    ]);
   const removeRow = (idx: number) =>
     setLanguages((prev) => prev.filter((_, i) => i !== idx));
 
   const handleSave = async () => {
     const filtered = languages.filter((l) => l.name.trim());
     const fd = new FormData();
-    
+
     if (mode === "add") {
       // Merge new languages with existing ones
-      const existingLanguages = profile.languages.map((l) => ({ name: l.name, level: l.level }));
+      const existingLanguages = profile.languages.map((l) => ({
+        name: l.name,
+        level: l.level,
+      }));
       const allLanguages = [...existingLanguages, ...filtered];
       allLanguages.forEach((lang, idx) => {
         fd.append(`languages[${idx}].name`, lang.name);
-        fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
+        fd.append(
+          `languages[${idx}].level`,
+          String(lang.level ?? LanguageLevel.Beginner)
+        );
       });
     } else {
       // Edit mode: replace all languages
       filtered.forEach((lang, idx) => {
         fd.append(`languages[${idx}].name`, lang.name);
-        fd.append(`languages[${idx}].level`, String(lang.level ?? LanguageLevel.Beginner));
+        fd.append(
+          `languages[${idx}].level`,
+          String(lang.level ?? LanguageLevel.Beginner)
+        );
       });
     }
-    
+
     await updateProfile(fd);
     onClose();
   };
@@ -143,11 +160,13 @@ const EditLanguagesModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
             </button>
           </div>
         ))}
+
         <button
           onClick={addRow}
-          className="text-xs font-semibold text-primary-1 hover:underline"
+          className="rounded-lg border border-[#E5E5E3] py-2 px-4 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
         >
-          + Add language
+          <PlusCircleIcon size={24} className="mr-2" />
+          Add Language
         </button>
       </div>
     </ProfileModalShell>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { TrashIcon } from "@phosphor-icons/react";
+import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 
@@ -21,22 +21,27 @@ const EMPTY_EDUCATION_ROW = {
   grade: "",
 };
 
-const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) => {
+const EditEducationModal = ({
+  open,
+  onClose,
+  profile,
+  mode = "edit",
+}: Props) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
-  
+
   const [rows, setRows] = useState(
     mode === "add"
       ? [EMPTY_EDUCATION_ROW]
       : profile.educations.length
-        ? profile.educations.map((edu) => ({
-            institution: edu.institution,
-            degree: edu.degree,
-            fieldOfStudy: edu.fieldOfStudy,
-            startDate: edu.startDate?.split("T")[0] ?? "",
-            endDate: edu.endDate?.split("T")[0] ?? "",
-            grade: edu.grade ?? "",
-          }))
-        : [EMPTY_EDUCATION_ROW]
+      ? profile.educations.map((edu) => ({
+          institution: edu.institution,
+          degree: edu.degree,
+          fieldOfStudy: edu.fieldOfStudy,
+          startDate: edu.startDate?.split("T")[0] ?? "",
+          endDate: edu.endDate?.split("T")[0] ?? "",
+          grade: edu.grade ?? "",
+        }))
+      : [EMPTY_EDUCATION_ROW]
   );
 
   // Reset state when mode or open changes
@@ -94,7 +99,7 @@ const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
       (r) => r.degree.trim() || r.institution.trim()
     );
     const fd = new FormData();
-    
+
     if (mode === "add") {
       // Merge new educations with existing ones
       const existingEducations = profile.educations.map((edu) => ({
@@ -125,7 +130,7 @@ const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
         fd.append(`educations[${idx}].grade`, row.grade ?? "");
       });
     }
-    
+
     await updateProfile(fd);
     onClose();
   };
@@ -152,9 +157,9 @@ const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
       }
       maxWidthClass="max-w-4xl"
     >
-      <div>
+      <div className="space-y-3">
         {rows.map((row, idx) => (
-          <div key={idx}>
+          <div className="border border-gray-200 rounded-lg p-3" key={idx}>
             <div className="grid md:grid-cols-2 gap-3">
               <Field
                 label="Institution"
@@ -189,19 +194,23 @@ const EditEducationModal = ({ open, onClose, profile, mode = "edit" }: Props) =>
                 onChange={(v) => handleChange(idx, "endDate", v)}
               />
             </div>
-            <button
-              onClick={() => removeRow(idx)}
-              className="text-xs font-semibold m-2 text-red-500 hover:underline"
-            >
-                <TrashIcon size={16} />
-            </button>
+            <div className="flex justify-end items-end mt-1">
+              <button
+                onClick={() => removeRow(idx)}
+                className=" text-xs font-semibold mt-2 text-alert hover:underline"
+              >
+                <TrashIcon size={18} />
+              </button>
+            </div>
           </div>
         ))}
+
         <button
           onClick={addRow}
-          className="mt-4 text-xs font-semibold text-primary-1 hover:underline"
+          className="mt-3 rounded-lg border border-[#E5E5E3] py-2 px-4 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
         >
-          + Add education entry
+          <PlusCircleIcon size={24} className="mr-2" />
+          Add education
         </button>
       </div>
     </ProfileModalShell>
