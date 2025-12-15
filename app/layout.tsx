@@ -1,11 +1,6 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "../styles/globals.css";
-import NavbarWrapper from "../layout/Navbar";
-import FooterWrapper from "../layout/Footer";
-import { GoogleOAuthProvider } from "@react-oauth/google";
-import { GOOGLE_CLIENT_ID } from "@/constant/Config";
-import QueryProvider from "@/providers/QueryProvider";
-
+import ClientLayout from "./ClientLayout";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -50,13 +45,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>
-          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <NavbarWrapper />
-            <main>{children}</main>
-            <FooterWrapper />
-          </GoogleOAuthProvider>
-        </QueryProvider>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
   );

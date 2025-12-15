@@ -96,7 +96,7 @@ const FooterWrapper = () => {
           </p>
 
           {/* Links Section */}
-          <div className="flex justify-center gap-4 md:gap-2 mt-4 md:mt-0 md:w-1/2">
+          <div className="flex justify-center gap-4 md:gap-4 mt-4 md:mt-0 md:w-1/2">
             <Link href="/cookies-policy" className="hover:text-[#C2B48B]">
               Cookies policy
             </Link>
