@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { ApplicationData } from "../../types/application";
 import ResumeUploadStep from "./Components/ResumeUploadStep";

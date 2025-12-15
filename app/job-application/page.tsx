@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import JobApplicationClient from "./JobApplicationClient";
 
 export const metadata = {
@@ -37,8 +38,17 @@ export const metadata = {
     ],
   },
 };
+
+function JobApplicationFallback() {
+  return <div className="p-6 animate-pulse">Loading…</div>;
+}
+
 const JobApplication = () => {
-  return <JobApplicationClient />;
+  return (
+    <Suspense fallback={<JobApplicationFallback />}>
+      <JobApplicationClient />
+    </Suspense>
+  );
 };
 
 export default JobApplication;
