@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   ApplicationStepProps,
   PositionItem,
@@ -56,45 +56,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       : [{ name: "", level: LanguageLevel.Beginner }]
   );
 
-  // Use ref to track if we should skip syncing (to avoid infinite loops)
-  const skipSyncRef = useRef(false);
-
-  useEffect(() => {
-    skipSyncRef.current = true; // Skip sync when props change
-    if (data.positions?.length) {
-      setPositions(data.positions);
-    }
-    if (data.educationHistory?.length) {
-      setEducationItems(data.educationHistory);
-    }
-    if (data.skills?.length) {
-      setSkills(data.skills);
-    }
-    if (data.languages?.length) {
-      setLanguages(data.languages);
-    }
-    // Reset skip flag after a short delay to allow sync on next change
-    setTimeout(() => {
-      skipSyncRef.current = false;
-    }, 0);
-  }, [data.positions, data.educationHistory, data.skills, data.languages]);
-
-  // Sync skills to parent when they change (but not when props update)
-  useEffect(() => {
-    if (skipSyncRef.current) {
-      return;
-    }
-    updateData({ skills: skills.filter((s) => s.trim()) });
-  }, [skills]);
-
-  // Sync languages to parent when they change (but not when props update)
-  useEffect(() => {
-    if (skipSyncRef.current) {
-      return;
-    }
-    updateData({ languages: languages.filter((l) => l.name.trim()) });
-  }, [languages]);
-
   const handlePositionChange = (
     index: number,
     field: keyof PositionItem,
@@ -103,7 +64,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
     setPositions((prev) => {
       const clone = [...prev];
       clone[index] = { ...clone[index], [field]: value } as PositionItem;
-      updateData({ positions: clone });
       return clone;
     });
   };
@@ -114,33 +74,23 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       clone[index] = { ...EMPTY_POSITION };
       return clone;
     });
-    updateData({ positions: [{ ...EMPTY_POSITION }] });
   };
 
   const handleRemovePosition = (index: number) => {
     setPositions((prev) => {
       if (prev.length === 1) {
-        const res = [{ ...EMPTY_POSITION }];
-        updateData({ positions: res });
-        return res;
+        return [{ ...EMPTY_POSITION }];
       }
-      const res = prev.filter((_, i) => i !== index);
-      updateData({ positions: res });
-      return res;
+      return prev.filter((_, i) => i !== index);
     });
   };
 
   const handleAddPosition = () => {
-    setPositions((prev) => {
-      const res = [...prev, { ...EMPTY_POSITION }];
-      updateData({ positions: res });
-      return res;
-    });
+    setPositions((prev) => [...prev, { ...EMPTY_POSITION }]);
   };
 
   const handleClearAllPosition = () => {
     setPositions([{ ...EMPTY_POSITION }]);
-    updateData({ positions: [{ ...EMPTY_POSITION }] });
   };
 
   const handleEducationChange = (
@@ -151,7 +101,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
     setEducationItems((prev) => {
       const clone = [...prev];
       clone[index] = { ...clone[index], [field]: value } as EducationItem;
-      updateData({ educationHistory: clone });
       return clone;
     });
   };
@@ -162,33 +111,23 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       clone[index] = { ...EMPTY_EDUCATION };
       return clone;
     });
-    updateData({ educationHistory: [{ ...EMPTY_EDUCATION }] });
   };
 
   const handleRemoveEducationItem = (index: number) => {
     setEducationItems((prev) => {
       if (prev.length === 1) {
-        const res = [{ ...EMPTY_EDUCATION }];
-        updateData({ educationHistory: res });
-        return res;
+        return [{ ...EMPTY_EDUCATION }];
       }
-      const res = prev.filter((_, i) => i !== index);
-      updateData({ educationHistory: res });
-      return res;
+      return prev.filter((_, i) => i !== index);
     });
   };
 
   const handleAddEducationItem = () => {
-    setEducationItems((prev) => {
-      const res = [...prev, { ...EMPTY_EDUCATION }];
-      updateData({ educationHistory: res });
-      return res;
-    });
+    setEducationItems((prev) => [...prev, { ...EMPTY_EDUCATION }]);
   };
 
   const handleClearAllEducation = () => {
     setEducationItems([{ ...EMPTY_EDUCATION }]);
-    updateData({ educationHistory: [{ ...EMPTY_EDUCATION }] });
   };
 
   const handleSkillChange = (index: number, value: string) => {
@@ -197,7 +136,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       clone[index] = value;
       return clone;
     });
-    // updateData will be called by useEffect when skills state changes
   };
 
   const handleAddSkill = () => {
@@ -209,7 +147,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       const res = prev.filter((_, i) => i !== index);
       return res.length > 0 ? res : [""];
     });
-    // updateData will be called by useEffect when skills state changes
   };
 
   const handleLanguageChange = (
@@ -225,7 +162,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
       };
       return clone;
     });
-    // updateData will be called by useEffect when languages state changes
   };
 
   const handleAddLanguage = () => {
@@ -242,7 +178,6 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
         ? res
         : [{ name: "", level: LanguageLevel.Beginner }];
     });
-    // updateData will be called by useEffect when languages state changes
   };
 
   const handleContinue = () => {
@@ -596,10 +531,7 @@ const ProfessionalInformation: React.FC<ApplicationStepProps> = ({
           <h2 className="text-base font-semibold text-primary-900">Skills</h2>
           <button
             type="button"
-            onClick={() => {
-              skipSyncRef.current = true;
-              setSkills([""]);
-            }}
+            onClick={() => setSkills([""])}
             className="text-xs font-semibold text-alert hover:underline"
           >
             clear
