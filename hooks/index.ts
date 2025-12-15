@@ -16,6 +16,7 @@ export {
   useDeleteJobOffer,
 } from "./useJobOffers";
 export { useTeams } from "./useTeams";
+export { useApplicantTeams } from "./useApplicantTeams";
 export { useJobOfferDetail } from "./useJobOfferDetail";
 export { useApplicantProfile, useUpdateProfile } from "./useProfile";
 export { useSavedJobs } from "./useSavedJobs";
@@ -31,7 +32,12 @@ export type {
   CreateJobOfferData,
   UpdateJobOfferData,
 } from "./useJobOffers";
-export type { Team, TeamsResponse, TeamTranslation } from "./useTeams";
+export type { Team } from "./useTeams";
+export type {
+  ApplicantTeam,
+  ApplicantTeamsResponse,
+  ApplicantTeamTranslation,
+} from "./useApplicantTeams";
 export type { JobOfferDetail } from "./useJobOfferDetail";
 export type {
   ApplicantProfile,

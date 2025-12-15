@@ -1,7 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useCreateJobAlert, usePositionTitles, useTeams } from "@/hooks";
+import {
+  useCreateJobAlert,
+  usePositionTitles,
+  useApplicantTeams,
+} from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 import {
   JobLevel,
@@ -25,7 +29,7 @@ const NewJobAlertModal = ({ open, onClose }: NewJobAlertModalProps) => {
     { languageCode: "en" },
     open
   );
-  const { data: teamsData } = useTeams({ languageCode: "en" }, open);
+  const { data: teamsData } = useApplicantTeams({ languageCode: "en" }, open);
 
   const [form, setForm] = useState({
     jobLevel: JobLevel.Intern,
