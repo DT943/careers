@@ -4,11 +4,6 @@ import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { MagnifyingGlassIcon } from "@phosphor-icons/react";
 
-import {
-  jobTeams,
-  jobLocations,
-  jobExperienceLevels,
-} from "../Helper/JobsData";
 import JobCard from "./JobCard";
 import JobCardSkeleton from "./JobCardSkeleton";
 import FilterSelect from "./FilterSelect";
