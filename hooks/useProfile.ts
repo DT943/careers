@@ -49,6 +49,7 @@ export interface ApplicantProfile {
   nationality: string;
   dateOfBirth: string;
   resumeUrl: string;
+  profilePictureUrl?: string;
   createdAt: string;
   updatedAt: string;
   skills: ProfileSkill[];

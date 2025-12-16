@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import profileLogo from "@/public/images/logoProfile.png";
 import Image from "next/image";
-import { PlusCircleIcon } from "@phosphor-icons/react";
+import { PlusCircleIcon, PencilSimpleIcon } from "@phosphor-icons/react";
 import {
   useApplicantProfile,
   useSavedJobs,
@@ -13,6 +13,7 @@ import {
   useJobApplications,
   JobApplicationItem,
   useHasProfile,
+  useUpdateProfile,
 } from "@/hooks";
 import CreateProfileForm from "./Components/CreateProfileForm";
 import NewJobAlertModal from "./Components/NewJobAlertModal";
@@ -102,6 +103,36 @@ const ProfileClient = () => {
   }, [activeTab]);
 
   const profile = data?.result;
+
+  // Avatar upload
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
+  const { mutateAsync: updateProfilePicture, isLoading: uploadingAvatar } =
+    useUpdateProfile();
+
+  const handleAvatarClick = () => {
+    avatarInputRef.current?.click();
+  };
+
+  const handleAvatarChange = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const fd = new FormData();
+    fd.append("profilePictureFile", file);
+
+    try {
+      await updateProfilePicture(fd);
+    } catch (err) {
+      console.error("Failed to update profile picture", err);
+    } finally {
+      // clear value so same file can be selected again if needed
+      if (avatarInputRef.current) {
+        avatarInputRef.current.value = "";
+      }
+    }
+  };
 
   const contactInfo = useMemo(() => {
     if (!profile)
@@ -207,15 +238,15 @@ const ProfileClient = () => {
   }, [applicationsData]);
 
   const toggleAlert = (id: number) => {
-    setAlerts((prev) =>
-      prev.map((alert) =>
+    setAlerts((prev: JobAlert[]) =>
+      prev.map((alert: JobAlert) =>
         alert.id === id ? { ...alert, isActive: !alert.isActive } : alert
       )
     );
   };
 
   const deleteAlert = (id: number) => {
-    setAlerts((prev) => prev.filter((alert) => alert.id !== id));
+    setAlerts((prev: JobAlert[]) => prev.filter((alert: JobAlert) => alert.id !== id));
   };
 
   // Show loading state while checking if profile exists
@@ -237,13 +268,30 @@ const ProfileClient = () => {
       {/* Header */}
       <div className="bg-white h-24">
         <div className="mx-auto max-w-7xl flex justify-start items-center py-4 gap-2">
-          <Image
-            src={profileLogo}
-            alt="profile logo"
-            width={60}
-            height={60}
-            className="rounded-full"
-          />
+          <div className="relative inline-block">
+            <Image
+              src={(profile as any)?.profilePictureUrl || profileLogo}
+              alt="Profile picture"
+              width={60}
+              height={60}
+              className="rounded-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={handleAvatarClick}
+              disabled={uploadingAvatar}
+              className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-[#5F5F5C] text-white shadow-sm hover:opacity-90 disabled:opacity-60"
+            >
+              <PencilSimpleIcon size={14} weight="fill" />
+            </button>
+            <input
+              ref={avatarInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+          </div>
           <div className="flex flex-col">
             <h3 className="text-sm font-normal text-primary-1">My profile</h3>
             <h3 className="text-2xl font-bold text-primary-1">
