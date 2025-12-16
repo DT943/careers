@@ -23,9 +23,10 @@ import EditSkillsModal from "./EditSkillsModal";
 import EditWorkHistoryModal from "./EditWorkHistoryModal";
 import EditEducationModal from "./EditEducationModal";
 import EditLanguagesModal from "./EditLanguagesModal";
+import AddAttachmentModal from "./AddAttachmentModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { getLanguageLevelLabel } from "@/utils";
-import { useUpdateProfile } from "@/hooks";
+import { useUpdateProfile, useDeleteAttachment, ProfileAttachment } from "@/hooks";
 
 type GeneralTabProps = {
   profile?: ApplicantProfile;
@@ -49,6 +50,9 @@ const GeneralTab = ({
   const [showWork, setShowWork] = useState(false);
   const [showEdu, setShowEdu] = useState(false);
   const [showLang, setShowLang] = useState(false);
+  const [showAddAttachment, setShowAddAttachment] = useState(false);
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null);
+  const { mutateAsync: deleteAttachment, isLoading: isDeletingAttachment } = useDeleteAttachment();
   const [skillsMode, setSkillsMode] = useState<"edit" | "add">("edit");
   const [workMode, setWorkMode] = useState<"edit" | "add">("edit");
   const [eduMode, setEduMode] = useState<"edit" | "add">("edit");
@@ -137,8 +141,61 @@ const GeneralTab = ({
         {/* <ResetPasswordButton /> */}
       </div>
 
-      {/* Resume */}
+      {/* Attachments */}
       <Card>
+        <CardHeader
+          title="Attachments"
+          icon={<FileTextIcon size={20} />}
+          rightNode={
+            <button
+              onClick={() => setShowAddAttachment(true)}
+              className="text-primary-1 hover:opacity-80"
+              aria-label="Add attachment"
+            >
+              <PlusCircleIcon size={18} />
+            </button>
+          }
+        />
+        {profile.attachments && profile.attachments.length > 0 ? (
+          <div className="space-y-3 w-full">
+            {profile.attachments.map((attachment) => (
+              <div
+                key={attachment.id}
+                className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50"
+              >
+                <div className="flex-1 min-w-0">
+                  <a
+                    href={attachment.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-sm font-medium text-primary-1 hover:underline truncate block"
+                  >
+                    {attachment.fileName}
+                  </a>
+                  {/* <p className="text-xs text-gray-500 mt-1">
+                    {attachment.fileCode}
+                  </p> */}
+                </div>
+                <button
+                  onClick={() => setDeletingAttachmentId(attachment.id)}
+                  className="ml-3 text-alert hover:opacity-80 shrink-0"
+                  aria-label="Delete attachment"
+                  disabled={isDeletingAttachment}
+                >
+                  <TrashIcon size={18} />
+                </button>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-sm text-gray-500 py-4">
+            No attachments yet. Click the + button to add one.
+          </div>
+        )}
+      </Card>
+
+      {/* Resume */}
+      {/* <Card>
         <CardHeader
           title="Resume"
           icon={<FileTextIcon size={20} />}
@@ -177,7 +234,7 @@ const GeneralTab = ({
             </div>
           )}
         </div>
-      </Card>
+      </Card> */}
 
       {/* Skills */}
       {profile.skills.length === 0 ? (
@@ -504,6 +561,28 @@ const GeneralTab = ({
         profile={profile}
         mode={langMode}
       />
+      <AddAttachmentModal
+        open={showAddAttachment}
+        onClose={() => setShowAddAttachment(false)}
+      />
+      {deletingAttachmentId !== null && (
+        <DeleteConfirmationModal
+          open={true}
+          onClose={() => setDeletingAttachmentId(null)}
+          onConfirm={async () => {
+            if (deletingAttachmentId !== null) {
+              try {
+                await deleteAttachment(deletingAttachmentId);
+                setDeletingAttachmentId(null);
+              } catch (error) {
+                console.error("Error deleting attachment:", error);
+              }
+            }
+          }}
+          title="Delete Attachment"
+          message="Are you sure you want to delete this attachment? This action cannot be undone."
+        />
+      )}
       <DeleteConfirmationModal
         open={deleteConfirm.open}
         onClose={() => setDeleteConfirm({ type: null, open: false })}

@@ -18,7 +18,7 @@ export {
 export { useTeams } from "./useTeams";
 export { useApplicantTeams } from "./useApplicantTeams";
 export { useJobOfferDetail } from "./useJobOfferDetail";
-export { useApplicantProfile, useUpdateProfile, useCreateProfile } from "./useProfile";
+export { useApplicantProfile, useUpdateProfile, useCreateProfile, useDeleteAttachment } from "./useProfile";
 export { useHasProfile } from "./useHasProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useSaveJobOffer, useUnsaveJobOffer } from "./useSavedJobActions";
@@ -46,6 +46,7 @@ export type {
   ProfileEducation,
   ProfileExperience,
   ProfileLanguage,
+  ProfileAttachment,
 } from "./useProfile";
 export type { SavedJobItem, SavedJobsResponse } from "./useSavedJobs";
 export type { JobAlert, CreateJobAlertData } from "./useJobAlerts";

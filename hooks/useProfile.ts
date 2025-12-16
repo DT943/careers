@@ -1,5 +1,7 @@
 import { useGetQuery, queryKeys, ApiResponse } from "./useApi";
 import { useUpdateMutation } from "./useApi";
+import { useMutation, useQueryClient } from "react-query";
+import { updateData } from "@/services/Api";
 
 export interface ProfileSkill {
   id: number;
@@ -34,6 +36,15 @@ export interface ProfileLanguage {
   level: number;
 }
 
+export interface ProfileAttachment {
+  id: number;
+  code: string;
+  fileCode: string;
+  fileUrl: string;
+  fileName: string;
+  type: number;
+}
+
 export interface ApplicantProfile {
   id: number;
   code: string;
@@ -56,10 +67,12 @@ export interface ApplicantProfile {
   educations: ProfileEducation[];
   experiences: ProfileExperience[];
   languages: ProfileLanguage[];
+  attachments?: ProfileAttachment[];
 }
 
 const ENDPOINTS = {
   profile: "/career/applicant/profile",
+  attachment: "/career/applicant/attachments/:id",
 };
 
 export const useApplicantProfile = (enabled = true) => {
@@ -87,5 +100,15 @@ export const useCreateProfile = () =>
     ENDPOINTS.profile,
     {},
     [queryKeys.auth.profile, queryKeys.auth.hasProfile]
+  );
+
+// Delete attachment by id
+import { useDeleteMutation } from "./useApi";
+
+export const useDeleteAttachment = () =>
+  useDeleteMutation<ApiResponse<null>>(
+    ENDPOINTS.attachment,
+    {},
+    [queryKeys.auth.profile]
   );
 
