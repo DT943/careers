@@ -119,7 +119,7 @@ const GeneralTab = ({
             <InfoRow label="Mobile Phone Number" value={profile.phoneNumber} />
             <InfoRow
               label="Date of birth"
-              value={profile.dateOfBirth.split("T")[0]}
+              value={profile.dateOfBirth?.split("T")[0] ?? ""}
             />
             <InfoRow label="Nationality" value={profile.nationality} />
             {profile.portfolioUrl && (

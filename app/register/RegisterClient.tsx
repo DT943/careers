@@ -7,10 +7,12 @@ import { ArrowLeftIcon } from "@phosphor-icons/react";
 
 import AuthCardContainer from "@/components/AuthCardContainer";
 import SignInCard from "./Components/SignInCard";
+import FirstTimeSignInCard from "./Components/FirstTimeSignInCard";
 import CreateAccountCard from "./Components/CreateAccountCard";
 import ForgotPasswordCard from "./Components/ForgetPasswordCard";
 import OtpVerificationCard from "./Components/OtpVerificationCard";
 import ResetPasswordCard from "./Components/ResetPasswordCard";
+import PasswordResetCompleteCard from "./Components/PasswordResetCompleteCard";
 
 import { OtpPurpose } from "@/types/Auth";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -18,12 +20,14 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 
 type AuthMode =
   | "SIGN_IN"
+  | "FIRST_TIME_SIGN_IN"
   | "CREATE_ACCOUNT"
   | "FORGOT_PASSWORD"
   | "OTP_FIRST_LOGIN"
   | "OTP_RESET_PASSWORD"
   | "RESET_FIRST_LOGIN"
-  | "RESET_AFTER_FORGOT";
+  | "RESET_AFTER_FORGOT"
+  | "PASSWORD_RESET_COMPLETE";
 
 const AUTH_TEXTS: Record<
   AuthMode,
@@ -104,6 +108,16 @@ const AUTH_TEXTS: Record<
       </p>
     ),
   },
+  FIRST_TIME_SIGN_IN: {
+    title: "Sign In",
+    subtitle: (
+      <p className=" pt-30">Welcome! Please enter the password we sent to your email.</p>
+    ),
+  },
+  PASSWORD_RESET_COMPLETE: {
+    title: "password reset complete",
+    subtitle: <p className="flex items-center justify-center text-center">Your password has been reset successfully</p>,
+  },
 };
 
 const RegisterPage = () => {
@@ -142,6 +156,27 @@ const RegisterPage = () => {
                 setFlowToken(token); // 🔹 هنا نخزن الـ token لفلو OTP/Reset
                 setMode("OTP_FIRST_LOGIN");
               }}
+              onRequireFirstTimeSignIn={({ email }) => {
+                setPendingEmail(email);
+                setMode("FIRST_TIME_SIGN_IN");
+              }}
+              onSwitchToCreateAccount={() => setMode("CREATE_ACCOUNT")}
+              onForgotPassword={() => setMode("FORGOT_PASSWORD")}
+            />
+          )}
+
+          {mode === "FIRST_TIME_SIGN_IN" && (
+            <FirstTimeSignInCard
+              defaultEmail={pendingEmail}
+              onLoggedIn={({ token, email, firstName, lastName }) => {
+                setAuth({ token, email, firstName, lastName });
+                router.push("/");
+              }}
+              onRequireFirstLoginOtp={({ email, token }) => {
+                setPendingEmail(email);
+                setFlowToken(token);
+                setMode("OTP_FIRST_LOGIN");
+              }}
               onSwitchToCreateAccount={() => setMode("CREATE_ACCOUNT")}
               onForgotPassword={() => setMode("FORGOT_PASSWORD")}
             />
@@ -152,8 +187,8 @@ const RegisterPage = () => {
               onAccountCreated={(email) => {
                 // Save email so user doesn't re-type it
                 setPendingEmail(email);
-                // Redirect to sign-in step with email pre-filled
-                setMode("SIGN_IN");
+                // Redirect to first-time sign-in step with email pre-filled
+                setMode("FIRST_TIME_SIGN_IN");
               }}
               onBackToSignIn={() => setMode("SIGN_IN")}
             />
@@ -206,9 +241,8 @@ const RegisterPage = () => {
               email={pendingEmail}
               purpose={"FIRST_LOGIN" as OtpPurpose}
               onCompleted={() => {
-                // first-login reset: user must sign-in with new password
-                // keep email so it stays pre-filled
-                setMode("SIGN_IN");
+                // first-login reset: show success card
+                setMode("PASSWORD_RESET_COMPLETE");
               }}
             />
           )}
@@ -221,12 +255,25 @@ const RegisterPage = () => {
                 console.log(data);
                 // if BE returns token + user, we auto-login
                 if (data?.token) {
-                  //   setAuth(data.token);
+                  setAuth({
+                    token: data.token,
+                    email: data.user?.email || pendingEmail || "",
+                    firstName: data.user?.firstName,
+                    lastName: data.user?.lastName,
+                  });
                   router.push("/");
                 } else {
-                  // fallback: go to sign-in
-                  setMode("SIGN_IN");
+                  // show success card
+                  setMode("PASSWORD_RESET_COMPLETE");
                 }
+              }}
+            />
+          )}
+
+          {mode === "PASSWORD_RESET_COMPLETE" && (
+            <PasswordResetCompleteCard
+              onReturnToSignIn={() => {
+                setMode("SIGN_IN");
               }}
             />
           )}

@@ -121,7 +121,7 @@ const ProfileClient = () => {
       fullName: `${profile.firstName} ${profile.lastName}`,
       location: `${profile.city}, ${profile.country}`,
       mobilePhone: profile.phoneNumber,
-      birthDate: profile.dateOfBirth.split("T")[0],
+      birthDate: profile.dateOfBirth?.split("T")[0] ?? "",
       nationality: profile.nationality,
       address: "",
       portfolioUrl: profile.portfolioUrl,

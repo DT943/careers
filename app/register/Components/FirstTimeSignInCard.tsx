@@ -1,15 +1,13 @@
 "use client";
 
 import { EnvelopeSimpleIcon, LockIcon } from "@phosphor-icons/react";
-import { FaGoogle } from "react-icons/fa6";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, SignInFormValues } from "@/validations/signInSchema";
 import { authService } from "@/services/Auth";
 import { SignInResponse } from "@/types/Auth";
-import GoogleAuthButton from "./GoogleAuthButton";
 
-type SignInCardProps = {
+type FirstTimeSignInCardProps = {
   defaultEmail?: string | null;
   onLoggedIn: (payload: {
     token: string;
@@ -18,16 +16,14 @@ type SignInCardProps = {
     lastName?: string;
   }) => void;
   onRequireFirstLoginOtp: (payload: { email: string; token: string }) => void;
-  onRequireFirstTimeSignIn?: (payload: { email: string }) => void;
   onSwitchToCreateAccount: () => void;
   onForgotPassword: () => void;
 };
 
-const SignInCard: React.FC<SignInCardProps> = ({
+const FirstTimeSignInCard: React.FC<FirstTimeSignInCardProps> = ({
   defaultEmail,
   onLoggedIn,
   onRequireFirstLoginOtp,
-  onRequireFirstTimeSignIn,
   onSwitchToCreateAccount,
   onForgotPassword,
 }) => {
@@ -50,25 +46,14 @@ const SignInCard: React.FC<SignInCardProps> = ({
       const res: SignInResponse = await authService.signIn(values);
 
       if (res.numberOfLogin === 0) {
-        // First login: check if we should show first-time sign-in card or OTP
-        if (onRequireFirstTimeSignIn) {
-          // Show first-time sign-in card with password from email message
-          onRequireFirstTimeSignIn({
-            email: res.email,
-          });
-        } else {
-          // Fallback to OTP flow
-          onRequireFirstLoginOtp({
-            email: res.email,
-            token: res.token,
-          });
-        }
+        // First login with one-time password:
+        // backend should send OTP email in this step
+        onRequireFirstLoginOtp({
+          email: res.email,
+          token: res.token,
+        });
         return;
       }
-
-      // if (!res.token || !res.firstName) {
-      //   throw new Error("Missing token or user in response");
-      // }
 
       // Normal login flow → go home
       onLoggedIn({
@@ -87,24 +72,11 @@ const SignInCard: React.FC<SignInCardProps> = ({
 
   return (
     <>
-      <GoogleAuthButton />
-      {/* <button
-        type="button"
-        className="w-full flex items-center justify-center gap-3 rounded-md border border-gray-200 bg-white py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 transition"
-      >
-        <span className="inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-semibold">
-          <FaGoogle size={20} color="#00253C" />
-        </span>
-        <span>Continue with Google</span>
-      </button> */}
-
-      <div className="flex items-center gap-4 my-4">
-        <span className="h-px flex-1 bg-gray-200" />
-        <span className="text-[11px] uppercase tracking-[0.25em] text-gray-400">
-          or
-        </span>
-        <span className="h-px flex-1 bg-gray-200" />
-      </div>
+      <p className="text-sm text-gray-600 mb-4 ">
+        We&apos;ve sent a password to{" "}
+        <span className="font-semibold">{defaultEmail}</span>. Enter it below to
+        sign in.
+      </p>
 
       <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-1">
@@ -145,23 +117,6 @@ const SignInCard: React.FC<SignInCardProps> = ({
           )}
         </div>
 
-        <div className="flex items-center justify-between text-sm text-primary-900">
-          <label className="inline-flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              className="h-3.5 w-3.5 rounded border-gray-300 text-[#054E72] focus:ring-[#054E72]"
-            />
-            <span>Remember me</span>
-          </label>
-          <button
-            type="button"
-            className="text-sm text-primary-1 hover:underline"
-            onClick={onForgotPassword}
-          >
-            Forgot password?
-          </button>
-        </div>
-
         {errors.root && (
           <p className="text-xs text-red-500 mt-1">{errors.root.message}</p>
         )}
@@ -174,19 +129,8 @@ const SignInCard: React.FC<SignInCardProps> = ({
           {isSubmitting ? "Signing in..." : "Sign In"}
         </button>
       </form>
-
-      <p className="mt-6 text-center text-sm text-black">
-        Don&apos;t have an account?{" "}
-        <button
-          type="button"
-          onClick={onSwitchToCreateAccount}
-          className="font-semibold text-[#054E72] hover:underline"
-        >
-          Create one
-        </button>
-      </p>
     </>
   );
 };
 
-export default SignInCard;
+export default FirstTimeSignInCard;
