@@ -39,7 +39,7 @@ const CreateAccountCard: React.FC<CreateAccountCardProps> = ({
     } catch (err: any) {
       setError("root", {
         type: "server",
-        message: err?.message || "Unable to create account",
+        message: err?.response?.data?.message || "Unable to create account",
       });
     }
   };

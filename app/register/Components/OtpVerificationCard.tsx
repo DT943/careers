@@ -46,7 +46,7 @@ const OtpVerificationCard: React.FC<OtpVerificationCardProps> = ({
     } catch (err: any) {
       setError("root", {
         type: "server",
-        message: err?.message || "Invalid OTP",
+        message: err?.response?.data?.message || "Invalid OTP",
       });
     }
   };

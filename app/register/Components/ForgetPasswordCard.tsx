@@ -45,7 +45,7 @@ const ForgotPasswordCard: React.FC<ForgotPasswordCardProps> = ({
     } catch (err: any) {
       setError("root", {
         type: "server",
-        message: err?.message || "Unable to send recovery email",
+        message: err?.response?.data?.message || "Unable to send recovery email",
       });
     }
   };

@@ -138,15 +138,14 @@ const CandidateProfile: React.FC<CandidateProfileProps> = ({
             <ContactRow label="Address 1" value={contactInfo.address} />
           )}
           {contactInfo.portfolioUrl && (
-            <ContactRow label="Link" value={contactInfo.portfolioUrl} isLink />
+            <ContactRow label="Link" value={contactInfo.portfolioUrl || "-"} isLink />
           )}
-          {contactInfo.linkedinUrl && (
+         
             <ContactRow
               label="LinkedIn Profile"
-              value={contactInfo.linkedinUrl}
+              value={contactInfo.linkedinUrl || "-"}
               isLink
             />
-          )}
         </div>
       </section>
 

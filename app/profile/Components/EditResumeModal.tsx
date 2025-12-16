@@ -19,7 +19,7 @@ const EditResumeModal = ({ open, onClose, profile }: Props) => {
   const handleSave = async () => {
     if (!file) return;
     const fd = new FormData();
-    fd.append("resumeFile", file);
+    fd.append("attachments[0].File", file);
     await updateProfile(fd);
     onClose();
   };

@@ -71,7 +71,7 @@ const SignInCard: React.FC<SignInCardProps> = ({
     } catch (err: any) {
       setError("root", {
         type: "server",
-        message: err?.message || "Unable to sign in",
+        message: err?.response?.data?.message || "Unable to sign in",
       });
     }
   };

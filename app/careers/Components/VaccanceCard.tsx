@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import { ClockIcon, MapPinIcon, SuitcaseIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useHasProfile } from "@/hooks";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 interface VacancyCardProps {
   title: any;
@@ -15,6 +17,9 @@ interface VacancyCardProps {
   posted: any;
   location: any;
 }
+
+type ConfirmMode = "login" | "profile" | null;
+
 const VacancyCard: React.FC<VacancyCardProps> = ({
   title,
   category,
@@ -32,15 +37,16 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
   );
   const hasProfile = !!hasProfileData?.result;
 
+  const [confirmMode, setConfirmMode] = useState<ConfirmMode>(null);
+
   const handleApply = () => {
     if (!token) {
-      router.push("/register");
+      setConfirmMode("login");
       return;
     }
 
-    // If user is logged in but has no profile yet, send them to profile page first
     if (!hasProfile && !hasProfileLoading) {
-      router.push("/profile");
+      setConfirmMode("profile");
       return;
     }
 
@@ -48,6 +54,22 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       `/job-application?jobId=${id}&title=${encodeURIComponent(title)}`
     );
   };
+
+  const handleConfirm = () => {
+    if (confirmMode === "login") {
+      router.push("/register");
+    } else if (confirmMode === "profile") {
+      router.push("/profile");
+    }
+    setConfirmMode(null);
+  };
+
+  const handleCancel = () => {
+    setConfirmMode(null);
+  };
+
+  const showLoginConfirm = confirmMode === "login";
+  const showProfileConfirm = confirmMode === "profile";
 
   return (
     <div className="bg-white p-6 rounded-lg w-full h-70">
@@ -82,6 +104,28 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       >
         {token && hasProfileLoading ? "Checking profile..." : "Apply Now"}
       </button>
+
+      {/* Login confirmation */}
+      <ConfirmDialog
+        open={showLoginConfirm}
+        title="Sign in required"
+        message="You must sign in to apply for jobs. Click OK to go to the sign in page."
+        confirmLabel="Sign in"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
+
+      {/* Profile creation confirmation */}
+      <ConfirmDialog
+        open={showProfileConfirm}
+        title="Create your profile"
+        message="You need to create your profile before applying. Click OK to go to your profile page."
+        confirmLabel="Create profile"
+        cancelLabel="Cancel"
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </div>
   );
 };

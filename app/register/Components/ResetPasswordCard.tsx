@@ -61,7 +61,7 @@ const ResetPasswordCard: React.FC<ResetPasswordCardProps> = ({
     } catch (err: any) {
       setError("root", {
         type: "server",
-        message: err?.message || "Unable to reset password",
+        message: err?.response?.data?.message || "Unable to reset password",
       });
     }
   };
