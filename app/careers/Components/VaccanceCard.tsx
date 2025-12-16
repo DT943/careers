@@ -1,8 +1,9 @@
- "use client";
+"use client";
 
 import { ClockIcon, MapPinIcon, SuitcaseIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useHasProfile } from "@/hooks";
 
 interface VacancyCardProps {
   title: any;
@@ -26,12 +27,23 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
 }) => {
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
+  const { data: hasProfileData, isLoading: hasProfileLoading } = useHasProfile(
+    !!token
+  );
+  const hasProfile = !!hasProfileData?.result;
 
   const handleApply = () => {
     if (!token) {
       router.push("/register");
       return;
     }
+
+    // If user is logged in but has no profile yet, send them to profile page first
+    if (!hasProfile && !hasProfileLoading) {
+      router.push("/profile");
+      return;
+    }
+
     router.push(
       `/job-application?jobId=${id}&title=${encodeURIComponent(title)}`
     );
@@ -51,8 +63,7 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       </div>
 
       <p className="text-sm font-normal text-primary-900 pt-3">
-        ID: {id} - 
-        Closing date: {closingDate}
+        ID: {id} - Closing date: {closingDate}
       </p>
       <p className="text-sm font-normal text-primary-900 pt-1 flex justify-start items-center gap-1">
         <SuitcaseIcon size={18} /> {type}
@@ -66,9 +77,10 @@ const VacancyCard: React.FC<VacancyCardProps> = ({
       </p>
       <button
         onClick={handleApply}
-        className="text-sm w-full mt-4 bg-primary-1 text-white py-2 px-4 rounded-lg p-1 hover:opacity-95"
+        disabled={!!token && hasProfileLoading}
+        className="text-sm w-full mt-4 bg-primary-1 text-white py-2 px-4 rounded-lg p-1 hover:opacity-95 disabled:opacity-60"
       >
-        Apply Now
+        {token && hasProfileLoading ? "Checking profile..." : "Apply Now"}
       </button>
     </div>
   );
