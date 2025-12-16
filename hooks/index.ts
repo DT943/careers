@@ -18,7 +18,8 @@ export {
 export { useTeams } from "./useTeams";
 export { useApplicantTeams } from "./useApplicantTeams";
 export { useJobOfferDetail } from "./useJobOfferDetail";
-export { useApplicantProfile, useUpdateProfile } from "./useProfile";
+export { useApplicantProfile, useUpdateProfile, useCreateProfile } from "./useProfile";
+export { useHasProfile } from "./useHasProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useSaveJobOffer, useUnsaveJobOffer } from "./useSavedJobActions";
 export { useJobAlerts, useCreateJobAlert } from "./useJobAlerts";

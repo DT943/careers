@@ -12,7 +12,9 @@ import {
   JobAlert as JobAlertApi,
   useJobApplications,
   JobApplicationItem,
+  useHasProfile,
 } from "@/hooks";
+import CreateProfileForm from "./Components/CreateProfileForm";
 import NewJobAlertModal from "./Components/NewJobAlertModal";
 import { useAuthStore } from "@/store/useAuthStore";
 import {
@@ -50,22 +52,29 @@ const ProfileClient = () => {
   const [showNewAlertModal, setShowNewAlertModal] = useState(false);
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
-  const { data, isLoading, error } = useApplicantProfile(!!token);
+  
+  // Check if user has a profile
+  // API returns result: 2 (or other number) if profile exists, 0 or falsy if not
+  const { data: hasProfileData, isLoading: hasProfileLoading } = useHasProfile(!!token);
+  const hasProfile = !!hasProfileData?.result;
+  
+  // Only fetch profile and related data if user has a profile
+  const { data, isLoading, error } = useApplicantProfile(!!token && hasProfile);
   const {
     data: savedJobsData,
     isLoading: savedLoading,
     error: savedError,
-  } = useSavedJobs(!!token);
+  } = useSavedJobs(!!token && hasProfile);
   const {
     data: alertsData,
     isLoading: alertsLoading,
     error: alertsError,
-  } = useJobAlerts({ languageCode: "en" }, !!token);
+  } = useJobAlerts({ languageCode: "en" }, !!token && hasProfile);
   const {
     data: applicationsData,
     isLoading: appsLoading,
     error: appsError,
-  } = useJobApplications(!!token);
+  } = useJobApplications(!!token && hasProfile);
 
   useEffect(() => {
     if (alertsData?.result) {
@@ -208,19 +217,19 @@ const ProfileClient = () => {
   const deleteAlert = (id: number) => {
     setAlerts((prev) => prev.filter((alert) => alert.id !== id));
   };
-  if (!token) {
+
+  // Show loading state while checking if profile exists
+  if (hasProfileLoading) {
     return (
       <div className="min-h-[83vh] flex items-center justify-center">
-        <div className="max-w-md text-center bg-white shadow-md rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-primary-900 mb-2">
-            Access denied
-          </h2>
-          <p className="text-sm text-primary-900">
-            You need to be logged in to view this page.
-          </p>
-        </div>
+        <div className="text-primary-900">Loading...</div>
       </div>
     );
+  }
+
+  // Show create profile form if user doesn't have a profile
+  if (!hasProfile) {
+    return <CreateProfileForm />;
   }
 
   return (

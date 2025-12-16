@@ -78,3 +78,13 @@ export const useUpdateProfile = () =>
     [queryKeys.auth.profile]
   );
 
+// Create profile via POST form-data
+import { usePostMutation } from "./useApi";
+
+export const useCreateProfile = () =>
+  usePostMutation<ApiResponse<ApplicantProfile>, FormData>(
+    ENDPOINTS.profile,
+    {},
+    [queryKeys.auth.profile, queryKeys.auth.hasProfile]
+  );
+

@@ -258,19 +258,7 @@ const JobApplicationClient = () => {
 
   return (
     <div className=" mx-auto p-6 min-h-[83vh]">
-      {!token ? (
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="max-w-md text-center bg-white shadow-md rounded-lg p-6">
-            <h2 className="text-xl font-semibold text-primary-900 mb-2">
-              Access denied
-            </h2>
-            <p className="text-sm text-primary-900">
-              You need to be logged in to apply for jobs.
-            </p>
-          </div>
-        </div>
-      ) : (
-        <>
+      <>
           {currentStep != 6 && (
             <>
               <div className="py-8 p-2 flex items-left justify-left lg:items-left lg:justify-left mx-auto max-w-7xl">
@@ -337,8 +325,7 @@ const JobApplicationClient = () => {
 
           {/* Step Content */}
           <div className="mx-auto max-w-5xl">{renderStep()}</div>
-        </>
-      )}
+      </>
     </div>
   );
 };

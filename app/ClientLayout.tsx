@@ -7,6 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "@/constant/Config";
 import QueryProvider from "@/providers/QueryProvider";
 import useDisableDevtool from "@/lib/useDisableDevtool";
+import { RouteGuard } from "@/components/RouteGuard";
 
 type ClientLayoutProps = {
   children: React.ReactNode;
@@ -18,9 +19,11 @@ const ClientLayout = ({ children }: ClientLayoutProps) => {
   return (
     <QueryProvider>
       <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <NavbarWrapper />
-        <main>{children}</main>
-        <FooterWrapper />
+        <RouteGuard>
+          <NavbarWrapper />
+          <main>{children}</main>
+          <FooterWrapper />
+        </RouteGuard>
       </GoogleOAuthProvider>
     </QueryProvider>
   );
