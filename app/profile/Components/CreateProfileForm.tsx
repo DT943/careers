@@ -347,7 +347,13 @@ const CreateProfileForm = () => {
               Upload your resume
             </h2>
             <div
-              className="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 bg-[#F5F5F4] hover:border-[#054E72]"
+              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 ${
+                !resumeFile
+                  ? "border-gray-300 bg-gray-50 hover:border-gray-400"
+                  : parseResume.isLoading
+                  ? " border-[#054E72] bg-blue-50"
+                  : "border-[#357B47] bg-green-50"
+              }`}
               onClick={() => fileInputRef.current?.click()}
             >
               <input
@@ -774,17 +780,24 @@ const CreateProfileForm = () => {
             </div>
           ))}
         </div>
-        <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
+        {/* <div className="w-full bg-gray-200 rounded-full h-1 mt-2">
           <div
             className="bg-primary-1 h-1 rounded-full transition-all duration-300"
             style={{
               width: `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`,
             }}
           ></div>
+        </div> */}
+
+        <div className="w-[90%] bg-gray-200 -mt-15 ml-10 rounded-full h-1">
+          <div
+            className="bg-primary-1 h-1 rounded-full transition-all duration-300"
+            style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+          ></div>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow-lg py-8 px-8 md:px-12">
+      <div className="bg-white rounded-lg shadow-lg py-8 px-8 md:px-12 mt-16">
         {/* Step content */}
         <div className="space-y-8">{renderStep()}</div>
 
@@ -802,7 +815,7 @@ const CreateProfileForm = () => {
           <button
             type="button"
             onClick={goNext}
-            disabled={isLoading}
+            disabled={isLoading || parseResume.isLoading || !resumeFile}
             className="inline-flex items-center gap-2 rounded-md bg-[#054E72] px-6 py-2 text-xs md:text-sm font-semibold text-white shadow-sm hover:opacity-95 disabled:opacity-60"
           >
             {currentStep === TOTAL_STEPS
