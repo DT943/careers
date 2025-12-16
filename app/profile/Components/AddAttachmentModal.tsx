@@ -67,32 +67,46 @@ const AddAttachmentModal = ({ open, onClose }: Props) => {
       footer={footer}
       maxWidthClass="max-w-2xl"
     >
-      <div className="space-y-3 text-sm text-primary-900">
-        <div>
-          <label className="block text-sm font-medium text-primary-900 mb-2">
-            Select files to upload
-          </label>
+      <div className="space-y-4 text-sm text-primary-900">
+        {/* Upload area styled similar to ResumeUploadStep */}
+        <div
+          className="border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 border-gray-300 bg-gray-50 hover:border-gray-400"
+          onClick={() => fileInputRef.current?.click()}
+        >
           <input
             type="file"
             ref={fileInputRef}
             accept=".pdf,.doc,.docx"
             multiple
             onChange={handleFileChange}
-            className="text-sm w-full"
+            className="hidden"
           />
+
+          {files.length === 0 ? (
+            <div className="text-gray-500">
+              <p className="text-sm font-medium mb-2">
+                Click to upload or drag and drop
+              </p>
+              <p className="text-xs font-normal">
+                PDF, DOC, DOCX · Max size 7MB per file
+              </p>
+            </div>
+          ) : (
+            <div className="text-primary-1">
+              <p className="text-sm font-medium mb-2">Selected file:</p>
+              <div className="flex flex-col items-center gap-1">
+                {files.map((file, idx) => (
+                  <span
+                    key={idx}
+                    className="text-xs text-primary-900 truncate max-w-full"
+                  >
+                    {file.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
-        {files.length > 0 && (
-          <div className="mt-4">
-            <p className="text-sm font-medium mb-2">Selected files:</p>
-            <ul className="list-disc list-inside space-y-1">
-              {files.map((file, idx) => (
-                <li key={idx} className="text-xs text-gray-600">
-                  {file.name}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
       </div>
     </ProfileModalShell>
   );
