@@ -6,16 +6,11 @@ import { ApplicationData } from "../../types/application";
 import ResumeUploadStep from "./Components/ResumeUploadStep";
 
 import { ArrowLeftIcon, CheckIcon } from "@phosphor-icons/react";
-import PersonalInformation from "./Components/PersonalInformation";
-import ProfessionalInformation from "./Components/ProfessionalInformation";
 import ReviewSubmit from "./Components/ReviewSubmit";
 import ApplicationSubmitted from "./Components/ApplicationSubmitted";
 import AdditionalQuestions from "./Components/AdditionalQuestions";
 import Link from "next/link";
-import {
-  useApplicantProfile,
-  useApplyToJob,
-} from "@/hooks";
+import { useApplicantProfile, useApplyToJob } from "@/hooks";
 import { useAuthStore } from "@/store/useAuthStore";
 
 const JobApplicationClient = () => {
@@ -32,6 +27,7 @@ const JobApplicationClient = () => {
     resume: null,
     resumeUrl: "",
     resumeCode: "",
+    selectedAttachmentId: undefined,
     skills: [],
     additionalDocuments: [],
     portfolioUrl: "",
@@ -81,52 +77,6 @@ const JobApplicationClient = () => {
     }
   }, [jobIdParam]);
 
-  useEffect(() => {
-    if (profile) {
-      setApplicationData((prev) => ({
-        ...prev,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email || "",
-        country: profile.country,
-        city: profile.city,
-        phoneNumber: profile.phoneNumber,
-        nationality: profile.nationality,
-        dateOfBirth: profile.dateOfBirth?.split("T")[0] ?? "",
-        linkedinUrl: profile.linkedInUrl,
-        portfolioUrl: profile.portfolioUrl,
-        resumeUrl: profile.resumeUrl ?? prev.resumeUrl,
-        jobOfferId: prev.jobOfferId || (jobIdParam ? Number(jobIdParam) : undefined),
-        positions:
-          profile.experiences?.map((exp) => ({
-            companyName: exp.company,
-            jobTitle: exp.title,
-            startDate: exp.startDate?.split("T")[0] ?? "",
-            endDate: exp.isCurrentRole ? "" : exp.startDate?.split("T")[0] ?? "",
-            currentlyWorkingHere: exp.isCurrentRole,
-            description: exp.responsibilities ?? "",
-          })) ?? prev.positions,
-        educationHistory:
-          profile.educations?.map((edu) => ({
-            institutionName: edu.institution,
-            degree: edu.degree,
-            fieldOfStudy: edu.fieldOfStudy,
-            startDate: edu.startDate?.split("T")[0] ?? "",
-            endDate: edu.endDate?.split("T")[0] ?? "",
-            currentlyWorkingHere: false,
-          })) ?? prev.educationHistory,
-        skills: profile.skills?.map((s) => s.name) ?? prev.skills,
-        languages:
-          profile.languages?.map((lang) => ({
-            name: lang.name,
-            level: lang.level,
-          })) ?? prev.languages,
-        step: 4,
-      }));
-      setCurrentStep(4);
-    }
-  }, [profile, jobIdParam]);
-
   const nextStep = () => {
     setCurrentStep((prev) => prev + 1);
     updateApplicationData({ step: currentStep + 1 });
@@ -146,28 +96,10 @@ const JobApplicationClient = () => {
             updateData={updateApplicationData}
             nextStep={nextStep}
             prevStep={prevStep}
+            attachments={profile?.attachments ?? []}
           />
         );
       case 2:
-        return (
-          <PersonalInformation
-            data={applicationData}
-            updateData={updateApplicationData}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        );
-      case 3:
-        return (
-          <ProfessionalInformation
-            data={applicationData}
-            updateData={updateApplicationData}
-            nextStep={nextStep}
-            prevStep={prevStep}
-          />
-        );
-
-      case 4:
         return (
           <AdditionalQuestions
             data={applicationData}
@@ -176,7 +108,7 @@ const JobApplicationClient = () => {
             prevStep={prevStep}
           />
         );
-      case 5:
+      case 3:
         return (
           <ReviewSubmit
             data={applicationData}
@@ -185,9 +117,10 @@ const JobApplicationClient = () => {
             prevStep={prevStep}
             onSubmit={handleSubmit}
             applying={applying}
+            attachments={profile?.attachments ?? []}
           />
         );
-      case 6:
+      case 4:
         return <ApplicationSubmitted />;
       default:
         return (
@@ -196,135 +129,108 @@ const JobApplicationClient = () => {
             updateData={updateApplicationData}
             nextStep={nextStep}
             prevStep={prevStep}
-            />
+          />
         );
     }
   };
 
   const handleSubmit = async () => {
     // Ensure jobOfferId is always available from URL params if missing
-    const finalJobOfferId = applicationData.jobOfferId || (jobIdParam ? Number(jobIdParam) : undefined);
-    
+    const finalJobOfferId =
+      applicationData.jobOfferId ||
+      (jobIdParam ? Number(jobIdParam) : undefined);
+
     if (!finalJobOfferId) {
-      console.error("Missing jobOfferId. Please ensure you're applying from a job listing.");
+      console.error(
+        "Missing jobOfferId. Please ensure you're applying from a job listing."
+      );
       alert("Missing job information. Please apply from a job listing page.");
       return;
     }
 
     const payload = {
-      jobOfferId: finalJobOfferId,
-      jobTitle: applicationData.jobTitle,
-      resumeCode: applicationData.resumeCode,
-      resumeUrl: applicationData.resumeUrl,
-      firstName: applicationData.firstName,
-      lastName: applicationData.lastName,
-      countryPhoneCode: applicationData.countryPhoneCode,
-      phoneNumber: applicationData.phoneNumber,
-      country: applicationData.country,
-      city: applicationData.city,
-      nationality: applicationData.nationality,
-      dateOfBirth: applicationData.dateOfBirth,
-      linkedInUrl: applicationData.linkedinUrl,
-      portfolioUrl: applicationData.portfolioUrl,
-      yearsOfExperience: applicationData.yearsOfExperience,
+      JobOfferId: finalJobOfferId,
+      ResumeCode: applicationData.resumeCode,
+      HasWorkedAtFlyChamBefore: applicationData.hasWorkedBefore,
+      HasRelativesAtFlyCham: applicationData.hasRelatives,
+      WhyWantToJoinFlyCham: applicationData.whyJoin,
+      HowDidYouHearAboutJob: applicationData.howHear,
+      YearsOfExperience: applicationData.yearsOfExperience,
       whenCanYouStart: applicationData.whenCanYouStart,
-      expectedSalary: applicationData.expectedSalary,
-      hasWorkedAtFlyChamBefore: applicationData.hasWorkedBefore,
-      hasRelativesAtFlyCham: applicationData.hasRelatives,
-      whyWantToJoinFlyCham: applicationData.whyJoin,
-      howDidYouHearAboutJob: applicationData.howHear,
-      skills: applicationData.skills,
-      experiences: applicationData.positions.map((p) => ({
-        title: p.jobTitle,
-        company: p.companyName,
-        startDate: p.startDate,
-        endDate: p.endDate,
-        isCurrentRole: p.currentlyWorkingHere,
-        responsibilities: p.description,
-      })),
-      educations: applicationData.educationHistory.map((e) => ({
-        degree: e.degree,
-        institution: e.institutionName,
-        fieldOfStudy: e.fieldOfStudy,
-        startDate: e.startDate,
-        endDate: e.endDate,
-        grade: "",
-      })),
+      ExpectedSalary: applicationData.expectedSalary,
     };
 
     await applyToJob(payload);
-    setCurrentStep(6);
+    setCurrentStep(4);
   };
 
   return (
     <div className=" mx-auto p-6 min-h-[83vh]">
       <>
-          {currentStep != 6 && (
-            <>
-              <div className="py-8 p-2 flex items-left justify-left lg:items-left lg:justify-left mx-auto max-w-7xl">
-                {" "}
-                <Link href="/jobs">
-                  <h5 className=" flex gap-1 items-center text-[#00253C] hover:text-[#3A5A6B] text-sm font-medium">
-                    <ArrowLeftIcon size={18} /> Back to all jobs
-                  </h5>
-                </Link>
-              </div>
-
-              <div className="py-2 p-2 flex justify-left items-left mx-auto max-w-7xl">
-                <h5 className=" flex gap-1 items-center text-primary-1 lg:text-3xl font-normal">
-                  You are applying for{" "}
-                  <span className="font-bold">{jobTitleParam}</span>
+        {currentStep !== 4 && (
+          <>
+            <div className="py-8 p-2 flex items-left justify-left lg:items-left lg:justify-left mx-auto max-w-7xl">
+              {" "}
+              <Link href="/jobs">
+                <h5 className=" flex gap-1 items-center text-[#00253C] hover:text-[#3A5A6B] text-sm font-medium">
+                  <ArrowLeftIcon size={18} /> Back to all jobs
                 </h5>
-              </div>
+              </Link>
+            </div>
 
-              {/* Progress Bar */}
+            <div className="py-2 p-2 flex justify-left items-left mx-auto max-w-7xl">
+              <h5 className=" flex gap-1 items-center text-primary-1 lg:text-3xl font-normal">
+                You are applying for{" "}
+                <span className="font-bold">{jobTitleParam}</span>
+              </h5>
+            </div>
 
-              <div className="py-8 mb-12 mx-auto max-w-5xl">
-                <div className="flex justify-between items-center mb-2">
-                  {[1, 2, 3, 4, 5].map((step) => (
+            {/* Progress Bar */}
+
+            <div className="py-8 mb-12 mx-auto max-w-5xl">
+              <div className="flex justify-between items-center mb-2">
+                {[1, 2, 3].map((step) => (
+                  <div
+                    key={step}
+                    className={`flex flex-col justify-center items-center ${
+                      step < currentStep
+                        ? "text-primary-1"
+                        : step === currentStep
+                        ? "text-primary-1"
+                        : "text-gray-400"
+                    }`}
+                  >
                     <div
-                      key={step}
-                      className={`flex flex-col justify-center items-center ${
+                      className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
                         step < currentStep
-                          ? "text-primary-1"
+                          ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
                           : step === currentStep
-                          ? "text-primary-1"
-                          : "text-gray-400"
+                          ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
+                          : "border-gray-300 bg-gray-300 text-gray-500"
                       }`}
                     >
-                      <div
-                        className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                          step < currentStep
-                            ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
-                            : step === currentStep
-                            ? "bg-primary-1 outline-2 outline-[#054E72] text-white"
-                            : "border-gray-300 bg-gray-300 text-gray-500"
-                        }`}
-                      >
-                        {step < currentStep ? <CheckIcon size={18} /> : step}
-                      </div>
-                      <span className="text-xs lg:max-w-sm max-w-10 absolute mt-24 lg:mt-18 font-medium">
-                        {step === 1 && "Select your resume"}
-                        {step === 2 && "Personal information"}
-                        {step === 3 && "Professional information"}
-                        {step === 4 && "Additional Questions"}
-                        {step === 5 && "ReView & Submit"}
-                      </span>
+                      {step < currentStep ? <CheckIcon size={18} /> : step}
                     </div>
-                  ))}
-                </div>
-                <div className="w-[95%] bg-gray-200 -mt-6 ml-5 rounded-full h-1">
-                  <div
-                    className="bg-primary-1 h-1 rounded-full transition-all duration-300"
-                    style={{ width: `${((currentStep - 1) / 4) * 100}%` }}
-                  ></div>
-                </div>
+                    <span className="text-xs lg:max-w-sm max-w-10 absolute mt-24 lg:mt-18 font-medium">
+                      {step === 1 && "Select your resume"}
+                      {step === 2 && "Additional Questions"}
+                      {step === 3 && "Review & Submit"}
+                    </span>
+                  </div>
+                ))}
               </div>
-            </>
-          )}
+              <div className="w-[95%] bg-gray-200 -mt-6 ml-5 rounded-full h-1">
+                <div
+                  className="bg-primary-1 h-1 rounded-full transition-all duration-300"
+                  style={{ width: `${((currentStep - 1) / 2) * 100}%` }}
+                ></div>
+              </div>
+            </div>
+          </>
+        )}
 
-          {/* Step Content */}
-          <div className="mx-auto max-w-5xl">{renderStep()}</div>
+        {/* Step Content */}
+        <div className="mx-auto max-w-5xl">{renderStep()}</div>
       </>
     </div>
   );

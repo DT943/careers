@@ -26,6 +26,7 @@ export interface ApplicationData {
   resume: File | null;
   resumeUrl: string;
   resumeCode?: string;
+  selectedAttachmentId?: number;
   skills: string[];
   additionalDocuments: File[];
   portfolioUrl: string;

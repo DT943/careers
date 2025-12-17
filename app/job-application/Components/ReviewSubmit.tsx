@@ -1,13 +1,15 @@
 "use client";
 import { ApplicationStepProps } from "@/types/application";
 import { ArrowLeftIcon, ArrowRightIcon } from "@phosphor-icons/react";
-import PersonalInformationPreview from "./PersonalInformationPreview";
 import AdditionalQuestionsPreview from "./AdditionalQuestionsPreview";
 import { useMemo } from "react";
+import type { ProfileAttachment } from "@/hooks";
+import ResumeUploadPreview from "./ResumeUploadPreview";
 
 type ReviewSubmitProps = ApplicationStepProps & {
   onSubmit: () => void;
   applying?: boolean;
+  attachments?: ProfileAttachment[];
 };
 
 const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
@@ -15,25 +17,22 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
   prevStep,
   onSubmit,
   applying,
+  attachments = [],
 }: ReviewSubmitProps) => {
-  const personalInfo = useMemo(
-    () => ({
-      fullName: `${data.firstName} ${data.lastName}`,
-      email: data.email,
-      phone: `${data.countryPhoneCode ? `${data.countryPhoneCode} ` : ""}${data.phoneNumber}`,
-      location: `${data.city}, ${data.country}`,
-      nationality: data.nationality,
-      birthDate: data.dateOfBirth,
-      linkedin: data.linkedinUrl,
-      portfolio: data.portfolioUrl,
-    }),
-    [data]
-  );
-
   const additionalQuestions = useMemo(
     () => ({
-      worked: data.hasWorkedBefore === undefined ? "—" : data.hasWorkedBefore ? "Yes" : "No",
-      relative: data.hasRelatives === undefined ? "—" : data.hasRelatives ? "Yes" : "No",
+      worked:
+        data.hasWorkedBefore === undefined
+          ? "—"
+          : data.hasWorkedBefore
+          ? "Yes"
+          : "No",
+      relative:
+        data.hasRelatives === undefined
+          ? "—"
+          : data.hasRelatives
+          ? "Yes"
+          : "No",
       here: data.howHear || "—",
       experience: data.yearsOfExperience || "—",
       startDate: data.whenCanYouStart || "—",
@@ -41,6 +40,14 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
       description: data.whyJoin || "—",
     }),
     [data]
+  );
+
+  const selectedAttachment = useMemo(
+    () =>
+      attachments.find(
+        (attachment) => attachment.id === data.selectedAttachmentId
+      ),
+    [attachments, data.selectedAttachmentId]
   );
 
   return (
@@ -51,19 +58,19 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
         </h1>
         <p className="text-primary-900 text-sm max-w-2xl">
           Please review the details below before submitting your application to
-          FlyCham. You can edit any section if something needs to be updated.
+          FlyCham.
         </p>
       </div>
 
       <div className="flex flex-col gap-y-6">
-        <PersonalInformationPreview personalInfo={personalInfo} />
+        <ResumeUploadPreview selectedAttachment={selectedAttachment} />
         <AdditionalQuestionsPreview additionalQuestions={additionalQuestions} />
       </div>
 
       <div className="flex justify-between mt-8">
         <button
           onClick={prevStep}
-          className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold border border-[#D4D4D2]/50 text-primary-900 hover:bg-[#F5F5F4]`}
+          className="flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold border border-[#D4D4D2]/50 text-primary-900 hover:bg-[#F5F5F4]"
         >
           <ArrowLeftIcon size={20} /> Previous
         </button>
@@ -71,9 +78,10 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
         <button
           onClick={onSubmit}
           disabled={applying}
-          className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg border border-primary-1 font-semibold bg-primary-1 text-white hover:opacity-95 disabled:opacity-50`}
+          className="flex justify-between items-center gap-1 px-8 py-3 rounded-lg border border-primary-1 font-semibold bg-primary-1 text-white hover:opacity-95 disabled:opacity-50"
         >
-          {applying ? "Submitting..." : "Submit application"} <ArrowRightIcon size={20} />
+          {applying ? "Submitting..." : "Submit application"}{" "}
+          <ArrowRightIcon size={20} />
         </button>
       </div>
     </div>

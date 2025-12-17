@@ -27,11 +27,13 @@ const ApplicationSubmitted = () => {
             See more open positions
           </button>
         </Link>
-        <button
-          className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold bg-primary-1 text-white hover:bg-primary-700 hover:opacity-95`}
-        >
-          View Application
-        </button>
+        <Link href={"/profile?tab=applications"}>
+          <button
+            className={`flex justify-between items-center gap-1 px-8 py-3 rounded-lg font-semibold bg-primary-1 text-white hover:bg-primary-700 hover:opacity-95`}
+          >
+            View application
+          </button>
+        </Link>
       </div>
     </div>
   );

@@ -30,6 +30,7 @@ import GeneralTab from "./Components/GeneralTab";
 import AlertsTab from "./Components/AlertsTab";
 import SavedJobsTab from "./Components/SavedJobsTab";
 import ApplicationsTab from "./Components/ApplicationsTab";
+import { useSearchParams } from "next/navigation";
 
 type JobAlert = {
   id: number;
@@ -48,7 +49,9 @@ type JobAlert = {
 const initialAlerts: JobAlert[] = [];
 const ProfileClient = () => {
   const { token } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("general");
+  const searchParams = useSearchParams();
+  const initialTab = searchParams.get("tab") || "general";
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [tabLoading, setTabLoading] = useState(false);
   const [showNewAlertModal, setShowNewAlertModal] = useState(false);
 

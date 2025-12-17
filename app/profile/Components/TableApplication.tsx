@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ModalCustom from "./WithdrawModal";
+import { useWithdrawApplication } from "@/hooks";
 
 export type JobApplicationRow = {
   id: number;
@@ -23,10 +24,17 @@ const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
 }) => {
   const [openForId, setOpenForId] = useState<number | null>(null);
   const [withdrawnIds, setWithdrawnIds] = useState<Set<number>>(new Set());
+  const { mutateAsync: withdrawApplicationApi, isLoading: withdrawing } =
+    useWithdrawApplication();
 
-  const withdrawApplication = (id: number) => {
-    setWithdrawnIds((prev) => new Set(prev).add(id));
-    setOpenForId(null);
+  const withdrawApplication = async (id: number, note: string) => {
+    try {
+      await withdrawApplicationApi({ jobApplicationId: id, note });
+      setWithdrawnIds((prev) => new Set(prev).add(id));
+      setOpenForId(null);
+    } catch (err) {
+      console.error("Failed to withdraw application", err);
+    }
   };
 
   return (
@@ -134,7 +142,10 @@ const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
                       <ModalCustom
                         isOpen={openForId === application.id}
                         onCancel={() => setOpenForId(null)}
-                        onWithdraw={() => withdrawApplication(application.id)}
+                        onWithdraw={(note: string) =>
+                          withdrawApplication(application.id, note)
+                        }
+                        loading={withdrawing}
                       />
                     </td>
                   </tr>

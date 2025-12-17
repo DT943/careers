@@ -23,7 +23,7 @@ export { useHasProfile } from "./useHasProfile";
 export { useSavedJobs } from "./useSavedJobs";
 export { useSaveJobOffer, useUnsaveJobOffer } from "./useSavedJobActions";
 export { useJobAlerts, useCreateJobAlert } from "./useJobAlerts";
-export { useJobApplications } from "./useJobApplications";
+export { useJobApplications, useWithdrawApplication } from "./useJobApplications";
 export { useParseResume, useApplyToJob } from "./useJobApplication";
 export { usePositionTitles } from "./usePositionTitles";
 
