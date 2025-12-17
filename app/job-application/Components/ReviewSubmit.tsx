@@ -62,15 +62,16 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
           Please review the details below before submitting your application to
           FlyCham.
         </p>
-        {submitError && (
-          <p className="mt-4 text-sm text-red-500">{submitError}</p>
-        )}
       </div>
 
       <div className="flex flex-col gap-y-6">
         <ResumeUploadPreview selectedAttachment={selectedAttachment} />
         <AdditionalQuestionsPreview additionalQuestions={additionalQuestions} />
       </div>
+
+      {submitError && (
+        <p className="mt-6 text-sm text-red-500 text-center">{submitError}</p>
+      )}
 
       <div className="flex justify-between mt-8">
         <button

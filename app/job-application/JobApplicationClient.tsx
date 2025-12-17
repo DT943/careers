@@ -158,9 +158,9 @@ const JobApplicationClient = () => {
       JobOfferId: finalJobOfferId,
       ResumeCode: applicationData.resumeCode || "",
       HasWorkedAtFlyChamBefore:
-        (applicationData.hasWorkedBefore as boolean | undefined) as any,
+        applicationData.hasWorkedBefore as boolean,
       HasRelativesAtFlyCham:
-        (applicationData.hasRelatives as boolean | undefined) as any,
+        applicationData.hasRelatives as boolean,
       WhyWantToJoinFlyCham: applicationData.whyJoin,
       HowDidYouHearAboutJob: applicationData.howHear,
       YearsOfExperience: applicationData.yearsOfExperience,
@@ -182,8 +182,15 @@ const JobApplicationClient = () => {
 
     setSubmitError(null);
 
-    await applyToJob(result.data);
-    setCurrentStep(4);
+    try {
+      await applyToJob(result.data);
+      setCurrentStep(4);
+    } catch (err: any) {
+      console.error("Failed to submit job application:", err);
+      setSubmitError(
+        err?.response?.data?.message || "Unable to submit application"
+      );
+    }
   };
 
   return (
