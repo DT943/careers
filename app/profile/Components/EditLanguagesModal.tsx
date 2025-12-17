@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
 import { LanguageLevel } from "@/enums";
 import { getLanguageLevelLabel } from "@/utils";
 import { PlusCircleIcon, TrashIcon } from "@phosphor-icons/react";
+import { LANGUAGES } from "@/constants/languages";
 
 type Props = {
   open: boolean;
@@ -28,6 +29,17 @@ const EditLanguagesModal = ({
       ? profile.languages.map((l) => ({ name: l.name, level: l.level }))
       : [{ name: "", level: LanguageLevel.Beginner }]
   );
+
+  // Include existing profile languages in the dropdown options
+  const languageOptions = useMemo(() => {
+    const set = new Set(LANGUAGES);
+    profile.languages.forEach((l) => {
+      if (l.name) {
+        set.add(l.name);
+      }
+    });
+    return Array.from(set);
+  }, [profile.languages]);
 
   // Reset state when mode or open changes
   useEffect(() => {
@@ -128,12 +140,18 @@ const EditLanguagesModal = ({
       <div className="space-y-3">
         {languages.map((lang, idx) => (
           <div key={idx} className="grid grid-cols-12 gap-3 items-center">
-            <input
+            <select
               value={lang.name}
               onChange={(e) => handleChange(idx, "name", e.target.value)}
-              placeholder="Language"
               className="col-span-8 rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
-            />
+            >
+              <option value="">Select language</option>
+              {languageOptions.map((name) => (
+                <option key={name} value={name}>
+                  {name}
+                </option>
+              ))}
+            </select>
             <select
               value={lang.level}
               onChange={(e) => handleChange(idx, "level", e.target.value)}

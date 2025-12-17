@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import { useCreateProfile, useParseResume } from "@/hooks";
 import { LanguageLevel } from "@/enums";
 import { getLanguageLevelLabel } from "@/utils";
+import { LANGUAGES } from "@/constants/languages";
 import {
   PlusCircleIcon,
   TrashIcon,
@@ -790,14 +791,20 @@ const CreateProfileForm = () => {
           <div className="space-y-3">
             {languages.map((lang, idx) => (
               <div key={idx} className="grid grid-cols-12 gap-3 items-center">
-                <input
+                <select
                   value={lang.name}
                   onChange={(e) =>
                     handleLanguageChange(idx, "name", e.target.value)
                   }
-                  placeholder="Language"
                   className="col-span-8 rounded-md border border-gray-200 px-3 py-2 text-sm focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
-                />
+                >
+                  <option value="">Select language</option>
+                  {LANGUAGES.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                </select>
                 <select
                   value={lang.level}
                   onChange={(e) =>

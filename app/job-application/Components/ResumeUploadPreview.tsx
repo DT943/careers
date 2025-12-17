@@ -14,7 +14,7 @@ const ResumeUploadPreview: React.FC<ResumeUploadPreviewProps> = ({
 }) => {
   return (
     <CustomPreviewInformationContainer title={"Resume"}>
-      <div className="space-y-3 p-4 grid grid-cols-2">
+      <div className="space-y-3 p-4 grid">
         <div className="flex items-start space-x-2">
           <div className="flex flex-row items-center justify-center gap-x-4">
             <span className="bg-[#054E72]/10 rounded-lg p-2">
