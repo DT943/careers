@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -9,6 +10,7 @@ import {
 import { authService } from "@/services/Auth";
 import { OtpPurpose, AuthUser } from "@/types/Auth";
 import { useAuthStore } from "@/store/useAuthStore";
+import { EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 
 type ResetPasswordCardProps = {
   email: string | null;
@@ -36,8 +38,10 @@ const ResetPasswordCard: React.FC<ResetPasswordCardProps> = ({
     },
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const flowToken = useAuthStore((state) => state.flowToken);
-  console.log(errors)
   const onSubmit = async (values: ResetPasswordFormValues) => {
     try {
       if (!email) {
@@ -77,12 +81,22 @@ const ResetPasswordCard: React.FC<ResetPasswordCardProps> = ({
           <label className="block text-sm font-normal text-primary-900">
             New Password
           </label>
-          <input
-            type="password"
-            className="w-full rounded-md border border-gray-200 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#054E72] focus:border-[#054E72]"
-            placeholder="Enter new password"
-            {...register("password")}
-          />
+          <div className="flex items-center gap-3 rounded-md border border-gray-200 px-3 py-2.5 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
+            <input
+              type={showPassword ? "text" : "password"}
+              className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
+              placeholder="Enter new password"
+              {...register("password")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="text-gray-400 hover:text-gray-700 focus:outline-none"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeSlashIcon size={18} /> : <EyeIcon size={18} />}
+            </button>
+          </div>
           {errors.password && (
             <p className="text-xs text-red-500 mt-1">
               {errors.password.message}
@@ -94,12 +108,22 @@ const ResetPasswordCard: React.FC<ResetPasswordCardProps> = ({
           <label className="block text-sm font-normal text-primary-900">
             Confirm Password
           </label>
-          <input
-            type="password"
-            className="w-full rounded-md border border-gray-200 px-3 py-2.5 text-sm text-gray-700 placeholder-gray-400 outline-none focus:ring-1 focus:ring-[#054E72] focus:border-[#054E72]"
-            placeholder="Re-enter new password"
-            {...register("confirmPassword")}
-          />
+          <div className="flex items-center gap-3 rounded-md border border-gray-200 px-3 py-2.5 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
+              placeholder="Re-enter new password"
+              {...register("confirmPassword")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              className="text-gray-400 hover:text-gray-700 focus:outline-none"
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+            >
+              {showConfirmPassword ? <EyeSlashIcon size={18} /> : <EyeIcon size={18} />}
+            </button>
+          </div>
           {errors.confirmPassword && (
             <p className="text-xs text-red-500 mt-1">
               {errors.confirmPassword.message}

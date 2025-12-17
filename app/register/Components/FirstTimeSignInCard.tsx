@@ -1,6 +1,7 @@
 "use client";
 
-import { EnvelopeSimpleIcon, LockIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+import { EnvelopeSimpleIcon, LockIcon, EyeIcon, EyeSlashIcon } from "@phosphor-icons/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, SignInFormValues } from "@/validations/signInSchema";
@@ -27,6 +28,7 @@ const FirstTimeSignInCard: React.FC<FirstTimeSignInCardProps> = ({
   onSwitchToCreateAccount,
   onForgotPassword,
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
   const {
     register,
     handleSubmit,
@@ -104,11 +106,19 @@ const FirstTimeSignInCard: React.FC<FirstTimeSignInCardProps> = ({
           <div className="flex items-center gap-3 rounded-md border border-gray-200 px-3 py-2.5 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
             <LockIcon color="#4a5565" size={18} />
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               placeholder="Enter your password"
               className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               {...register("password")}
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="text-gray-400 hover:text-gray-700 focus:outline-none"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeSlashIcon size={18} /> : <EyeIcon size={18} />}
+            </button>
           </div>
           {errors.password && (
             <p className="text-xs text-red-500 mt-1">
