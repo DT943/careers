@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ModalCustom from "./WithdrawModal";
 import { useWithdrawApplication } from "@/hooks";
+import Link from "next/link";
 
 export type JobApplicationRow = {
   id: number;
+  jobOfferCode: string;
   position: string;
   status: string;
   location: string;
@@ -67,7 +69,10 @@ const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
             {loading && (
               <>
                 {[1, 2, 3].map((idx) => (
-                  <tr key={idx} className="border-b border-gray-200 animate-pulse">
+                  <tr
+                    key={idx}
+                    className="border-b border-gray-200 animate-pulse"
+                  >
                     <td className="px-6 py-4">
                       <div className="h-4 w-32 bg-gray-200 rounded" />
                     </td>
@@ -121,11 +126,17 @@ const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
                   application.status.toLowerCase() === "withdrawn";
                 return (
                   <tr key={application.id} className="border-b border-gray-200">
-                    <td className="px-6 py-4 text-sm">{application.position}</td>
+                    <td className="px-6 py-4 text-sm underline">
+                      <Link href={`/jobs/${application.jobOfferCode}`}>
+                        {application.position}
+                      </Link>
+                    </td>
                     <td className="px-6 py-4 text-sm">
                       {isWithdrawn ? "Withdrawn" : application.status}
                     </td>
-                    <td className="px-6 py-4 text-sm">{application.location}</td>
+                    <td className="px-6 py-4 text-sm">
+                      {application.location}
+                    </td>
                     <td className="px-6 py-4 text-sm">{application.team}</td>
                     <td className="px-6 py-4 text-sm">
                       {application.applicationDate}

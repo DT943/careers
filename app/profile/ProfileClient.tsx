@@ -160,6 +160,7 @@ const ProfileClient = () => {
     const items = applicationsData?.result ?? [];
     return items.map((item: JobApplicationItem) => ({
       id: item.id,
+      jobOfferCode: item.jobOfferCode,
       position: item.jobPosition,
       status: getApplicationStatusLabel(item.status),
       location: item.userProfile.city || "—",
