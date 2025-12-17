@@ -146,7 +146,7 @@ const NavbarWrapper = () => {
                 <li>
                   <Link
                     className="flex gap-1 justify-between items-center transition hover:text-[#C2B48B]"
-                    href="https://flycham.com"
+                    href="https://flycham.com/about-fly-cham"
                     target="_blank"
                   >
                     {" "}
@@ -185,7 +185,7 @@ const NavbarWrapper = () => {
               Talent Community
             </Link>
             <Link
-              href="https://flycham.com"
+              href="https://flycham.com/about-fly-cham"
               target="_blank"
               className="block text-sm hover:text-[#C2B48B]"
               onClick={() => setMobileOpen(false)}
