@@ -172,10 +172,22 @@ const JobApplicationClient = () => {
 
     if (!result.success) {
       const firstIssue = result.error.issues[0];
-      setSubmitError(
-        firstIssue?.message ||
-          "Please complete all required fields before submitting."
-      );
+      const field = firstIssue?.path?.[0];
+
+      let message: string;
+      if (field === "HasWorkedAtFlyChamBefore") {
+        message = "Please specify if you have worked at FlyCham before.";
+      } else if (field === "HasRelativesAtFlyCham") {
+        message = "Please specify if you have relatives at FlyCham.";
+      } else if (field === "ResumeCode") {
+        message = "Please select a resume before submitting your application.";
+      } else {
+        message =
+          firstIssue?.message ||
+          "Please complete all required fields before submitting.";
+      }
+
+      setSubmitError(message);
       setCurrentStep(3);
       return;
     }
