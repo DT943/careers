@@ -7,6 +7,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 
 interface Job {
   id: any;
+  code?: any;
   title: any;
   team: any;
   experienceLevel: any;
@@ -32,7 +33,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
       return;
     }
     router.push(
-      `/job-application?jobId=${job.id}&title=${encodeURIComponent(job.title)}`
+      `/job-application?jobId=${job.code}&title=${encodeURIComponent(job.title)}`
     );
   };
 
@@ -76,7 +77,7 @@ const JobCard: React.FC<JobCardProps> = ({ job }) => {
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-          <Link href={`/jobs/${job.id}`}>
+          <Link href={`/jobs/${job.code}`}>
             <button
               type="button"
               // onClick={() => {
