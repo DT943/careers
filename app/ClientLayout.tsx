@@ -6,7 +6,7 @@ import FooterWrapper from "../layout/Footer";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "@/constant/Config";
 import QueryProvider from "@/providers/QueryProvider";
-import useDisableDevtool from "@/lib/useDisableDevtool";
+// import useDisableDevtool from "@/lib/useDisableDevtool";
 import { RouteGuard } from "@/components/RouteGuard";
 
 type ClientLayoutProps = {
@@ -14,7 +14,7 @@ type ClientLayoutProps = {
 };
 
 const ClientLayout = ({ children }: ClientLayoutProps) => {
-  useDisableDevtool({ enabled: process.env.NODE_ENV === "production" });
+  // useDisableDevtool({ enabled: process.env.NODE_ENV === "production" });
 
   return (
     <QueryProvider>
