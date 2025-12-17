@@ -38,9 +38,24 @@ const EditPersonalInfoModal = ({
   const handleSubmit = async () => {
     const fd = new FormData();
     Object.entries(form).forEach(([key, val]) => {
-      if (val !== undefined && val !== null && String(val).length > 0) {
-        fd.append(key, val as string);
+      if (val === undefined || val === null || String(val).length === 0) {
+        return;
       }
+
+      if (key === "countryPhoneCode") {
+        // merged into phoneNumber, don't send separately
+        return;
+      }
+
+      if (key === "phoneNumber") {
+        const fullPhone = `${form.countryPhoneCode ?? ""}${form.phoneNumber ?? ""}`;
+        if (fullPhone.trim().length > 0) {
+          fd.append("phoneNumber", fullPhone);
+        }
+        return;
+      }
+
+      fd.append(key, val as string);
     });
 
     await updateProfile(fd);
