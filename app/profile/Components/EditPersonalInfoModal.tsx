@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ApplicantProfile, useUpdateProfile } from "@/hooks";
 import ProfileModalShell from "../../../components/ProfileModalShell";
+import { COUNTRIES } from "@/constants/countries";
 
 type EditPersonalInfoModalProps = {
   open: boolean;
@@ -123,11 +124,20 @@ const EditPersonalInfoModal = ({
           value={form.dateOfBirth}
           onChange={(v) => handleChange("dateOfBirth", v)}
         />
-        <Field
-          label="Nationality *"
-          value={form.nationality}
-          onChange={(v) => handleChange("nationality", v)}
-        />
+        <label className="flex flex-col gap-1 text-xs font-medium text-primary-900">
+          Nationality *
+          <select
+            value={form.nationality || "Syria"}
+            onChange={(e) => handleChange("nationality", e.target.value)}
+            className="rounded-md border border-gray-200 px-3 py-2 text-sm text-primary-900 bg-white focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
+          >
+            {COUNTRIES.map((country) => (
+              <option key={country} value={country}>
+                {country}
+              </option>
+            ))}
+          </select>
+        </label>
         <Field
           label="LinkedIn Profile (Optional)"
           value={form.linkedInUrl}
