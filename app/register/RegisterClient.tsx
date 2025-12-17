@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeftIcon } from "@phosphor-icons/react";
 
 import AuthCardContainer from "@/components/AuthCardContainer";
@@ -122,7 +122,12 @@ const AUTH_TEXTS: Record<
 
 const RegisterPage = () => {
   const router = useRouter();
-  const [mode, setMode] = useState<AuthMode>("SIGN_IN");
+  const searchParams = useSearchParams();
+  const modeParam = searchParams.get("mode");
+
+  const [mode, setMode] = useState<AuthMode>(() =>
+    modeParam === "create-account" ? "CREATE_ACCOUNT" : "SIGN_IN"
+  );
 
   const pendingEmail = useAuthStore((state) => state.pendingEmail);
   const setPendingEmail = useAuthStore((state) => state.setPendingEmail);
@@ -131,6 +136,17 @@ const RegisterPage = () => {
   const { token } = useAuthStore();
 
   const { title, subtitle } = AUTH_TEXTS[mode];
+
+  // Keep auth mode in sync with `mode` query param for entry from navbar
+  useEffect(() => {
+    if (mode === "SIGN_IN" || mode === "CREATE_ACCOUNT") {
+      const desiredMode: AuthMode =
+        modeParam === "create-account" ? "CREATE_ACCOUNT" : "SIGN_IN";
+      if (desiredMode !== mode) {
+        setMode(desiredMode);
+      }
+    }
+  }, [modeParam, mode]);
 
   return (
     <div className="min-h-screen flex flex-col py-10">
@@ -160,7 +176,10 @@ const RegisterPage = () => {
                 setPendingEmail(email);
                 setMode("FIRST_TIME_SIGN_IN");
               }}
-              onSwitchToCreateAccount={() => setMode("CREATE_ACCOUNT")}
+              onSwitchToCreateAccount={() => {
+                setMode("CREATE_ACCOUNT");
+                router.replace("/register?mode=create-account");
+              }}
               onForgotPassword={() => setMode("FORGOT_PASSWORD")}
             />
           )}
@@ -190,7 +209,10 @@ const RegisterPage = () => {
                 // Redirect to first-time sign-in step with email pre-filled
                 setMode("FIRST_TIME_SIGN_IN");
               }}
-              onBackToSignIn={() => setMode("SIGN_IN")}
+              onBackToSignIn={() => {
+                setMode("SIGN_IN");
+                router.replace("/register");
+              }}
             />
           )}
 

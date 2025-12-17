@@ -50,7 +50,7 @@ const NavbarWrapper = () => {
         <span className="text-white">|</span>
         <Link
           className="transition hover:text-[#C2B48B]"
-          href="/register"
+          href="/register?mode=create-account"
           onClick={() => {
             setMenuOpen(false);
             setMobileOpen(false);
