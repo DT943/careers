@@ -121,7 +121,7 @@ const EditSkillsModal = ({
           onClick={addSkill}
           className="mt-3 rounded-lg border border-[#E5E5E3] py-2 px-4 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
         >
-          <PlusCircleIcon size={24} className="mr-2" />
+          <PlusCircleIcon size={22} className="mr-2" />
           Add skill
         </button>
       </div>

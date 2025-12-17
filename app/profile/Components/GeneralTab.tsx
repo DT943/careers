@@ -26,7 +26,11 @@ import EditLanguagesModal from "./EditLanguagesModal";
 import AddAttachmentModal from "./AddAttachmentModal";
 import DeleteConfirmationModal from "./DeleteConfirmationModal";
 import { getLanguageLevelLabel } from "@/utils";
-import { useUpdateProfile, useDeleteAttachment, ProfileAttachment } from "@/hooks";
+import {
+  useUpdateProfile,
+  useDeleteAttachment,
+  ProfileAttachment,
+} from "@/hooks";
 
 type GeneralTabProps = {
   profile?: ApplicantProfile;
@@ -51,8 +55,11 @@ const GeneralTab = ({
   const [showEdu, setShowEdu] = useState(false);
   const [showLang, setShowLang] = useState(false);
   const [showAddAttachment, setShowAddAttachment] = useState(false);
-  const [deletingAttachmentId, setDeletingAttachmentId] = useState<number | null>(null);
-  const { mutateAsync: deleteAttachment, isLoading: isDeletingAttachment } = useDeleteAttachment();
+  const [deletingAttachmentId, setDeletingAttachmentId] = useState<
+    number | null
+  >(null);
+  const { mutateAsync: deleteAttachment, isLoading: isDeletingAttachment } =
+    useDeleteAttachment();
   const [skillsMode, setSkillsMode] = useState<"edit" | "add">("edit");
   const [workMode, setWorkMode] = useState<"edit" | "add">("edit");
   const [eduMode, setEduMode] = useState<"edit" | "add">("edit");
@@ -147,13 +154,19 @@ const GeneralTab = ({
           title="Attachments"
           icon={<FileTextIcon size={20} />}
           rightNode={
-            <button
-              onClick={() => setShowAddAttachment(true)}
-              className="text-primary-1 hover:opacity-80"
-              aria-label="Add attachment"
-            >
-              <PlusCircleIcon size={18} />
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="text-sm text-gray-500">
+                {profile.attachments?.length ?? 0}/{3}
+              </div>
+              <button
+                onClick={() => setShowAddAttachment(true)}
+                disabled={(profile.attachments?.length ?? 0) >= 3 ? true : false}
+                className="disabled:opacity-50 disabled:cursor-not-allowed text-primary-1 hover:opacity-80"
+                aria-label="Add attachment"
+              >
+                <PlusCircleIcon size={22} />
+              </button>
+            </div>
           }
         />
         {profile.attachments && profile.attachments.length > 0 ? (
@@ -249,7 +262,7 @@ const GeneralTab = ({
               onClick={() => setShowSkills(true)}
               className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
             >
-              <PlusCircleIcon size={24} className="mr-2" />
+              <PlusCircleIcon size={22} className="mr-2" />
               Add Skill
             </button>
           </div>
@@ -269,7 +282,7 @@ const GeneralTab = ({
                   className="text-primary-1 hover:opacity-80"
                   aria-label="Add skill"
                 >
-                  <PlusCircleIcon size={18} />
+                  <PlusCircleIcon size={22} />
                 </button>
                 <button
                   onClick={() => {
@@ -320,7 +333,7 @@ const GeneralTab = ({
               onClick={() => setShowWork(true)}
               className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1 "
             >
-              <PlusCircleIcon size={24} className="mr-2" />
+              <PlusCircleIcon size={22} className="mr-2" />
               Add Work History
             </button>
           </div>
@@ -340,7 +353,7 @@ const GeneralTab = ({
                   className="text-primary-1 hover:opacity-80"
                   aria-label="Add work history"
                 >
-                  <PlusCircleIcon size={18} />
+                  <PlusCircleIcon size={22} />
                 </button>
                 <button
                   onClick={() => {
@@ -394,7 +407,7 @@ const GeneralTab = ({
               onClick={() => setShowEdu(true)}
               className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
             >
-              <PlusCircleIcon size={24} className="mr-2" />
+              <PlusCircleIcon size={22} className="mr-2" />
               Add Education
             </button>
           </div>
@@ -414,7 +427,7 @@ const GeneralTab = ({
                   className="text-primary-1 hover:opacity-80"
                   aria-label="Add education"
                 >
-                  <PlusCircleIcon size={18} />
+                  <PlusCircleIcon size={22} />
                 </button>
                 <button
                   onClick={() => {
@@ -468,7 +481,7 @@ const GeneralTab = ({
               onClick={() => setShowLang(true)}
               className="w-full rounded-xl border border-[#E5E5E3] py-3 flex items-center justify-center text-sm font-semibold text-white hover:opacity-90 bg-primary-1"
             >
-              <PlusCircleIcon size={24} className="mr-2" />
+              <PlusCircleIcon size={22} className="mr-2" />
               Add Language
             </button>
           </div>
@@ -488,7 +501,7 @@ const GeneralTab = ({
                   className="text-primary-1 hover:opacity-80"
                   aria-label="Add language"
                 >
-                  <PlusCircleIcon size={18} />
+                  <PlusCircleIcon size={22} />
                 </button>
                 <button
                   onClick={() => {

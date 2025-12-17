@@ -56,12 +56,14 @@ const ProfileClient = () => {
   const [showNewAlertModal, setShowNewAlertModal] = useState(false);
 
   const [alerts, setAlerts] = useState<JobAlert[]>(initialAlerts);
-  
+
   // Check if user has a profile
   // API returns result: 2 (or other number) if profile exists, 0 or falsy if not
-  const { data: hasProfileData, isLoading: hasProfileLoading } = useHasProfile(!!token);
+  const { data: hasProfileData, isLoading: hasProfileLoading } = useHasProfile(
+    !!token
+  );
   const hasProfile = !!hasProfileData?.result;
-  
+
   // Only fetch profile and related data if user has a profile
   const { data, isLoading, error } = useApplicantProfile(!!token && hasProfile);
   const {
@@ -116,9 +118,7 @@ const ProfileClient = () => {
     avatarInputRef.current?.click();
   };
 
-  const handleAvatarChange = async (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -136,78 +136,6 @@ const ProfileClient = () => {
       }
     }
   };
-
-  const contactInfo = useMemo(() => {
-    if (!profile)
-      return {
-        fullName: "",
-        email: "",
-        location: "",
-        mobilePhone: "",
-        birthDate: "",
-        nationality: "",
-        address: "",
-        portfolioUrl: "",
-        linkedinUrl: "",
-      };
-
-    return {
-      fullName: `${profile.firstName} ${profile.lastName}`,
-      location: `${profile.city}, ${profile.country}`,
-      mobilePhone: profile.phoneNumber,
-      birthDate: profile.dateOfBirth?.split("T")[0] ?? "",
-      nationality: profile.nationality,
-      address: "",
-      portfolioUrl: profile.portfolioUrl,
-      linkedinUrl: profile.linkedInUrl,
-    };
-  }, [profile]);
-
-  const attachments = useMemo(() => {
-    if (!profile?.resumeUrl) return [];
-    return [
-      {
-        id: profile.id,
-        name: "Resume",
-        type: "PDF",
-        url: profile.resumeUrl,
-      },
-    ];
-  }, [profile]);
-
-  const workHistory = useMemo(() => {
-    return (
-      profile?.experiences.map((exp) => {
-        const start = exp.startDate.split("T")[0];
-        const period = exp.isCurrentRole ? `${start} - Present` : start;
-        return {
-          id: exp.id,
-          title: exp.title,
-          companyOrSchool: exp.company,
-          period,
-          location: `${exp.city}, ${exp.country}`,
-          description: exp.responsibilities,
-        };
-      }) ?? []
-    );
-  }, [profile]);
-
-  const educationHistory = useMemo(() => {
-    return (
-      profile?.educations.map((edu) => {
-        const start = edu.startDate.split("T")[0];
-        const end = edu.endDate?.split("T")[0];
-        return {
-          id: edu.id,
-          title: edu.degree,
-          companyOrSchool: edu.institution,
-          period: `${start}${end ? ` - ${end}` : ""}`,
-          location: edu.fieldOfStudy,
-          description: edu.grade ? `Grade: ${edu.grade}` : "",
-        };
-      }) ?? []
-    );
-  }, [profile]);
 
   const savedJobs = useMemo(() => {
     const items = savedJobsData?.result?.items ?? [];
@@ -249,7 +177,9 @@ const ProfileClient = () => {
   };
 
   const deleteAlert = (id: number) => {
-    setAlerts((prev: JobAlert[]) => prev.filter((alert: JobAlert) => alert.id !== id));
+    setAlerts((prev: JobAlert[]) =>
+      prev.filter((alert: JobAlert) => alert.id !== id)
+    );
   };
 
   // Show loading state while checking if profile exists
@@ -411,7 +341,7 @@ const ProfileClient = () => {
                   onClick={() => setShowNewAlertModal(true)}
                   className="inline-flex items-center gap-2 rounded-md bg-[#00527a] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:opacity-95 transition"
                 >
-                  <PlusCircleIcon size={18} weight="bold" />
+                  <PlusCircleIcon size={22} weight="bold" />
                   New alert
                 </button>
               </div>
