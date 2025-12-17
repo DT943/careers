@@ -13,6 +13,11 @@ import {
 } from "@phosphor-icons/react";
 import { IoDocumentTextOutline } from "react-icons/io5";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  createProfileSchema,
+  type CreateProfileFormValues,
+  professionalInfoSchema,
+} from "@/validations/createProfileSchema";
 
 const TOTAL_STEPS = 3;
 
@@ -23,7 +28,7 @@ const CreateProfileForm = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<CreateProfileFormValues>({
     firstName: "",
     lastName: "",
     country: "",
@@ -35,6 +40,11 @@ const CreateProfileForm = () => {
     linkedInUrl: "",
     portfolioUrl: "",
   });
+
+  const [formErrors, setFormErrors] = useState<
+    Partial<Record<keyof CreateProfileFormValues, string>>
+  >({});
+  const [submitError, setSubmitError] = useState("");
 
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [resumeError, setResumeError] = useState("");
@@ -67,8 +77,34 @@ const CreateProfileForm = () => {
     { name: "", level: LanguageLevel.Beginner },
   ]);
 
-  const handleFormChange = (field: string, value: string) => {
+  const handleFormChange = (
+    field: keyof CreateProfileFormValues,
+    value: string
+  ) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+  };
+
+  const validatePersonalInfo = () => {
+    const result = createProfileSchema.safeParse(form);
+
+    if (result.success) {
+      setFormErrors({});
+      return true;
+    }
+
+    const fieldErrors: Partial<Record<keyof CreateProfileFormValues, string>> =
+      {};
+
+    result.error.issues.forEach((issue) => {
+      const field = issue.path[0] as keyof CreateProfileFormValues;
+      if (field && !fieldErrors[field]) {
+        fieldErrors[field] = issue.message;
+      }
+    });
+
+    setFormErrors(fieldErrors);
+    return false;
   };
 
   const handleSkillChange = (idx: number, value: string) => {
@@ -238,13 +274,61 @@ const CreateProfileForm = () => {
   );
 
   const handleSubmit = async () => {
+    const isValidPersonal = validatePersonalInfo();
+    if (!isValidPersonal) {
+      if (currentStep !== 2) {
+        setCurrentStep(2);
+      }
+      return;
+    }
+
+    setSubmitError("");
+
+    // Validate professional information (step 3)
+    const professionalData = {
+      skills: skills
+        .map((s) => ({ name: s.trim() }))
+        .filter((s) => s.name.length > 0),
+      workHistory,
+      educationHistory,
+      languages,
+    };
+
+    const professionalResult =
+      professionalInfoSchema.safeParse(professionalData);
+
+    if (!professionalResult.success) {
+      const firstIssue = professionalResult.error.issues[0];
+      setSubmitError(
+        firstIssue?.message ||
+          "Please complete all required professional information."
+      );
+      setCurrentStep(TOTAL_STEPS);
+      return;
+    }
+
     const fd = new FormData();
 
     // Personal information
     Object.entries(form).forEach(([key, val]) => {
-      if (val && String(val).length > 0) {
-        fd.append(key, val as string);
+      if (!val || String(val).length === 0) return;
+
+      if (key === "countryPhoneCode") {
+        // Don't send this as a separate field; it's merged into phoneNumber
+        return;
       }
+
+      if (key === "phoneNumber") {
+        const fullPhone = `${form.countryPhoneCode ?? ""}${
+          form.phoneNumber ?? ""
+        }`;
+        if (fullPhone.trim().length > 0) {
+          fd.append("phoneNumber", fullPhone);
+        }
+        return;
+      }
+
+      fd.append(key, val as string);
     });
 
     // Add email from store if available
@@ -318,12 +402,22 @@ const CreateProfileForm = () => {
     try {
       await createProfile(fd);
       // The query will automatically refetch after mutation success
-    } catch (error) {
-      console.error("Error creating profile:", error);
+    } catch (err: any) {
+      console.error("Error creating profile:", err);
+      setSubmitError(
+        err?.response?.data?.message || "Unable to create profile"
+      );
     }
   };
 
   const goNext = () => {
+    if (currentStep === 2) {
+      const isValid = validatePersonalInfo();
+      if (!isValid) {
+        return;
+      }
+    }
+
     if (currentStep < TOTAL_STEPS) {
       setCurrentStep((s) => s + 1);
     } else {
@@ -411,11 +505,13 @@ const CreateProfileForm = () => {
                 label="First Name *"
                 value={form.firstName}
                 onChange={(v) => handleFormChange("firstName", v)}
+                error={formErrors.firstName}
               />
               <Field
                 label="Last Name *"
                 value={form.lastName}
                 onChange={(v) => handleFormChange("lastName", v)}
+                error={formErrors.lastName}
               />
               {/* <Field
                 label="Email *"
@@ -428,43 +524,51 @@ const CreateProfileForm = () => {
                 label="Country *"
                 value={form.country}
                 onChange={(v) => handleFormChange("country", v)}
+                error={formErrors.country}
               />
               <Field
                 label="City *"
                 value={form.city}
                 onChange={(v) => handleFormChange("city", v)}
+                error={formErrors.city}
               />
               <Field
                 label="Country Phone Code *"
                 value={form.countryPhoneCode}
                 onChange={(v) => handleFormChange("countryPhoneCode", v)}
                 placeholder="e.g. +963"
+                error={formErrors.countryPhoneCode}
               />
               <Field
                 label="Phone Number *"
                 value={form.phoneNumber}
                 onChange={(v) => handleFormChange("phoneNumber", v)}
+                error={formErrors.phoneNumber}
               />
               <Field
                 label="Date of Birth *"
                 type="date"
                 value={form.dateOfBirth}
                 onChange={(v) => handleFormChange("dateOfBirth", v)}
+                error={formErrors.dateOfBirth}
               />
               <Field
                 label="Nationality *"
                 value={form.nationality}
                 onChange={(v) => handleFormChange("nationality", v)}
+                error={formErrors.nationality}
               />
               <Field
                 label="LinkedIn Profile (Optional)"
                 value={form.linkedInUrl}
                 onChange={(v) => handleFormChange("linkedInUrl", v)}
+                error={formErrors.linkedInUrl}
               />
               <Field
                 label="Portfolio/Website (Optional)"
                 value={form.portfolioUrl}
                 onChange={(v) => handleFormChange("portfolioUrl", v)}
+                error={formErrors.portfolioUrl}
               />
             </div>
           </section>
@@ -798,6 +902,10 @@ const CreateProfileForm = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-lg py-8 px-8 md:px-12 mt-16">
+        {submitError && (
+          <p className="mb-4 text-sm text-red-500">{submitError}</p>
+        )}
+
         {/* Step content */}
         <div className="space-y-8">{renderStep()}</div>
 
@@ -838,6 +946,7 @@ const Field = ({
   type = "text",
   placeholder,
   disabled,
+  error,
 }: {
   label: string;
   value: string;
@@ -845,6 +954,7 @@ const Field = ({
   type?: string;
   placeholder?: string;
   disabled?: boolean;
+  error?: string;
 }) => (
   <label className="flex flex-col gap-1 text-xs font-medium text-primary-900">
     {label}
@@ -854,8 +964,13 @@ const Field = ({
       placeholder={placeholder}
       onChange={(e) => onChange(e.target.value)}
       disabled={disabled}
-      className="rounded-md border border-gray-200 px-3 py-2 text-sm text-primary-900 focus:border-primary-1 focus:ring-1 focus:ring-primary-1 disabled:bg-gray-100 disabled:cursor-not-allowed"
+      className={`rounded-md border px-3 py-2 text-sm text-primary-900 disabled:bg-gray-100 disabled:cursor-not-allowed ${
+        error
+          ? "border-red-500 focus:border-red-500 focus:ring-1 focus:ring-red-500"
+          : "border-gray-200 focus:border-primary-1 focus:ring-1 focus:ring-primary-1"
+        }`}
     />
+    {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
   </label>
 );
 
