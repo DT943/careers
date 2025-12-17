@@ -16,13 +16,20 @@ const EditPersonalInfoModal = ({
   profile,
 }: EditPersonalInfoModalProps) => {
   const { mutateAsync: updateProfile, isLoading } = useUpdateProfile();
+
+  // Split stored phone number (e.g. "+963987234768") into country code and local number
+  const rawPhone = profile.phoneNumber ?? "";
+  const phoneMatch = rawPhone.match(/^(\+\d{1,3})(\d+)$/);
+  const initialCountryPhoneCode = phoneMatch ? phoneMatch[1] : "";
+  const initialPhoneNumber = phoneMatch ? phoneMatch[2] : rawPhone;
+
   const [form, setForm] = useState({
     firstName: profile.firstName ?? "",
     lastName: profile.lastName ?? "",
     country: profile.country ?? "",
     city: profile.city ?? "",
-    countryPhoneCode: "",
-    phoneNumber: profile.phoneNumber ?? "",
+    countryPhoneCode: initialCountryPhoneCode,
+    phoneNumber: initialPhoneNumber,
     dateOfBirth: profile.dateOfBirth?.split("T")[0] ?? "",
     nationality: profile.nationality ?? "",
     linkedInUrl: profile.linkedInUrl ?? "",
