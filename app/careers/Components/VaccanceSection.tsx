@@ -36,7 +36,7 @@ const Vacancies = () => {
 
   const topVacancies = useMemo(() => {
     if (!data?.result) return [];
-    return data.result.slice(0, 4).map(transformJob);
+    return data.result.items.slice(0, 4).map(transformJob);
   }, [data]);
 
   return (

@@ -21,6 +21,11 @@ export interface JobOffer {
   teamImageUrl: string;
 }
 
+export interface JobOfferListResponse {
+  items: JobOffer[];
+  totalCount: number;
+}
+
 export interface JobOfferParams extends QueryParams {
   search?: string;
   city?: string;
@@ -63,7 +68,7 @@ const ENDPOINTS = {
  * @param enabled - Whether to enable the query
  */
 export const useJobOffers = (params?: JobOfferParams, enabled = true) => {
-  return useGetQuery<ApiResponse<JobOffer[]>>(
+  return useGetQuery<ApiResponse<JobOfferListResponse>>(
     queryKeys.careers.jobOffers(params ?? {}),
     ENDPOINTS.list,
     params,

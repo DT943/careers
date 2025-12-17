@@ -67,7 +67,7 @@ const JobResultsSection = () => {
 
   const jobs = useMemo(() => {
     if (!data?.result) return [];
-    return data.result.map(transformJobOffer);
+    return data.result.items.map(transformJobOffer);
   }, [data]);
 
   // Handle manual search

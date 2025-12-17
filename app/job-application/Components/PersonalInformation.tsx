@@ -7,6 +7,7 @@ import {
   GlobeIcon,
 } from "@phosphor-icons/react";
 import { FiLinkedin } from "react-icons/fi";
+import { COUNTRIES } from "@/constants/countries";
 
 const PersonalInformation: React.FC<ApplicationStepProps> = ({
   data,
@@ -158,15 +159,18 @@ const PersonalInformation: React.FC<ApplicationStepProps> = ({
             <label className="block text-sm font-medium text-primary-900">
               Nationality *
             </label>
-            <div className="flex items-center gap-3 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] p-3 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
-
-              <input
-                type="text"
-                placeholder="Syrian"
-                value={data.nationality}
+            <div className="flex items-center gap-3 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] px-3 py-2 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
+              <select
+                value={data.nationality || "Syria"}
                 onChange={(e) => updateData({ nationality: e.target.value })}
-                className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
-              />
+                className="flex-1 border-none bg-transparent text-sm text-gray-700 outline-none"
+              >
+                {COUNTRIES.map((country) => (
+                  <option key={country} value={country}>
+                    {country}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
         </div>

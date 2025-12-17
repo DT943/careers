@@ -10,6 +10,7 @@ type ReviewSubmitProps = ApplicationStepProps & {
   onSubmit: () => void;
   applying?: boolean;
   attachments?: ProfileAttachment[];
+  submitError?: string;
 };
 
 const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
@@ -18,6 +19,7 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
   onSubmit,
   applying,
   attachments = [],
+  submitError,
 }: ReviewSubmitProps) => {
   const additionalQuestions = useMemo(
     () => ({
@@ -60,6 +62,9 @@ const ReviewSubmit: React.FC<ReviewSubmitProps> = ({
           Please review the details below before submitting your application to
           FlyCham.
         </p>
+        {submitError && (
+          <p className="mt-4 text-sm text-red-500">{submitError}</p>
+        )}
       </div>
 
       <div className="flex flex-col gap-y-6">

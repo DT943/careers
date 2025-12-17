@@ -12,6 +12,10 @@ import AdditionalQuestions from "./Components/AdditionalQuestions";
 import Link from "next/link";
 import { useApplicantProfile, useApplyToJob } from "@/hooks";
 import { useAuthStore } from "@/store/useAuthStore";
+import {
+  applyJobSchema,
+  type ApplyJobPayload,
+} from "@/validations/applyJobSchema";
 
 const JobApplicationClient = () => {
   const searchParams = useSearchParams();
@@ -23,6 +27,7 @@ const JobApplicationClient = () => {
   const { mutateAsync: applyToJob, isLoading: applying } = useApplyToJob();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [applicationData, setApplicationData] = useState<ApplicationData>({
     resume: null,
     resumeUrl: "",
@@ -118,6 +123,7 @@ const JobApplicationClient = () => {
             onSubmit={handleSubmit}
             applying={applying}
             attachments={profile?.attachments ?? []}
+            submitError={submitError ?? undefined}
           />
         );
       case 4:
@@ -148,11 +154,13 @@ const JobApplicationClient = () => {
       return;
     }
 
-    const payload = {
+    const rawPayload: ApplyJobPayload = {
       JobOfferId: finalJobOfferId,
-      ResumeCode: applicationData.resumeCode,
-      HasWorkedAtFlyChamBefore: applicationData.hasWorkedBefore,
-      HasRelativesAtFlyCham: applicationData.hasRelatives,
+      ResumeCode: applicationData.resumeCode || "",
+      HasWorkedAtFlyChamBefore:
+        (applicationData.hasWorkedBefore as boolean | undefined) as any,
+      HasRelativesAtFlyCham:
+        (applicationData.hasRelatives as boolean | undefined) as any,
       WhyWantToJoinFlyCham: applicationData.whyJoin,
       HowDidYouHearAboutJob: applicationData.howHear,
       YearsOfExperience: applicationData.yearsOfExperience,
@@ -160,7 +168,21 @@ const JobApplicationClient = () => {
       ExpectedSalary: applicationData.expectedSalary,
     };
 
-    await applyToJob(payload);
+    const result = applyJobSchema.safeParse(rawPayload);
+
+    if (!result.success) {
+      const firstIssue = result.error.issues[0];
+      setSubmitError(
+        firstIssue?.message ||
+          "Please complete all required fields before submitting."
+      );
+      setCurrentStep(3);
+      return;
+    }
+
+    setSubmitError(null);
+
+    await applyToJob(result.data);
     setCurrentStep(4);
   };
 
