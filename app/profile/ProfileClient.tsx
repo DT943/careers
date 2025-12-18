@@ -144,6 +144,7 @@ const ProfileClient = () => {
       return {
         id: job.id,
         title: job.positionTitle,
+        code: job.code,
         team: job.teamName,
         experienceLevel: getLevelLabel(job.level),
         location: `${job.city}, ${job.country}`,
