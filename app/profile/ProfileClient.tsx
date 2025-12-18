@@ -159,11 +159,11 @@ const ProfileClient = () => {
   const applications = useMemo(() => {
     const items = applicationsData?.result ?? [];
     return items.map((item: JobApplicationItem) => ({
-      id: item.id,
+      id: item.jobOfferId,
       jobOfferCode: item.jobOfferCode,
-      position: item.jobPosition,
+      position: item.jobPosition  || "-",
       status: getApplicationStatusLabel(item.status),
-      location: item.userProfile.city || "—",
+      location: `${item.city}, ${item.country}` || "—",
       team: item.teamName,
       applicationDate: item.appliedOn?.split("T")[0] ?? "",
     }));

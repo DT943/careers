@@ -126,7 +126,7 @@ const JobApplicationsTable: React.FC<JobApplicationsTableProps> = ({
                   application.status.toLowerCase() === "withdrawn";
                 return (
                   <tr key={application.id} className="border-b border-gray-200">
-                    <td className="px-6 py-4 text-sm underline">
+                    <td className={`px-6 py-4 text-sm ${application.position ? "underline" : ""}`}>
                       <Link href={`/jobs/${application.jobOfferCode}`}>
                         {application.position}
                       </Link>
