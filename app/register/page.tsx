@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import RegisterClient from "./RegisterClient";
 
 export const metadata = {
@@ -38,7 +39,11 @@ export const metadata = {
   },
 };
 const Register = () => {
-  return <RegisterClient />;
+  return (
+    <Suspense fallback={null}>
+      <RegisterClient />
+    </Suspense>
+  );
 };
 
 export default Register;
