@@ -156,7 +156,7 @@ const DatePickerField = ({
           value={displayValue}
           placeholder={placeholder}
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-full rounded-md border border-gray-200 px-3 py-2 text-sm text-primary-900 cursor-pointer focus:border-primary-1 focus:ring-1 focus:ring-primary-1 ${inputClassName}`}
+          className={`w-full rounded-md px-3 py-2 text-sm text-primary-900 cursor-pointer focus:border-primary-1 focus:ring-1 focus:ring-primary-1 ${inputClassName}`}
         />
         <svg
           className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"

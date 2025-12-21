@@ -148,6 +148,7 @@ const EditPersonalInfoModal = ({
             // Disable future dates
             return date > new Date();
           }}
+          inputClassName="border border-gray-200"
           required
         />
         <label className="flex flex-col gap-1 text-xs font-medium text-primary-900">

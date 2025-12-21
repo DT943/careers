@@ -1,4 +1,5 @@
 "use client";
+import DatePickerField from "@/components/DatePickerField";
 import { ApplicationStepProps } from "@/types/application";
 import {
   ArrowLeftIcon,
@@ -206,7 +207,9 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
                 type="text"
                 placeholder="1-3 years"
                 value={data.yearsOfExperience}
-                onChange={(e) => updateData({ yearsOfExperience: e.target.value })}
+                onChange={(e) =>
+                  updateData({ yearsOfExperience: e.target.value })
+                }
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
             </div>
@@ -216,15 +219,25 @@ const AdditionalQuestions: React.FC<ApplicationStepProps> = ({
             <label className="block text-sm font-medium text-primary-900">
               When can you start? *
             </label>
-            <div className="flex items-center gap-3 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] p-3 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
+            {/* <div className="flex items-center gap-3 rounded-md border border-[#F5F5F4] bg-[#F5F5F4] p-3 focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72]">
               <input
                 type="date"
                 placeholder="17-12-2025"
                 value={data.whenCanYouStart}
-                onChange={(e) => updateData({ whenCanYouStart: e.target.value })}
+                onChange={(e) =>
+                  updateData({ whenCanYouStart: e.target.value })
+                }
                 className="flex-1 border-none bg-transparent text-sm text-gray-700 placeholder-gray-400 outline-none"
               />
-            </div>
+            </div> */}
+            <DatePickerField
+              label=""
+              inputClassName="rounded-md border border-[#F5F5F4] bg-[#F5F5F4] focus-within:ring-1 focus-within:ring-[#054E72] focus-within:border-[#054E72] py-3 -mt-1"
+              value={data.whenCanYouStart}
+              onChange={(date) =>
+                updateData({ whenCanYouStart: date?.toISOString() })
+              }
+            />
           </div>
         </div>
 
